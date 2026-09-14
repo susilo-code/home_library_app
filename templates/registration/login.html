@@ -117,13 +117,13 @@
                 </li>
                 <li class="flex items-center gap-2 rounded-xl border border-purple-400/20 bg-white/5 px-3 py-2.5 text-xs font-medium text-purple-100/85">
                     <svg class="h-4 w-4 text-royal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                    Statistik Kontribusi
+                    Statistik Buku
                 </li>
             </ul>
         </div>
 
         <p class="relative hidden text-xs text-purple-200/65 lg:block">
-            &copy; {% now "Y" %} {{ app_config.app_name|default:"Perpustakaan" }}
+            &copy; {% now "Y" %} {{ app_config.app_name|default:"Perpustakaan" }}<br><span class="text-[11px]">This app is developed by susilo</span>
         </p>
     </section>
 
@@ -204,7 +204,7 @@
             </div>
 
             <p class="mt-6 text-center text-xs text-purple-200/65 lg:hidden">
-                &copy; {% now "Y" %} {{ app_config.app_name|default:"Perpustakaan" }}
+                &copy; {% now "Y" %} {{ app_config.app_name|default:"Perpustakaan" }}<br><span class="text-[11px]">This app is developed by susilo</span>
             </p>
         </div>
     </section>

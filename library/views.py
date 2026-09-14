@@ -78,6 +78,9 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         fiksi = Book.objects.filter(book_type=Book.BookCategory.FIKSI).count()
         non_fiksi = Book.objects.filter(book_type=Book.BookCategory.NON_FIKSI).count()
 
+        # Buku yang belum selesai dibaca (status belum "Selesai Dibaca")
+        belum_selesai = Book.objects.exclude(status=Book.ReadingStatus.COMPLETED).count()
+
         shelf_stats = Shelf.objects.annotate(book_count=Count('books')).order_by('-book_count')[:5]
 
         context.update({
@@ -89,6 +92,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             'my_genres': my_genres,
             'total_fiksi': fiksi,
             'total_non_fiksi': non_fiksi,
+            'belum_selesai': belum_selesai,
             'genre_labels': json.dumps(genre_labels),
             'genre_counts': json.dumps(genre_counts),
             'genre_colors': json.dumps(genre_colors),

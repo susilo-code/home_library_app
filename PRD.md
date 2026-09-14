@@ -167,3 +167,17 @@ Delapan permintaan perbaikan sekaligus:
    penulis, jenis buku, dan nama pemilik (opsional). Ada opsi “lompati N label”
    untuk stiker yang sebagian sudah terpakai, serta `@page A4 margin 8 mm` saat dicetak.
    Menu **Cetak Label** ditambahkan di navbar (desktop & mobile).
+
+### Revisi 5 (v1.4.1)
+1. **Top bar dibersihkan** — menu **Pengguna**, tombol **+ Tambah Buku**, dan **jam digital**
+   dihapus dari navbar (desktop maupun menu mobile) agar tidak berdesakan.
+   Top bar kini hanya: **Dashboard · Katalog Buku · Cetak Label** + pemilih tema + menu user.
+   Pengguna tetap bisa dikelola dari **menu klik user → Kelola Pengguna**, dan menambah buku
+   dari tombol **Tambah Buku Baru** di Dashboard & Katalog.
+2. **Kredit pengembang** — footer berubah menjadi `© {tahun} {judul aplikasi}. Developed by susilo.`
+   (menggantikan “Dibangun dengan Django + Tailwind CSS”); halaman login mencantumkan
+   **“This app is developed by susilo”**.
+3. **Halaman login** — bulet **“Statistik Kontribusi”** diganti **“Statistik Buku”**.
+4. **Kartu dashboard** — **“Kontributor Aktif”** menjadi **“User Aktif”**, dan kartu
+   **“Buku Anda”** diganti **“Belum Selesai Dibaca”** (jumlah buku yang statusnya belum
+   *Selesai Dibaca*, dihitung dari seluruh koleksi).
