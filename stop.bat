@@ -4,7 +4,7 @@ REM  stop.bat — Matikan semua service Hirunaza's Library
 REM  Menutup proses yang menahan port Django (mis. 8000) & FastAPI (mis. 8001)
 REM ══════════════════════════════════════════════════════════════════════
 setlocal EnableExtensions EnableDelayedExpansion
-title Hirunaza's Library - Stop Services
+title Stop - Hirunaza Library
 cd /d "%~dp0"
 
 set "VENV_PY=%~dp0.venv\Scripts\python.exe"
@@ -40,6 +40,15 @@ if "!KETEMU!"=="0" (
     echo.
     echo   [OK] Service dihentikan.
 )
+
+REM ── Tutup juga jendela launcher yang dibuka start.bat ─────────────────
+REM Tanpa langkah ini, jendela "Hirunaza Django/FastAPI" tetap terbuka
+REM dan lama-lama menumpuk walau servernya sudah mati.
+echo.
+echo   Menutup jendela launcher (bila ada) ...
+taskkill /F /IM cmd.exe /FI "WINDOWTITLE eq Hirunaza*" >nul 2>&1
+taskkill /F /IM cmd.exe /FI "WINDOWTITLE eq Administrator: Hirunaza*" >nul 2>&1
+echo   [OK] Selesai.
 
 echo.
 echo Tekan tombol apa saja untuk menutup.
