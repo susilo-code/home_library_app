@@ -33,7 +33,14 @@ PAGES = {
     "dashboard": "/",
     "login": "/login/",
     "kelola-pengguna": "/pengguna/",
+    "identitas": "/pengaturan/identitas/",
+    "label-pilih": "/label/",
 }
+
+from library.models import Book  # noqa: E402
+
+_buku_rak = Book.objects.exclude(shelf=None).select_related("shelf")[:12]
+PAGES["label-cetak"] = "/label/cetak/?ids=" + ",".join(str(b.pk) for b in _buku_rak)
 
 for nama, url in PAGES.items():
     html = c.get(url).content.decode()
@@ -45,3 +52,16 @@ for nama, url in PAGES.items():
     with open(path, "w", encoding="utf-8") as f:
         f.write(html)
     print(f"{url:16s} -> {path}  ({len(html)} chars)")
+
+# ── Versi khusus: modal detail & modal tambah genre dibuka paksa (untuk pratinjau) ──
+html_form = open("preview/form-buku.html", encoding="utf-8").read()
+html_modal = html_form.replace(
+    'id="modal-detail" class="fixed inset-0 z-50 hidden items-center justify-center p-4"',
+    'id="modal-detail" class="fixed inset-0 z-50 flex items-center justify-center p-4"'
+).replace(
+    'id="modal-genre" class="fixed inset-0 z-50 hidden items-center justify-center p-4"',
+    'id="modal-genre" class="fixed inset-0 z-50 flex items-center justify-center p-4"'
+)
+with open("preview/form-buku-modal.html", "w", encoding="utf-8") as f:
+    f.write(html_modal)
+print("modal dipaksa terbuka -> preview/form-buku-modal.html")

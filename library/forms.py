@@ -6,7 +6,7 @@ from django.db.models import Q
 from datetime import date
 import re
 
-from .models import Book, Genre, Shelf, UserProfile, normalize_text
+from .models import Book, Genre, Shelf, SiteConfig, UserProfile, normalize_text
 
 # ─── Shared CSS classes ───────────────────────────────────────────────────────
 INPUT_CLASS = (
@@ -531,13 +531,7 @@ class StaffUserCreateForm(forms.ModelForm):
         p1, p2 = cleaned.get('password1'), cleaned.get('password2')
         if p1 and p2 and p1 != p2:
             self.add_error('password2', 'Kata sandi dan ulangannya tidak sama.')
-        if p1:
-            from django.contrib.auth.password_validation import validate_password
-            from django.core.exceptions import ValidationError as DjangoValidationError
-            try:
-                validate_password(p1, self.instance)
-            except DjangoValidationError as e:
-                self.add_error('password1', e)
+        # Catatan: kata sandi sengaja DIBEBASKAN — tidak ada aturan panjang/kerumitan.
         return cleaned
 
     def save(self, commit=True):
@@ -572,15 +566,8 @@ class StaffUserUpdateForm(forms.ModelForm):
         }
 
     def clean_password_baru(self):
-        sandi = self.cleaned_data.get('password_baru')
-        if sandi:
-            from django.contrib.auth.password_validation import validate_password
-            from django.core.exceptions import ValidationError as DjangoValidationError
-            try:
-                validate_password(sandi, self.instance)
-            except DjangoValidationError as e:
-                raise forms.ValidationError(e)
-        return sandi
+        # Kata sandi dibebaskan: tidak ada validasi panjang maupun kerumitan.
+        return self.cleaned_data.get('password_baru')
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -644,12 +631,11 @@ class GenreForm(forms.ModelForm):
 class ShelfForm(forms.ModelForm):
     class Meta:
         model = Shelf
-        fields = ['name', 'code', 'description', 'capacity', 'color_code', 'is_active']
+        fields = ['name', 'code', 'description', 'color_code', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': INPUT_CLASS, 'placeholder': 'Contoh: Rak A-1 (Kamar Depan)'}),
             'code': forms.TextInput(attrs={'class': INPUT_CLASS, 'placeholder': 'Contoh: A1'}),
             'description': forms.TextInput(attrs={'class': INPUT_CLASS, 'placeholder': 'Contoh: rak kayu dekat jendela'}),
-            'capacity': forms.NumberInput(attrs={'class': INPUT_CLASS, 'min': 1, 'placeholder': 'Contoh: 50'}),
             'color_code': forms.TextInput(attrs={'class': INPUT_CLASS, 'type': 'color'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'h-5 w-5 rounded border-purple-300 text-purple-600 focus:ring-purple-500'}),
         }
@@ -657,7 +643,6 @@ class ShelfForm(forms.ModelForm):
             'name': 'Nama Lokasi Rak',
             'code': 'Kode Rak',
             'description': 'Keterangan',
-            'capacity': 'Kapasitas (buku)',
             'color_code': 'Warna Label',
             'is_active': 'Aktif (tampil di form perekaman)',
         }
@@ -683,3 +668,37 @@ class ShelfForm(forms.ModelForm):
         if not color.startswith('#') or len(color) not in (4, 7):
             raise forms.ValidationError('Warna harus format hex, contoh: #8A4FFF.')
         return color
+
+
+# ─── Master data dinamis: Identitas Aplikasi (judul bisa disetting) ──────────
+
+class SiteConfigForm(forms.ModelForm):
+    """Form untuk mengubah judul/nama singkat/tagline aplikasi dari Pengaturan."""
+
+    class Meta:
+        model = SiteConfig
+        fields = ['app_name', 'app_short_name', 'tagline', 'label_owner']
+        widgets = {
+            'app_name': forms.TextInput(attrs={
+                'class': INPUT_CLASS, 'maxlength': 150,
+                'placeholder': "Contoh: Hirunaza's Library Information System"}),
+            'app_short_name': forms.TextInput(attrs={
+                'class': INPUT_CLASS, 'maxlength': 80,
+                'placeholder': "Contoh: Hirunaza's Library"}),
+            'tagline': forms.TextInput(attrs={
+                'class': INPUT_CLASS, 'maxlength': 160,
+                'placeholder': 'Contoh: Sistem Informasi Perpustakaan Pribadi'}),
+            'label_owner': forms.TextInput(attrs={
+                'class': INPUT_CLASS, 'maxlength': 80,
+                'placeholder': 'Contoh: Keluarga Hirunaza (boleh dikosongkan)'}),
+        }
+        labels = {
+            'app_name': 'Judul Aplikasi',
+            'app_short_name': 'Nama Singkat (navbar)',
+            'tagline': 'Tagline',
+            'label_owner': 'Nama Pemilik (pada label cetak)',
+        }
+        error_messages = {
+            'app_name': {'required': 'Judul aplikasi wajib diisi.'},
+            'app_short_name': {'required': 'Nama singkat wajib diisi.'},
+        }

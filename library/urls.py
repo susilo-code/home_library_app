@@ -33,6 +33,17 @@ urlpatterns = [
     path("pengguna/<int:pk>/edit/", views.UserUpdateView.as_view(), name="user-update"),
     path("pengguna/<int:pk>/hapus/", views.UserDeleteView.as_view(), name="user-delete"),
 
+    # Identitas aplikasi (judul dinamis) — hanya admin
+    path("pengaturan/identitas/", views.AppIdentityUpdateView.as_view(), name="app-identity"),
+
+    # Tambah cepat (modal di form buku) — balas JSON
+    path("api/genre/tambah/", views.GenreQuickCreateView.as_view(), name="genre-quick-create"),
+    path("api/rak/tambah/", views.ShelfQuickCreateView.as_view(), name="shelf-quick-create"),
+
+    # Cetak label buku 2 × 3 cm
+    path("label/", views.LabelSelectView.as_view(), name="label-select"),
+    path("label/cetak/", views.LabelPrintView.as_view(), name="label-print"),
+
     # Pengaturan → master data DINAMIS: Genre / Kategori
     path("pengaturan/genre/tambah/", views.GenreCreateView.as_view(), name="genre-create"),
     path("pengaturan/genre/<int:pk>/edit/", views.GenreUpdateView.as_view(), name="genre-update"),

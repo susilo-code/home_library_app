@@ -16,8 +16,9 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from django.core.paginator import Paginator
 
-from .models import ActivityLog, Book, Genre, Shelf, UserProfile, normalize_text
-from .forms import BookForm, GenreForm, ProfileForm, ShelfForm, StaffUserCreateForm, StaffUserUpdateForm, UserSettingsForm
+from .models import ActivityLog, Book, Genre, Shelf, SiteConfig, UserProfile, normalize_text
+from .forms import (BookForm, GenreForm, ProfileForm, ShelfForm, SiteConfigForm,
+                    StaffUserCreateForm, StaffUserUpdateForm, UserSettingsForm)
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
@@ -35,18 +36,40 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         my_books = Book.objects.filter(recorded_by=user).count()
         my_genres = Genre.objects.filter(books__recorded_by=user).distinct().count()
 
-        # Distribusi genre untuk grafik
-        genre_data = Genre.objects.annotate(book_count=Count('books')).order_by('-book_count')[:10]
-        genre_labels = [g.name for g in genre_data]
-        genre_counts = [g.book_count for g in genre_data]
-        genre_colors = [g.color_code for g in genre_data]
+        # Distribusi genre untuk grafik donat — LENGKAP dengan persentase
+        genre_qs = list(Genre.objects.annotate(book_count=Count('books')).order_by('-book_count'))
+        total_genre_books = sum(g.book_count for g in genre_qs)
+        distribusi = [
+            {
+                'name': g.name,
+                'count': g.book_count,
+                'percent': round(g.book_count / total_genre_books * 100, 1) if total_genre_books else 0.0,
+                'color': g.color_code or '#8A4FFF',
+            }
+            for g in genre_qs if g.book_count
+        ]
+        # Donut: maksimal 8 genre, sisanya digabung jadi "Lainnya" agar tetap terbaca
+        donut = distribusi[:8]
+        sisa = distribusi[8:]
+        if sisa:
+            sisa_count = sum(d['count'] for d in sisa)
+            donut.append({
+                'name': 'Lainnya',
+                'count': sisa_count,
+                'percent': round(sisa_count / total_genre_books * 100, 1) if total_genre_books else 0.0,
+                'color': '#94A3B8',
+            })
 
-        # Produktivitas per user
-        user_stats = User.objects.annotate(
-            book_count=Count('recorded_books')
-        ).filter(book_count__gt=0).order_by('-book_count')[:10]
-        user_labels = [u.username for u in user_stats]
-        user_counts = [u.book_count for u in user_stats]
+        genre_labels = [d['name'] for d in donut]
+        genre_counts = [d['count'] for d in donut]
+        genre_colors = [d['color'] for d in donut]
+        genre_percents = [d['percent'] for d in donut]
+
+        # Top 5 genre berdasarkan jumlah buku (menggantikan grafik produktivitas kontributor)
+        top5 = distribusi[:5]
+        top_genre_labels = [d['name'] for d in top5]
+        top_genre_counts = [d['count'] for d in top5]
+        top_genre_colors = [d['color'] for d in top5]
 
         recent_activities = ActivityLog.objects.select_related('user').order_by('-timestamp')[:10]
         recent_books = Book.objects.select_related('genre', 'recorded_by', 'shelf').order_by('-created_at')[:5]
@@ -69,8 +92,11 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             'genre_labels': json.dumps(genre_labels),
             'genre_counts': json.dumps(genre_counts),
             'genre_colors': json.dumps(genre_colors),
-            'user_labels': json.dumps(user_labels),
-            'user_counts': json.dumps(user_counts),
+            'genre_percents': json.dumps(genre_percents),
+            'genre_distribution': distribusi,
+            'top_genre_labels': json.dumps(top_genre_labels),
+            'top_genre_counts': json.dumps(top_genre_counts),
+            'top_genre_colors': json.dumps(top_genre_colors),
             'recent_activities': recent_activities,
             'recent_books': recent_books,
             'shelf_stats': shelf_stats,
@@ -539,6 +565,145 @@ class UserDeleteView(StaffRequiredMixin, DeleteView):
             detail=f"Menghapus akun: {username}",
         )
         return super().form_valid(form)
+
+
+# ─── Identitas aplikasi (judul dinamis) ───────────────────────────────────────
+
+class AppIdentityUpdateView(StaffRequiredMixin, FormView):
+    """
+    Ubah judul aplikasi / nama singkat / tagline / nama pemilik pada label.
+    Hanya admin (staff/superuser) karena berlaku untuk semua pengguna.
+    """
+    template_name = 'accounts/app_identity_form.html'
+    form_class = SiteConfigForm
+    success_url = reverse_lazy('settings')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = SiteConfig.get_solo()
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        ActivityLog.objects.create(
+            user=self.request.user, action='UPDATE_IDENTITAS',
+            detail=f"Mengubah judul aplikasi menjadi: {form.instance.app_name}")
+        messages.success(self.request, 'Identitas aplikasi berhasil disimpan.')
+        return super().form_valid(form)
+
+
+# ─── Tambah cepat dari dalam form buku (modal, tanpa pindah halaman) ─────────
+
+class GenreQuickCreateView(LoginRequiredMixin, View):
+    """Endpoint JSON: tambah Genre baru langsung dari modal di form buku."""
+
+    def post(self, request):
+        form = GenreForm(request.POST)
+        if form.is_valid():
+            genre = form.save()
+            ActivityLog.objects.create(user=request.user, action='TAMBAH_GENRE',
+                                       detail=f'Menambahkan genre: {genre.name}')
+            return JsonResponse({'ok': True, 'id': genre.pk, 'name': genre.name,
+                                 'color': genre.color_code})
+        return JsonResponse(
+            {'ok': False, 'errors': {f: errs[0] for f, errs in form.errors.items()}},
+            status=400)
+
+
+class ShelfQuickCreateView(LoginRequiredMixin, View):
+    """Endpoint JSON: tambah Lokasi Rak baru langsung dari modal di form buku."""
+
+    def post(self, request):
+        form = ShelfForm(request.POST)
+        if form.is_valid():
+            rak = form.save()
+            ActivityLog.objects.create(user=request.user, action='TAMBAH_RAK',
+                                       detail=f'Menambahkan lokasi rak: {rak.name}')
+            return JsonResponse({'ok': True, 'id': rak.pk, 'name': rak.name,
+                                 'label': str(rak), 'color': rak.color_code})
+        return JsonResponse(
+            {'ok': False, 'errors': {f: errs[0] for f, errs in form.errors.items()}},
+            status=400)
+
+
+# ─── Cetak label buku (2 × 3 cm) ─────────────────────────────────────────────
+
+class LabelSelectView(LoginRequiredMixin, ListView):
+    """Pilih buku yang akan dicetak labelnya (dengan filter & pencarian)."""
+    template_name = 'labels/label_select.html'
+    context_object_name = 'books'
+    paginate_by = 24
+
+    def get_queryset(self):
+        qs = Book.objects.select_related('genre', 'shelf', 'recorded_by').order_by('shelf__name', 'title')
+        p = self.request.GET
+        if p.get('q'):
+            kata = p['q'].strip()
+            qs = qs.filter(Q(title__icontains=kata) | Q(author__icontains=kata))
+        if p.get('genre'):
+            qs = qs.filter(genre_id=p['genre'])
+        if p.get('shelf'):
+            qs = qs.filter(shelf_id=p['shelf'])
+        if p.get('book_type'):
+            qs = qs.filter(book_type=p['book_type'])
+        if p.get('tanpa_rak') == '1':
+            qs = qs.filter(shelf__isnull=True)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['genres'] = Genre.objects.order_by('name')
+        context['shelves'] = Shelf.objects.order_by('name')
+        context['book_types'] = Book.BookCategory.choices
+        context['filter'] = self.request.GET
+        context['total_hasil'] = self.get_queryset().count()
+        # Query string tanpa 'page' untuk tautan paginasi
+        params = self.request.GET.copy()
+        params.pop('page', None)
+        context['query_tanpa_page'] = params.urlencode()
+        return context
+
+
+class LabelPrintView(LoginRequiredMixin, TemplateView):
+    """
+    Lembar label siap cetak: tiap label 3 × 2 cm (mendatar) atau 2 × 3 cm (tegak).
+
+    Isi label: lokasi rak (menonjol), judul, penulis, dan nama pemilik (opsional).
+    Parameter: ?ids=1,2,3  atau  ?semua=1&<filter yang sama dengan LabelSelectView>
+    """
+    template_name = 'labels/label_print.html'
+
+    def get_queryset(self):
+        p = self.request.GET
+        ids = [int(x) for x in p.get('ids', '').split(',') if x.strip().isdigit()]
+        if ids:
+            return (Book.objects.select_related('genre', 'shelf')
+                    .filter(pk__in=ids).order_by('shelf__name', 'title'))
+        qs = Book.objects.select_related('genre', 'shelf').order_by('shelf__name', 'title')
+        if p.get('q'):
+            kata = p['q'].strip()
+            qs = qs.filter(Q(title__icontains=kata) | Q(author__icontains=kata))
+        if p.get('genre'):
+            qs = qs.filter(genre_id=p['genre'])
+        if p.get('shelf'):
+            qs = qs.filter(shelf_id=p['shelf'])
+        if p.get('book_type'):
+            qs = qs.filter(book_type=p['book_type'])
+        if p.get('tanpa_rak') == '1':
+            qs = qs.filter(shelf__isnull=True)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['books'] = self.get_queryset()
+        # orientasi: 'mendatar' (3×2 cm, default) atau 'tegak' (2×3 cm)
+        context['orientasi'] = 'tegak' if self.request.GET.get('orientasi') == 'tegak' else 'mendatar'
+        context['mulai_dari'] = self.request.GET.get('mulai', '')     # lompati N label pertama
+        # Query string tanpa 'orientasi' — untuk tombol ganti orientasi
+        params = self.request.GET.copy()
+        params.pop('orientasi', None)
+        context['query_tanpa_orientasi'] = params.urlencode()
+        return context
 
 
 # ─── API ──────────────────────────────────────────────────────────────────────

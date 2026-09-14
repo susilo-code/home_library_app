@@ -18,9 +18,12 @@ Dibangun dengan **Django 5.2** (antarmuka) + **FastAPI** (layanan data) + **Tail
 | **Katalog** | Pencarian, filter (genre, jenis, rak, status, perekam), paginasi, tampilan tabel responsif |
 | **Jenis Buku** | Pilihan tetap: **Fiksi** & **Non-Fiksi** |
 | **Genre / Kategori** | **Dinamis** — tambah/ubah/hapus dari halaman Pengaturan (slug otomatis, warna label) |
-| **Lokasi Rak Buku** | **Dinamis** — nama, kode, kapasitas, keterisian, warna label |
+| **Lokasi Rak Buku** | **Dinamis** — nama, kode, warna label (tanpa isian kapasitas) |
 | **Data Buku** | Tahun terbit, **tahun beli**, penerbit, halaman, rating, sinopsis, sampul (upload/URL) |
 | **Pengguna** | Multi-user kolaboratif; halaman **Kelola Pengguna** untuk admin (tambah, atur ulang sandi, nonaktifkan, hapus) |
+| **Identitas Aplikasi** | Judul aplikasi, nama singkat navbar, tagline, dan nama pemilik **bisa disetting** dari Pengaturan (tanpa ubah kode) |
+| **Cetak Label** | Label buku **2 × 3 cm** (mendatar/tegak) berisi **lokasi rak** + judul & penulis, siap dicetak di kertas stiker A4 |
+| **Modal Form** | Detail buku dibuka lewat modal “Isi Detail Buku”; **genre & rak bisa ditambah** langsung dari form buku |
 | **Profil** | Foto profil, bio, statistik pribadi |
 | **Tampilan** | Nuansa ungu tua, mode **gelap/terang**, responsif, animasi halus |
 | **Jejak Audit** | ActivityLog mencatat tambah/ubah/hapus buku, genre, rak, dan pengguna |

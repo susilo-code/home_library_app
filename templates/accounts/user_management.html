@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Kelola Pengguna — Hirunaza's Library{% endblock %}
+{% block title %}Kelola Pengguna — {{ app_config.app_name|default:"Perpustakaan" }}{% endblock %}
 
 {% block content %}
 <div class="mx-auto max-w-4xl animate-in">

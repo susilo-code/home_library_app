@@ -209,6 +209,7 @@ home_library_app/
 │   └── dev/              # skrip pengujian & pratinjau (verify_*.py, test_start_bat.py)
 ├── templates/            # halaman HTML
 │   ├── books/ accounts/ settings/ registration/
+│   └── labels/           # pilih & cetak label buku (2 × 3 cm)
 ├── static/
 │   ├── css/output.css    # hasil build Tailwind (di-commit agar tanpa Node tetap rapi)
 │   ├── img/library-hero.svg
@@ -245,6 +246,33 @@ Genre & Lokasi Rak dikelola dari menu **Pengaturan** (dinamis, tersimpan di data
 > **Catatan penting:** menghapus Genre atau Rak **tidak** menghapus bukunya — kolom terkait
 > menjadi kosong (`SET NULL`), dan setiap penghapusan **tercatat di ActivityLog**
 > (aksi `HAPUS_GENRE` / `HAPUS_RAK`) sehingga bisa ditelusuri.
+
+> **Kata sandi dibebaskan** (v1.4.0): tidak ada aturan panjang minimum maupun kerumitan
+> (`AUTH_PASSWORD_VALIDATORS = []`). Yang diperiksa hanya: sandi tidak boleh kosong dan
+> sandi harus sama dengan ulangannya. Sandi tetap disimpan dalam bentuk ter-hash.
+
+---
+
+## 7c. Cetak Label Buku (2 × 3 cm)
+
+Menu **Cetak Label** di navbar (atau buka `/label/`).
+
+1. Pilih buku: gunakan pencarian/filter (genre, rak, atau “belum punya rak”).
+2. Centang buku yang ingin diberi label — atau klik **Cetak semua hasil filter**.
+3. Tentukan **orientasi label** dan (opsional) **lompati N label** bila lembar stiker
+   Anda sebagian sudah terpakai.
+4. Klik **Cetak label terpilih** → halaman lembar label terbuka → klik
+   **Cetak / Simpan PDF** (Ctrl+P).
+
+| Pengaturan | Nilai |
+| :--- | :--- |
+| Ukuran label | **3 × 2 cm** (mendatar, default) atau **2 × 3 cm** (tegak) |
+| Isi label | Lokasi rak (menonjol) + kode rak, judul, penulis, jenis buku, nama pemilik |
+| Kertas | A4, margin cetak 8 mm (`@page`) |
+| Baris atas label | Kode rak (atau nama rak bila kode kosong); buku **tanpa rak** diberi label merah “TANPA RAK” |
+
+> Nama pemilik pada label diatur di **Pengaturan → Identitas Aplikasi → Nama Pemilik
+> (pada label cetak)**. Bila dikosongkan, label menampilkan nomor ID buku.
 
 ---
 
@@ -311,7 +339,8 @@ Login ke `http://127.0.0.1:8000/admin/` → menu **Users → Add user**.
 ### Skrip pengujian bawaan (opsional, untuk memastikan aplikasi sehat)
 
 ```bat
-.venv\Scripts\python.exe scripts\dev\verify_features_v2.py    :: 72 pemeriksaan fitur & halaman
+.venv\Scripts\python.exe scripts\dev\verify_features_v2.py    :: 78 pemeriksaan fitur & halaman
+.venv\Scripts\python.exe scripts\dev\verify_perbaikan_v3.py   :: 67 pemeriksaan batch v1.4.0 (8 perbaikan)
 .venv\Scripts\python.exe scripts\dev\verify_user_management.py :: 30 pemeriksaan kelola pengguna
 .venv\Scripts\python.exe scripts\dev\test_start_bat.py        :: uji start.bat + kedua service
 .venv\Scripts\python.exe scripts\dev\verify_fresh_clone.py    :: uji skenario "clone di PC baru" dari nol

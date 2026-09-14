@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masuk — Hirunaza's Library Information System</title>
+    <title>Masuk — {{ app_config.app_name|default:"Perpustakaan" }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -84,19 +84,18 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                 </svg>
             </div>
-            <span class="font-display text-sm font-semibold uppercase tracking-[0.2em] text-purple-200/80">Rumah Baca</span>
+            <span class="font-display text-sm font-semibold uppercase tracking-[0.2em] text-purple-200/80">{{ app_config.app_short_name|default:"Perpustakaan" }}</span>
         </div>
 
         <!-- Judul utama -->
         <div class="relative my-10 max-w-xl lg:my-0">
             <p class="mb-3 inline-flex items-center gap-2 rounded-full border border-purple-400/25 bg-white/5 px-3 py-1 text-xs font-medium text-purple-200/90 rise rise-1">
                 <span class="h-1.5 w-1.5 rounded-full bg-royal-500"></span>
-                Sistem Informasi Perpustakaan Pribadi
+                {{ app_config.tagline|default:"Sistem Informasi Perpustakaan Pribadi" }}
             </p>
             <h1 class="font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-white drop-shadow-[0_4px_18px_rgba(0,0,0,.9)] rise rise-2 sm:text-5xl lg:text-6xl">
-                <span class="drop-shadow-[0_2px_8px_rgba(0,0,0,.85)]">Hirunaza&rsquo;s</span><br>
                 <span class="bg-gradient-to-r from-white via-purple-200 to-purple-300 bg-clip-text text-transparent">
-                    Library Information System
+                    {{ app_config.app_name|default:"Perpustakaan" }}
                 </span>
             </h1>
             <blockquote class="mt-6 max-w-lg rounded-2xl border-l-4 border-royal-500 bg-white/5 p-5 rise rise-3">
@@ -124,7 +123,7 @@
         </div>
 
         <p class="relative hidden text-xs text-purple-200/65 lg:block">
-            &copy; {% now "Y" %} Hirunaza&rsquo;s Library Information System
+            &copy; {% now "Y" %} {{ app_config.app_name|default:"Perpustakaan" }}
         </p>
     </section>
 
@@ -143,7 +142,7 @@
                     </div>
                     <div>
                         <h2 class="font-display text-xl font-bold text-white">Masuk ke Akun</h2>
-                        <p class="text-xs font-medium text-purple-100/90">Hirunaza&rsquo;s Library Information System</p>
+                        <p class="text-xs font-medium text-purple-100/90">{{ app_config.app_name|default:"Perpustakaan" }}</p>
                     </div>
                 </div>
 
@@ -205,7 +204,7 @@
             </div>
 
             <p class="mt-6 text-center text-xs text-purple-200/65 lg:hidden">
-                &copy; {% now "Y" %} Hirunaza&rsquo;s Library Information System
+                &copy; {% now "Y" %} {{ app_config.app_name|default:"Perpustakaan" }}
             </p>
         </div>
     </section>

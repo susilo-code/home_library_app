@@ -63,19 +63,19 @@ class Command(BaseCommand):
 
         # ── 2. LOKASI RAK BUKU (dinamis) ──────────────────────────────────────
         shelves_data = [
-            {'name': 'Rak A-1 (Kamar Depan)', 'code': 'A1', 'capacity': 60, 'color_code': '#8A4FFF',
+            {'name': 'Rak A-1 (Kamar Depan)', 'code': 'A1', 'color_code': '#8A4FFF',
              'description': 'Rak kayu utama dekat jendela ruang tamu'},
-            {'name': 'Rak A-2 (Kamar Depan)', 'code': 'A2', 'capacity': 60, 'color_code': '#9A6EFF',
+            {'name': 'Rak A-2 (Kamar Depan)', 'code': 'A2', 'color_code': '#9A6EFF',
              'description': 'Rak kayu sisi kiri, khusus novel & fiksi'},
-            {'name': 'Rak B-1 (Kamar Tengah)', 'code': 'B1', 'capacity': 80, 'color_code': '#6366F1',
+            {'name': 'Rak B-1 (Kamar Tengah)', 'code': 'B1', 'color_code': '#6366F1',
              'description': 'Rak besi rakitan, koleksi non-fiksi & referensi'},
-            {'name': 'Rak B-2 (Kamar Tengah)', 'code': 'B2', 'capacity': 80, 'color_code': '#06B6D4',
+            {'name': 'Rak B-2 (Kamar Tengah)', 'code': 'B2', 'color_code': '#06B6D4',
              'description': 'Rak besi sisi kanan, buku teknologi & komputer'},
-            {'name': 'Lemari Kaca C (Ruang Baca)', 'code': 'C', 'capacity': 40, 'color_code': '#10B981',
+            {'name': 'Lemari Kaca C (Ruang Baca)', 'code': 'C', 'color_code': '#10B981',
              'description': 'Lemari kaca untuk koleksi khusus & buku langka'},
-            {'name': 'Rak D (Kamar Belakang)', 'code': 'D', 'capacity': 100, 'color_code': '#F59E0B',
+            {'name': 'Rak D (Kamar Belakang)', 'code': 'D', 'color_code': '#F59E0B',
              'description': 'Rak buku anak, komik, dan majalah'},
-            {'name': 'Box Penyimpanan E', 'code': 'E', 'capacity': 30, 'color_code': '#EC4899',
+            {'name': 'Box Penyimpanan E', 'code': 'E', 'color_code': '#EC4899',
              'description': 'Box plastik untuk buku cadangan / belum disortir'},
         ]
         self.stdout.write('Membuat lokasi rak buku...')

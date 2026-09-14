@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-from .models import Genre, Book, Shelf, UserProfile, ActivityLog
+from .models import Genre, Book, Shelf, SiteConfig, UserProfile, ActivityLog
 
 
 @admin.register(Genre)
@@ -18,18 +18,13 @@ class GenreAdmin(admin.ModelAdmin):
 
 @admin.register(Shelf)
 class ShelfAdmin(admin.ModelAdmin):
-    list_display = ['name', 'code', 'capacity', 'books_count', 'fill_percent', 'is_active', 'color_code']
+    list_display = ['name', 'code', 'books_count', 'is_active', 'color_code']
     list_filter = ['is_active']
     search_fields = ['name', 'code', 'description']
 
     def books_count(self, obj):
         return obj.books.count()
     books_count.short_description = 'Jumlah Buku'
-
-    def fill_percent(self, obj):
-        pct = obj.fill_percent
-        return f'{pct}%' if pct is not None else '—'
-    fill_percent.short_description = 'Keterisian'
 
 
 @admin.register(Book)
@@ -105,6 +100,19 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+
+
+@admin.register(SiteConfig)
+class SiteConfigAdmin(admin.ModelAdmin):
+    """Identitas aplikasi (hanya satu baris)."""
+    list_display = ['app_name', 'app_short_name', 'tagline', 'updated_at']
+
+    def has_add_permission(self, request):
+        return not SiteConfig.objects.exists()      # cukup satu baris
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 admin.site.site_header = "Hirunaza's Library — Admin"
 admin.site.site_title = "Hirunaza's Library"

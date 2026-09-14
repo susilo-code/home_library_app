@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Profil Saya - Home Library{% endblock %}
+{% block title %}Profil Saya — {{ app_config.app_name|default:"Perpustakaan" }}{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto animate-in">

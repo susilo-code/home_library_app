@@ -317,11 +317,9 @@ def get_shelves(aktif_saja: bool = False):
             "name": s.name,
             "code": s.code,
             "description": s.description,
-            "capacity": s.capacity,
             "color_code": s.color_code,
             "is_active": s.is_active,
             "book_count": s.book_count,
-            "fill_percent": s.fill_percent,
         }
         for s in qs
     ]

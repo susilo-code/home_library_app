@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Hapus {{ jenis }} — Hirunaza's Library{% endblock %}
+{% block title %}Hapus {{ jenis }} — {{ app_config.app_name|default:"Perpustakaan" }}{% endblock %}
 
 {% block content %}
 <div class="mx-auto max-w-md animate-in">

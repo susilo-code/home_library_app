@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Dashboard - Home Library{% endblock %}
+{% block title %}Dashboard — {{ app_config.app_name|default:"Perpustakaan" }}{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -126,22 +126,22 @@
             </div>
         </div>
 
-        <!-- User Productivity Chart -->
+        <!-- Top 5 Genre Chart -->
         <div class="card">
             <div class="card-header">
                 <h2 class="font-display text-lg font-semibold text-purple-800 dark:text-purple-200 flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                    Produktivitas Perekaman per User
+                    Top 5 Genre (jumlah buku terbanyak)
                 </h2>
             </div>
             <div class="card-body">
                 <div class="chart-container">
-                    <canvas id="userChart"></canvas>
+                    <canvas id="topGenreChart"></canvas>
                 </div>
-                {% if not user_labels|length %}
+                {% if not top_genre_labels|length %}
                 <div class="text-center py-12 text-purple-500 dark:text-purple-400">
-                    <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                    <p>Belum ada data kontributor</p>
+                    <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <p>Belum ada data genre</p>
                 </div>
                 {% endif %}
             </div>
@@ -226,16 +226,20 @@
 
 {% block extra_scripts %}
 <script>
-    // Genre Distribution Chart (Doughnut)
+    const css = (nama) => getComputedStyle(document.documentElement).getPropertyValue(nama).trim();
+
+    // ── Donut: Distribusi Buku per Genre — menampilkan PERSENTASE ──
     const genreLabels = {{ genre_labels|safe }};
     const genreCounts = {{ genre_counts|safe }};
     const genreColors = {{ genre_colors|safe }};
+    const genrePercents = {{ genre_percents|safe }};
 
     if (genreLabels.length > 0) {
         new Chart(document.getElementById('genreChart'), {
             type: 'doughnut',
             data: {
-                labels: genreLabels,
+                // Persentase ikut tampil pada keterangan (legend) di bawah grafik
+                labels: genreLabels.map((nama, i) => `${nama} (${genrePercents[i]}%)`),
                 datasets: [{
                     data: genreCounts,
                     backgroundColor: genreColors,
@@ -250,49 +254,74 @@
                     legend: {
                         position: 'bottom',
                         labels: {
-                            padding: 16,
+                            padding: 14,
                             usePointStyle: true,
                             pointStyle: 'circle',
                             font: { family: 'Inter', size: 12 },
-                            color: getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim()
+                            color: css('--color-text-secondary')
                         }
                     },
                     tooltip: {
-                        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-bg-secondary').trim(),
-                        titleColor: getComputedStyle(document.documentElement).getPropertyValue('--color-text-primary').trim(),
-                        bodyColor: getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim(),
-                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim(),
+                        backgroundColor: css('--color-bg-secondary'),
+                        titleColor: css('--color-text-primary'),
+                        bodyColor: css('--color-text-secondary'),
+                        borderColor: css('--color-border'),
                         borderWidth: 1,
                         padding: 12,
                         callbacks: {
-                            label: function(context) {
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            label: function (context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0) || 1;
                                 const pct = ((context.raw / total) * 100).toFixed(1);
                                 return `${context.label}: ${context.raw} buku (${pct}%)`;
                             }
                         }
                     }
                 },
-                cutout: '65%',
-            }
+                cutout: '60%',
+            },
+            plugins: [{
+                // Tulis persentase langsung di dalam potongan donut
+                id: 'persenDonut',
+                afterDatasetsDraw(chart) {
+                    const ctx = chart.ctx;
+                    const data = chart.data.datasets[0].data;
+                    const total = data.reduce((a, b) => a + b, 0) || 1;
+                    chart.getDatasetMeta(0).data.forEach((busur, i) => {
+                        if (!busur) return;
+                        const persen = (data[i] / total) * 100;
+                        if (persen < 5) return;
+                        const pos = busur.tooltipPosition();
+                        ctx.save();
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 11px Inter, Arial, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.shadowColor = 'rgba(0,0,0,.45)';
+                        ctx.shadowBlur = 3;
+                        ctx.fillText(persen.toFixed(1) + '%', pos.x, pos.y);
+                        ctx.restore();
+                    });
+                }
+            }]
         });
     }
 
-    // User Productivity Chart (Horizontal Bar)
-    const userLabels = {{ user_labels|safe }};
-    const userCounts = {{ user_counts|safe }};
+    // ── Top 5 Genre berdasarkan jumlah buku (batang mendatar) ──
+    const topGenreLabels = {{ top_genre_labels|safe }};
+    const topGenreCounts = {{ top_genre_counts|safe }};
+    const topGenreColors = {{ top_genre_colors|safe }};
 
-    if (userLabels.length > 0) {
-        new Chart(document.getElementById('userChart'), {
+    if (topGenreLabels.length > 0) {
+        new Chart(document.getElementById('topGenreChart'), {
             type: 'bar',
             data: {
-                labels: userLabels,
+                labels: topGenreLabels,
                 datasets: [{
                     label: 'Jumlah Buku',
-                    data: userCounts,
-                    backgroundColor: 'rgba(138, 79, 255, 0.7)',
-                    borderColor: 'rgba(138, 79, 255, 1)',
-                    borderWidth: 1,
+                    data: topGenreCounts,
+                    backgroundColor: topGenreColors.map((w) => w + 'CC'),
+                    borderColor: topGenreColors,
+                    borderWidth: 1.5,
                     borderRadius: 6,
                     borderSkipped: false,
                 }]
@@ -304,34 +333,52 @@
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-bg-secondary').trim(),
-                        titleColor: getComputedStyle(document.documentElement).getPropertyValue('--color-text-primary').trim(),
-                        bodyColor: getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim(),
-                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim(),
+                        backgroundColor: css('--color-bg-secondary'),
+                        titleColor: css('--color-text-primary'),
+                        bodyColor: css('--color-text-secondary'),
+                        borderColor: css('--color-border'),
                         borderWidth: 1,
                         padding: 12,
+                        callbacks: {
+                            label: (c) => ` ${c.raw} buku`
+                        }
                     }
                 },
                 scales: {
                     x: {
                         beginAtZero: true,
-                        grid: {
-                            color: getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim() + '40',
-                        },
+                        grid: { color: css('--color-border') + '40' },
                         ticks: {
-                            color: getComputedStyle(document.documentElement).getPropertyValue('--color-text-muted').trim(),
+                            precision: 0,
+                            color: css('--color-text-muted'),
                             font: { family: 'Inter', size: 11 }
                         }
                     },
                     y: {
                         grid: { display: false },
                         ticks: {
-                            color: getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim(),
+                            color: css('--color-text-secondary'),
                             font: { family: 'Inter', size: 12 }
                         }
                     }
                 }
-            }
+            },
+            plugins: [{
+                // Tulis jumlah buku di ujung tiap batang
+                id: 'nilaiBatang',
+                afterDatasetsDraw(chart) {
+                    const ctx = chart.ctx;
+                    chart.getDatasetMeta(0).data.forEach((batang, i) => {
+                        ctx.save();
+                        ctx.fillStyle = css('--color-text-secondary') || '#4b5563';
+                        ctx.font = 'bold 11px Inter, Arial, sans-serif';
+                        ctx.textAlign = 'left';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(chart.data.datasets[0].data[i], batang.x + 6, batang.y);
+                        ctx.restore();
+                    });
+                }
+            }]
         });
     }
 </script>

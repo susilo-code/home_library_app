@@ -12,8 +12,6 @@ Contoh pemakaian:
 import getpass
 
 from django.contrib.auth.models import User
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Count
 
@@ -51,18 +49,15 @@ class Command(BaseCommand):
             self.stdout.write(f'{u.username:<18}{peran:<14}{status:<10}{u.jumlah_buku:>6}  {u.email or "-"}')
 
     def minta_sandi_baru(self, user=None) -> str:
-        """Minta kata sandi dua kali sampai valid & cocok."""
+        """Minta kata sandi dua kali sampai cocok (tanpa aturan kerumitan)."""
         while True:
             p1 = getpass.getpass('Kata sandi: ')
             p2 = getpass.getpass('Ulangi kata sandi: ')
             if p1 != p2:
                 self.stderr.write(self.style.ERROR('  Kata sandi tidak sama, coba lagi.'))
                 continue
-            try:
-                validate_password(p1, user)
-            except ValidationError as e:
-                for pesan in e.messages:
-                    self.stderr.write(self.style.ERROR(f'  {pesan}'))
+            if not p1:
+                self.stderr.write(self.style.ERROR('  Kata sandi tidak boleh kosong.'))
                 continue
             return p1
 

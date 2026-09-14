@@ -74,6 +74,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # Identitas aplikasi (judul dinamis) untuk semua template
+                "library.context_processors.identitas_aplikasi",
             ],
         },
     },
@@ -127,12 +129,9 @@ else:
 
 
 # ── Validasi kata sandi ───────────────────────────────────────────────────────
-AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
-]
+# Dikosongkan sesuai permintaan: kata sandi DIBEBASKAN — tanpa aturan panjang
+# minimum, tanpa penolakan kata sandi umum/angka saja.
+AUTH_PASSWORD_VALIDATORS = []
 
 
 # ── Bahasa & waktu ────────────────────────────────────────────────────────────

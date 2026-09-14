@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cetak Label Buku — {{ app_config.app_name|default:"Perpustakaan" }}</title>
+    <style>
+        /* ══════════════════════════════════════════════════════════════════
+           Label buku — UKURAN TETAP
+           mendatar : 3 cm (lebar) × 2 cm (tinggi)   [default]
+           tegak    : 2 cm (lebar) × 3 cm (tinggi)
+           Cetak: A4, margin 8 mm.
+           ══════════════════════════════════════════════════════════════════ */
+        :root {
+            --lebar-label: 3cm;
+            --tinggi-label: 2cm;
+            --jarak: 2mm;
+            --garis: #9aa0ae;
+            --tinta: #111827;
+            --tinta-lembut: #4b5563;
+        }
+        .tegak { --lebar-label: 2cm; --tinggi-label: 3cm; }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 12px;
+            background: #eef0f5;
+            font-family: Arial, Helvetica, "Segoe UI", sans-serif;
+            color: var(--tinta);
+        }
+
+        /* ── Bilah alat (tidak ikut tercetak) ── */
+        .toolbar {
+            max-width: 210mm; margin: 0 auto 12px; padding: 10px 14px;
+            background: #fff; border-radius: 10px; display: flex; flex-wrap: wrap;
+            gap: 10px; align-items: center; justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12); font-size: 13px;
+        }
+        .toolbar a, .toolbar button {
+            font: inherit; text-decoration: none; cursor: pointer;
+            padding: 7px 12px; border-radius: 7px; border: 1px solid #d1d5db;
+            background: #fff; color: #374151;
+        }
+        .toolbar button.utama { background: #6d28d9; border-color: #6d28d9; color: #fff; font-weight: 600; }
+        .toolbar .info { color: #4b5563; }
+        .toolbar .info b { color: #111827; }
+
+        /* ── Lembar label ── */
+        .lembar {
+            width: 194mm; margin: 0 auto; padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, var(--lebar-label));
+            gap: var(--jarak);
+            align-content: start;
+            background: #fff;
+            padding: 4mm;
+            box-shadow: 0 1px 6px rgba(0,0,0,.15);
+        }
+
+        .label {
+            width: var(--lebar-label);
+            height: var(--tinggi-label);
+            border: 1px dashed var(--garis);
+            padding: 1.4mm 1.6mm;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            break-inside: avoid;
+            page-break-inside: avoid;
+            background: #fff;
+        }
+        .label .atas { display: flex; align-items: baseline; gap: 1mm; }
+        .label .rak {
+            font-size: 11pt; font-weight: 700; line-height: 1; letter-spacing: .2px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .label .nama-rak {
+            font-size: 5.2pt; color: var(--tinta-lembut); line-height: 1.1;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .label .judul {
+            font-size: 6.2pt; font-weight: 600; line-height: 1.15; margin-top: .6mm;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .label .penulis {
+            font-size: 5.2pt; color: var(--tinta-lembut); line-height: 1.1;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .label .kaki {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 4.6pt; color: #6b7280; gap: 1mm;
+        }
+        .label .pemilik { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .label .jenis {
+            font-size: 4.6pt; font-weight: 700; text-transform: uppercase; letter-spacing: .3px;
+            white-space: nowrap;
+        }
+        .label.tanpa-rak { border-color: #dc2626; }
+        .label.tanpa-rak .rak { color: #b91c1c; }
+
+        .kosong {
+            max-width: 210mm; margin: 0 auto; padding: 24px; background: #fff;
+            border-radius: 10px; text-align: center; color: #6b7280;
+        }
+
+        @page { size: A4; margin: 8mm; }
+
+        @media print {
+            body { background: #fff; padding: 0; }
+            .toolbar { display: none !important; }
+            .lembar {
+                width: auto; margin: 0; padding: 0;
+                box-shadow: none; gap: var(--jarak);
+            }
+            .label { border-color: #cbd5e1; }
+        }
+    </style>
+</head>
+<body class="{{ orientasi }}">
+
+<div class="toolbar">
+    <div class="info">
+        <b>{{ books|length }}</b> label siap dicetak ·
+        ukuran <b>{% if orientasi == 'tegak' %}2 × 3 cm (tegak){% else %}3 × 2 cm (mendatar){% endif %}</b>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <a href="?{{ query_tanpa_orientasi }}{% if query_tanpa_orientasi %}&{% endif %}orientasi={% if orientasi == 'tegak' %}mendatar{% else %}tegak{% endif %}">
+            {% if orientasi == 'tegak' %}Ubah ke mendatar (3×2){% else %}Ubah ke tegak (2×3){% endif %}
+        </a>
+        <a href="{% url 'label-select' %}">← Pilih buku lain</a>
+        <button class="utama" onclick="window.print()">Cetak / Simpan PDF</button>
+    </div>
+</div>
+
+{% if books %}
+<div class="lembar">
+    {% for b in books %}
+    <div class="label{% if not b.shelf %} tanpa-rak{% endif %}">
+        <div>
+            <div class="atas">
+                <span class="rak">{% if b.shelf %}{{ b.shelf.code|default:b.shelf.name }}{% else %}TANPA RAK{% endif %}</span>
+            </div>
+            {% if b.shelf %}<div class="nama-rak">{{ b.shelf.name }}</div>{% endif %}
+            <div class="judul">{{ b.title }}</div>
+            <div class="penulis">{{ b.author }}</div>
+        </div>
+        <div class="kaki">
+            <span class="jenis">{{ b.get_book_type_display }}</span>
+            <span class="pemilik">{% if app_config.label_owner %}{{ app_config.label_owner }}{% else %}#{{ b.pk }}{% endif %}</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="kosong">
+    <p><strong>Tidak ada buku yang dipilih.</strong></p>
+    <p><a href="{% url 'label-select' %}">Pilih buku untuk dicetak labelnya</a></p>
+</div>
+{% endif %}
+
+</body>
+</html>

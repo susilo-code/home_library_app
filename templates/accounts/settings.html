@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Pengaturan — Hirunaza's Library{% endblock %}
+{% block title %}Pengaturan — {{ app_config.app_name|default:"Perpustakaan" }}{% endblock %}
 
 {% block content %}
 <div class="mx-auto max-w-3xl animate-in">
@@ -165,7 +165,6 @@
                             <th>Nama Rak</th>
                             <th class="hidden sm:table-cell">Kode</th>
                             <th class="text-center">Buku</th>
-                            <th class="hidden md:table-cell">Kapasitas</th>
                             <th class="w-28">Aksi</th>
                         </tr>
                     </thead>
@@ -184,16 +183,6 @@
                             </td>
                             <td class="hidden font-mono text-sm sm:table-cell">{{ s.code|default:"—" }}</td>
                             <td class="text-center font-semibold text-purple-700 dark:text-purple-300">{{ s.book_count }}</td>
-                            <td class="hidden md:table-cell">
-                                {% if s.capacity %}
-                                <div class="flex items-center gap-2">
-                                    <div class="h-2 w-16 overflow-hidden rounded-full bg-purple-100 dark:bg-purple-900">
-                                        <div class="h-full rounded-full bg-purple-500" style="width: {{ s.fill_percent }}%"></div>
-                                    </div>
-                                    <span class="text-xs text-purple-500 dark:text-purple-400">{{ s.book_count }}/{{ s.capacity }}</span>
-                                </div>
-                                {% else %}<span class="text-purple-400 dark:text-purple-500">—</span>{% endif %}
-                            </td>
                             <td>
                                 <div class="flex items-center gap-1">
                                     <a href="{% url 'shelf-update' s.pk %}" class="rounded-lg p-1.5 text-indigo-600 transition hover:bg-indigo-100 dark:text-indigo-400 dark:hover:bg-indigo-900/30" title="Edit">
@@ -206,7 +195,7 @@
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="5" class="py-8 text-center text-purple-500 dark:text-purple-400">Belum ada lokasi rak. Tambahkan di bawah ini.</td></tr>
+                        <tr><td colspan="4" class="py-8 text-center text-purple-500 dark:text-purple-400">Belum ada lokasi rak. Tambahkan di bawah ini.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -227,10 +216,7 @@
                     <div class="sm:col-span-3">
                         <input type="text" name="code" maxlength="30" placeholder="Kode (A1)" class="input">
                     </div>
-                    <div class="sm:col-span-2">
-                        <input type="number" name="capacity" min="1" placeholder="Kapasitas" class="input">
-                    </div>
-                    <div class="sm:col-span-2 flex gap-2">
+                    <div class="sm:col-span-4 flex gap-2">
                         <input type="color" name="color_code" value="#8A4FFF" class="h-full w-14 cursor-pointer rounded-lg border border-purple-200 bg-white dark:border-purple-800 dark:bg-purple-950" title="Warna label">
                         <button type="submit" class="btn-primary flex-1 whitespace-nowrap">Tambah</button>
                     </div>
@@ -265,6 +251,43 @@
             </div>
         </div>
     </section>
+
+    <!-- ══════════ IDENTITAS APLIKASI (khusus staff) ══════════ -->
+    {% if user.is_staff or user.is_superuser %}
+    <section id="identitas" class="card mb-6 scroll-mt-24">
+        <div class="card-header flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <h2 class="flex items-center gap-2 text-lg font-semibold text-purple-800 dark:text-purple-200">
+                    Identitas Aplikasi
+                </h2>
+                <p class="text-xs text-purple-400 dark:text-purple-500">
+                    Judul aplikasi dapat diubah — dipakai di tab browser, navbar, footer, halaman login, dan label cetak.
+                </p>
+            </div>
+            <a href="{% url 'app-identity' %}" class="btn-primary whitespace-nowrap">Ubah Identitas</a>
+        </div>
+        <div class="card-body">
+            <dl class="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
+                <div>
+                    <dt class="text-xs uppercase tracking-wide text-purple-400">Judul Aplikasi</dt>
+                    <dd class="font-medium text-purple-800 dark:text-purple-200">{{ app_config.app_name }}</dd>
+                </div>
+                <div>
+                    <dt class="text-xs uppercase tracking-wide text-purple-400">Nama Singkat (navbar)</dt>
+                    <dd class="font-medium text-purple-800 dark:text-purple-200">{{ app_config.app_short_name }}</dd>
+                </div>
+                <div>
+                    <dt class="text-xs uppercase tracking-wide text-purple-400">Tagline</dt>
+                    <dd class="text-purple-700 dark:text-purple-300">{{ app_config.tagline|default:"—" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-xs uppercase tracking-wide text-purple-400">Nama Pemilik (label cetak)</dt>
+                    <dd class="text-purple-700 dark:text-purple-300">{{ app_config.label_owner|default:"— belum diisi —" }}</dd>
+                </div>
+            </dl>
+        </div>
+    </section>
+    {% endif %}
 
     <!-- ══════════ KELOLA PENGGUNA (khusus staff) ══════════ -->
     {% if user.is_staff or user.is_superuser %}

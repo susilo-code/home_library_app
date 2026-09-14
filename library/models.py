@@ -87,7 +87,6 @@ class Shelf(models.Model):
                             help_text="Kode singkat, contoh: A1, RK-02")
     description = models.CharField(max_length=255, blank=True, default='', verbose_name="Keterangan",
                                    help_text="Contoh: rak kayu dekat jendela, lantai 2")
-    capacity = models.PositiveIntegerField(null=True, blank=True, verbose_name="Kapasitas (buku)")
     color_code = models.CharField(max_length=7, default='#8A4FFF', verbose_name="Warna Label")
     is_active = models.BooleanField(default=True, verbose_name="Aktif")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -99,12 +98,6 @@ class Shelf(models.Model):
 
     def __str__(self):
         return f"{self.name}" + (f" ({self.code})" if self.code else "")
-
-    @property
-    def fill_percent(self):
-        if not self.capacity:
-            return None
-        return min(100, round(self.books.count() / self.capacity * 100))
 
 
 class Book(models.Model):
@@ -197,3 +190,45 @@ class ActivityLog(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.action} ({self.timestamp:%Y-%m-%d %H:%M})"
+
+
+class SiteConfig(models.Model):
+    """
+    Identitas aplikasi — HANYA SATU BARIS (singleton).
+
+    Judul aplikasi dapat diubah dari halaman Pengaturan (menu klik user),
+    dan langsung dipakai di judul tab browser, navbar, footer, serta halaman login.
+    """
+    app_name = models.CharField(
+        max_length=150, default="Hirunaza's Library Information System",
+        verbose_name="Judul Aplikasi",
+        help_text="Tampil di judul tab browser, halaman login, dan footer.")
+    app_short_name = models.CharField(
+        max_length=80, default="Hirunaza's Library",
+        verbose_name="Nama Singkat (navbar)",
+        help_text="Dipakai di navbar atas agar ringkas.")
+    tagline = models.CharField(
+        max_length=160, default="Sistem Informasi Perpustakaan Pribadi",
+        verbose_name="Tagline",
+        help_text="Teks kecil di bawah judul (halaman login).")
+    label_owner = models.CharField(
+        max_length=80, blank=True, default='',
+        verbose_name="Nama Pemilik (pada label cetak)",
+        help_text="Ikut tercetak pada label buku 2×3 cm. Boleh dikosongkan.")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Identitas Aplikasi'
+        verbose_name_plural = 'Identitas Aplikasi'
+
+    def __str__(self):
+        return self.app_name
+
+    def save(self, *args, **kwargs):
+        self.pk = 1                       # paksa selalu satu baris
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_solo(cls) -> "SiteConfig":
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj

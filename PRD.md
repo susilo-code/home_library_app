@@ -137,3 +137,33 @@
 - Perbaikan: endpoint FastAPI diubah ke fungsi sinkron (Django ORM tidak boleh di
   konteks async), penghapusan genre/rak kini tercatat, dan seeder tidak lagi
   menimpa klasifikasi jenis buku secara manual.
+
+### Revisi 4 (v1.4.0)
+Delapan permintaan perbaikan sekaligus:
+
+1. **Judul aplikasi dinamis** — model baru `SiteConfig` (singleton) + context processor
+   `identitas_aplikasi`; diedit dari Pengaturan → **Identitas Aplikasi** (khusus admin).
+   Dipakai di judul tab browser, navbar, footer, halaman login, dan label cetak.
+   Field: `app_name`, `app_short_name`, `tagline`, `label_owner`.
+2. **Kapasitas rak dihapus** — field `Shelf.capacity` + property `fill_percent` dihapus
+   dari model, form, admin, halaman Pengaturan, seeder, dan API.
+3. **Detail buku menjadi MODAL** — section detail (ISBN, tahun terbit, tahun beli,
+   penerbit, halaman, rating) tidak lagi terlipat di halaman, melainkan tersembunyi dan
+   dibuka lewat tombol **“Isi Detail Buku”**; otomatis terbuka bila ada error validasi.
+4. **Tambah genre & rak langsung dari form buku** — modal + endpoint JSON
+   `api/genre/tambah/` dan `api/rak/tambah/`; data baru langsung tersimpan dan
+   terpilih otomatis di form, tanpa pindah ke halaman Pengaturan.
+5. **Kata sandi dibebaskan** — `AUTH_PASSWORD_VALIDATORS = []`; validasi panjang/kerumitan
+   dihapus dari form tambah/ubah pengguna, halaman ubah sandi, dan command `create_user`.
+   Yang tersisa hanya pemeriksaan sandi == ulangannya dan tidak boleh kosong.
+6. **Dashboard tanpa data per user** — grafik “Produktivitas Perekaman per User”
+   beserta datanya (`user_labels` / `user_counts`) dihapus.
+7. **Donut genre menampilkan persentase** (angka persentase digambar di dalam potongan
+   + pada keterangan) dan grafik kontributor diganti **Top 5 Genre** (batang mendatar,
+   jumlah buku ditulis di ujung batang).
+8. **Cetak label 2 × 3 cm** — halaman `/label/` (pilih buku dengan filter) dan
+   `/label/cetak/` (lembar siap cetak). Ukuran label tetap: **3 × 2 cm (mendatar,
+   default)** atau **2 × 3 cm (tegak)**; isi label = lokasi rak (menonjol), judul,
+   penulis, jenis buku, dan nama pemilik (opsional). Ada opsi “lompati N label”
+   untuk stiker yang sebagian sudah terpakai, serta `@page A4 margin 8 mm` saat dicetak.
+   Menu **Cetak Label** ditambahkan di navbar (desktop & mobile).

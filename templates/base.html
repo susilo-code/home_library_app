@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Hirunaza's Library Information System{% endblock %}</title>
+    <title>{% block title %}{{ app_config.app_name|default:"Perpustakaan" }}{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -47,7 +47,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                             </svg>
                         </div>
-                        <span class="font-display font-bold text-xl text-purple-800 dark:text-purple-200 hidden sm:block">Hirunaza&rsquo;s Library</span>
+                        <span class="font-display font-bold text-xl text-purple-800 dark:text-purple-200 hidden sm:block">{{ app_config.app_short_name|default:"Perpustakaan" }}</span>
                     </a>
                 </div>
 
@@ -55,6 +55,7 @@
                 <div class="hidden md:flex items-center gap-6">
                     <a href="{% url 'dashboard' %}" class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 transition-colors">Dashboard</a>
                     <a href="{% url 'book-list' %}" class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 transition-colors">Katalog Buku</a>
+                    <a href="{% url 'label-select' %}" class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 transition-colors">Cetak Label</a>
                     {% if user.is_staff or user.is_superuser %}
                     <a href="{% url 'user-list' %}" class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 transition-colors">Pengguna</a>
                     {% endif %}
@@ -98,6 +99,10 @@
                                 <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 Kelola Pengguna
                             </a>
+                            <a href="{% url 'app-identity' %}" class="dropdown-item" role="menuitem">
+                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                Identitas Aplikasi
+                            </a>
                             {% endif %}
                             <hr class="my-1 border-purple-100 dark:border-purple-800">
                             <form action="{% url 'logout' %}" method="post" class="p-0">
@@ -121,6 +126,7 @@
     <div id="mobile-menu" class="md:hidden bg-white dark:bg-purple-slate-900 border-b border-purple-100 dark:border-purple-800 hidden px-4 py-4 space-y-2">
         <a href="{% url 'dashboard' %}" class="block px-3 py-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-lg">Dashboard</a>
         <a href="{% url 'book-list' %}" class="block px-3 py-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-lg">Katalog Buku</a>
+        <a href="{% url 'label-select' %}" class="block px-3 py-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-lg">Cetak Label</a>
         <a href="{% url 'book-create' %}" class="block btn-primary text-center">+ Tambah Buku</a>
         {% if user.is_authenticated %}
         <hr class="border-purple-100 dark:border-purple-800">
@@ -158,7 +164,7 @@
     <!-- Footer -->
     <footer class="bg-white dark:bg-purple-slate-900 border-t border-purple-100 dark:border-purple-800 py-6 mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-purple-500 dark:text-purple-400">
-            <p>&copy; {% now "Y" %} Hirunaza&rsquo;s Library Information System. Dibangun dengan Django + Tailwind CSS.</p>
+            <p>&copy; {% now "Y" %} {{ app_config.app_name|default:"Perpustakaan" }}. Dibangun dengan Django + Tailwind CSS.</p>
         </div>
     </footer>
 

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{% if object %}Edit{% else %}Tambah{% endif %} Buku — Hirunaza's Library{% endblock %}
+{% block title %}{% if object %}Edit{% else %}Tambah{% endif %} Buku — {{ app_config.app_name|default:"Perpustakaan" }}{% endblock %}
 
 {% block content %}
 <div class="mx-auto max-w-3xl animate-in pb-28">
@@ -118,7 +118,7 @@
                         <div>
                             <div class="mb-1.5 flex items-center justify-between">
                                 <label for="{{ form.genre.id_for_label }}" class="block text-sm font-medium text-purple-700 dark:text-purple-300">{{ form.genre.label }}</label>
-                                <a href="{% url 'settings' %}#genre-kategori" class="text-xs text-purple-500 hover:underline dark:text-purple-400">kelola</a>
+                                <button type="button" id="buka-genre-baru" class="text-xs font-semibold text-purple-600 hover:underline dark:text-purple-300">+ Tambah genre</button>
                             </div>
                             {{ form.genre }}
                             {% if form.genre.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.genre.errors.0 }}</p>{% endif %}
@@ -128,7 +128,7 @@
                         <div>
                             <div class="mb-1.5 flex items-center justify-between">
                                 <label for="{{ form.shelf.id_for_label }}" class="block text-sm font-medium text-purple-700 dark:text-purple-300">{{ form.shelf.label }}</label>
-                                <a href="{% url 'settings' %}#rak-buku" class="text-xs text-purple-500 hover:underline dark:text-purple-400">kelola</a>
+                                <button type="button" id="buka-rak-baru" class="text-xs font-semibold text-purple-600 hover:underline dark:text-purple-300">+ Tambah rak</button>
                             </div>
                             {{ form.shelf }}
                             {% if form.shelf.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.shelf.errors.0 }}</p>{% endif %}
@@ -136,54 +136,28 @@
                     </div>
                 </section>
 
-                {# ══════════ DETAIL OPSIONAL (terlipat) ══════════ #}
-                <details class="group rounded-xl border border-purple-100 dark:border-purple-800" {% if detail_error %}open{% endif %}>
-                    <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-3.5 select-none">
-                        <span class="flex items-center gap-2 font-medium text-purple-800 dark:text-purple-200">
-                            <svg class="h-5 w-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                            Detail Buku
-                            <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal text-purple-600 dark:bg-purple-900 dark:text-purple-300">opsional</span>
-                        </span>
-                        <svg class="h-5 w-5 text-purple-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    </summary>
-                    <div class="border-t border-purple-100 p-4 dark:border-purple-800">
-                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div>
-                                {{ form.isbn.label_tag }}
-                                {{ form.isbn }}
-                                {% if form.isbn.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.isbn.errors.0 }}</p>{% endif %}
-                            </div>
-                            <div>
-                                {{ form.publication_year.label_tag }}
-                                {{ form.publication_year }}
-                                {% if form.publication_year.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.publication_year.errors.0 }}</p>{% endif %}
-                            </div>
-                            <!-- Tahun Beli (baru) -->
-                            <div>
-                                {{ form.purchase_year.label_tag }}
-                                {{ form.purchase_year }}
-                                <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.purchase_year.help_text }}</p>
-                                {% if form.purchase_year.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.purchase_year.errors.0 }}</p>{% endif %}
-                            </div>
-                            <div>
-                                {{ form.publisher.label_tag }}
-                                {{ form.publisher }}
-                                {% if form.publisher.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.publisher.errors.0 }}</p>{% endif %}
-                            </div>
-                            <div>
-                                {{ form.pages.label_tag }}
-                                {{ form.pages }}
-                                {% if form.pages.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.pages.errors.0 }}</p>{% endif %}
-                            </div>
-                            <div class="md:col-span-2">
-                                {{ form.rating.label_tag }}
-                                {{ form.rating }}
-                                <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.rating.help_text }}</p>
-                                {% if form.rating.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.rating.errors.0 }}</p>{% endif %}
-                            </div>
+                {# ══════════ DETAIL BUKU (dibuka lewat modal) ══════════ #}
+                <div class="rounded-xl border border-purple-100 p-4 dark:border-purple-800">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <p class="flex items-center gap-2 font-medium text-purple-800 dark:text-purple-200">
+                                <svg class="h-5 w-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                                Detail Buku
+                                <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal text-purple-600 dark:bg-purple-900 dark:text-purple-300">opsional</span>
+                            </p>
+                            <p id="ringkas-detail-info" class="mt-1 text-xs text-purple-400 dark:text-purple-500">
+                                ISBN, tahun terbit, tahun beli, penerbit, jumlah halaman, rating
+                            </p>
                         </div>
+                        <button type="button" id="buka-detail" class="btn-secondary whitespace-nowrap">Isi Detail Buku</button>
                     </div>
-                </details>
+                    {% if detail_error %}
+                    <p class="mt-2 flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                        Ada isian detail yang perlu diperbaiki — klik "Isi Detail Buku".
+                    </p>
+                    {% endif %}
+                </div>
 
                 {# ══════════ SAMPUL BUKU (terlipat) ══════════ #}
                 <details class="group rounded-xl border border-purple-100 dark:border-purple-800" {% if cover_error %}open{% endif %}>
@@ -238,7 +212,129 @@
                 <p class="text-center text-xs text-purple-400 dark:text-purple-500">
                     Field bertanda <span class="font-semibold text-purple-600 dark:text-purple-300">*</span> wajib diisi.
                 </p>
+
+                {# ══════════ MODAL: DETAIL BUKU ══════════ #}
+                <div id="modal-detail" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="judul-modal-detail">
+                    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-tutup-detail></div>
+                    <div class="relative z-10 flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-purple-200 bg-white shadow-2xl dark:border-purple-800 dark:bg-purple-slate-900">
+                        <div class="flex items-center justify-between border-b border-purple-100 px-5 py-4 dark:border-purple-800">
+                            <div>
+                                <h2 id="judul-modal-detail" class="font-display text-lg font-bold text-purple-800 dark:text-purple-200">Detail Buku</h2>
+                                <p class="text-xs text-purple-400 dark:text-purple-500">Semua isian di sini opsional — boleh dikosongkan.</p>
+                            </div>
+                            <button type="button" data-tutup-detail aria-label="Tutup"
+                                    class="rounded-lg p-2 text-purple-400 transition hover:bg-purple-100 dark:hover:bg-purple-900">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto p-5">
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div>
+                                    {{ form.isbn.label_tag }}
+                                    {{ form.isbn }}
+                                    {% if form.isbn.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.isbn.errors.0 }}</p>{% endif %}
+                                </div>
+                                <div>
+                                    {{ form.publication_year.label_tag }}
+                                    {{ form.publication_year }}
+                                    {% if form.publication_year.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.publication_year.errors.0 }}</p>{% endif %}
+                                </div>
+                                <div>
+                                    {{ form.purchase_year.label_tag }}
+                                    {{ form.purchase_year }}
+                                    <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.purchase_year.help_text }}</p>
+                                    {% if form.purchase_year.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.purchase_year.errors.0 }}</p>{% endif %}
+                                </div>
+                                <div>
+                                    {{ form.publisher.label_tag }}
+                                    {{ form.publisher }}
+                                    {% if form.publisher.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.publisher.errors.0 }}</p>{% endif %}
+                                </div>
+                                <div>
+                                    {{ form.pages.label_tag }}
+                                    {{ form.pages }}
+                                    {% if form.pages.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.pages.errors.0 }}</p>{% endif %}
+                                </div>
+                                <div class="md:col-span-2">
+                                    {{ form.rating.label_tag }}
+                                    {{ form.rating }}
+                                    <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.rating.help_text }}</p>
+                                    {% if form.rating.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.rating.errors.0 }}</p>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-3 border-t border-purple-100 bg-purple-50/70 px-5 py-3 dark:border-purple-800 dark:bg-purple-950/40">
+                            <span id="ringkas-detail" class="text-xs text-purple-500 dark:text-purple-400"></span>
+                            <button type="button" data-tutup-detail class="btn-primary">Selesai</button>
+                        </div>
+                    </div>
+                </div>
             </form>
+
+            {# ══════════ MODAL: TAMBAH GENRE BARU ══════════ #}
+            <div id="modal-genre" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true">
+                <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-tutup></div>
+                <div class="relative z-10 w-full max-w-md rounded-2xl border border-purple-200 bg-white p-5 shadow-2xl dark:border-purple-800 dark:bg-purple-slate-900">
+                    <h2 class="font-display text-lg font-bold text-purple-800 dark:text-purple-200">Tambah Genre / Kategori</h2>
+                    <p class="mb-4 text-xs text-purple-400 dark:text-purple-500">Tersimpan langsung dan otomatis terpilih di form ini.</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="genre-nama" class="mb-1 block text-sm font-medium text-purple-700 dark:text-purple-300">Nama Genre</label>
+                            <input type="text" id="genre-nama" name="name" maxlength="100" class="input" placeholder="Contoh: Sejarah">
+                        </div>
+                        <div>
+                            <label for="genre-ket" class="mb-1 block text-sm font-medium text-purple-700 dark:text-purple-300">Keterangan (opsional)</label>
+                            <input type="text" id="genre-ket" name="description" maxlength="255" class="input" placeholder="Contoh: buku sejarah & biografi">
+                        </div>
+                        <div>
+                            <label for="genre-warna" class="mb-1 block text-sm font-medium text-purple-700 dark:text-purple-300">Warna Label</label>
+                            <input type="color" id="genre-warna" name="color_code" value="#8A4FFF"
+                                   class="h-10 w-24 cursor-pointer rounded-lg border border-purple-200 bg-white dark:border-purple-800 dark:bg-purple-950">
+                        </div>
+                        <input type="hidden" id="genre-ikon" name="icon" value="bookmark">
+                    </div>
+                    <p id="pesan-genre" class="mt-3 text-sm text-red-600 dark:text-red-400"></p>
+                    <div class="mt-4 flex justify-end gap-2">
+                        <button type="button" class="btn-secondary" data-tutup>Batal</button>
+                        <button type="button" id="simpan-genre" class="btn-primary">Simpan Genre</button>
+                    </div>
+                </div>
+            </div>
+
+            {# ══════════ MODAL: TAMBAH LOKASI RAK ══════════ #}
+            <div id="modal-rak" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true">
+                <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-tutup></div>
+                <div class="relative z-10 w-full max-w-md rounded-2xl border border-purple-200 bg-white p-5 shadow-2xl dark:border-purple-800 dark:bg-purple-slate-900">
+                    <h2 class="font-display text-lg font-bold text-purple-800 dark:text-purple-200">Tambah Lokasi Rak</h2>
+                    <p class="mb-4 text-xs text-purple-400 dark:text-purple-500">Tersimpan langsung dan otomatis terpilih di form ini.</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="rak-nama" class="mb-1 block text-sm font-medium text-purple-700 dark:text-purple-300">Nama Lokasi Rak</label>
+                            <input type="text" id="rak-nama" name="name" maxlength="100" class="input" placeholder="Contoh: Rak A-1 (Kamar Depan)">
+                        </div>
+                        <div>
+                            <label for="rak-kode" class="mb-1 block text-sm font-medium text-purple-700 dark:text-purple-300">Kode Rak (opsional)</label>
+                            <input type="text" id="rak-kode" name="code" maxlength="30" class="input" placeholder="Contoh: A1">
+                        </div>
+                        <div>
+                            <label for="rak-ket" class="mb-1 block text-sm font-medium text-purple-700 dark:text-purple-300">Keterangan (opsional)</label>
+                            <input type="text" id="rak-ket" name="description" maxlength="255" class="input" placeholder="Contoh: rak kayu dekat jendela">
+                        </div>
+                        <div>
+                            <label for="rak-warna" class="mb-1 block text-sm font-medium text-purple-700 dark:text-purple-300">Warna Label</label>
+                            <input type="color" id="rak-warna" name="color_code" value="#8A4FFF"
+                                   class="h-10 w-24 cursor-pointer rounded-lg border border-purple-200 bg-white dark:border-purple-800 dark:bg-purple-950">
+                        </div>
+                    </div>
+                    <p id="pesan-rak" class="mt-3 text-sm text-red-600 dark:text-red-400"></p>
+                    <div class="mt-4 flex justify-end gap-2">
+                        <button type="button" class="btn-secondary" data-tutup>Batal</button>
+                        <button type="button" id="simpan-rak" class="btn-primary">Simpan Rak</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -449,5 +545,132 @@
         }
     });
 })();
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  MODAL DETAIL BUKU (default tersembunyi; muncul saat tombol diklik)
+    // ══════════════════════════════════════════════════════════════════════
+    const modalDetail = document.getElementById('modal-detail');
+    const tombolDetail = document.getElementById('buka-detail');
+    window.bukaModal = function (el) {
+        if (!el) return;
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    };
+    window.tutupModal = function (el) {
+        if (!el) return;
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+        document.body.style.overflow = '';
+    };
+
+    if (modalDetail && tombolDetail) {
+        const ID_DETAIL = ['id_isbn', 'id_publication_year', 'id_purchase_year', 'id_publisher', 'id_pages', 'id_rating'];
+        const ringkas = document.getElementById('ringkas-detail');
+        const ringkasInfo = document.getElementById('ringkas-detail-info');
+
+        function perbaruiRingkasanDetail() {
+            const terisi = ID_DETAIL
+                .map((id) => document.getElementById(id))
+                .filter((el) => el && String(el.value).trim() !== '');
+            if (ringkas) ringkas.textContent = terisi.length + ' dari ' + ID_DETAIL.length + ' isian detail terisi';
+            if (ringkasInfo && terisi.length) {
+                ringkasInfo.textContent = terisi.length + ' isian detail sudah diisi — klik untuk mengubah';
+            }
+        }
+
+        tombolDetail.addEventListener('click', () => bukaModal(modalDetail));
+        modalDetail.querySelectorAll('[data-tutup-detail]').forEach((t) =>
+            t.addEventListener('click', () => tutupModal(modalDetail)));
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modalDetail.classList.contains('hidden')) tutupModal(modalDetail);
+        });
+        ID_DETAIL.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', perbaruiRingkasanDetail);
+        });
+        perbaruiRingkasanDetail();
+        // Bila ada error validasi di bagian detail, modal dibuka otomatis
+        if (document.querySelector('.text-red-600') && {% if detail_error %}true{% else %}false{% endif %}) bukaModal(modalDetail);
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  MODAL TAMBAH CEPAT: GENRE & RAK (simpan lewat AJAX, tanpa pindah halaman)
+    // ══════════════════════════════════════════════════════════════════════
+    function tokenCsrf() {
+        const el = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        return el ? el.value : '';
+    }
+
+    function siapkanModalCepat(cfg) {
+        const modal = document.getElementById(cfg.modal);
+        const tombol = document.getElementById(cfg.tombol);
+        const simpan = document.getElementById(cfg.simpan);
+        const pesan = document.getElementById(cfg.pesan);
+        if (!modal || !tombol || !simpan) return;
+
+        tombol.addEventListener('click', () => { pesan.textContent = ''; bukaModal(modal); });
+        modal.querySelectorAll('[data-tutup]').forEach((t) =>
+            t.addEventListener('click', () => tutupModal(modal)));
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) tutupModal(modal);
+        });
+
+        simpan.addEventListener('click', async () => {
+            const data = new FormData();
+            let adaIsi = false;
+            cfg.fields.forEach((f) => {
+                const el = document.getElementById(f);
+                if (el) { data.append(el.name, el.value); if (String(el.value).trim()) adaIsi = true; }
+            });
+            data.append('is_active', 'on');
+            if (!adaIsi) { pesan.textContent = 'Isi dulu nama ' + cfg.nama + '.'; return; }
+
+            simpan.disabled = true;
+            pesan.textContent = '';
+            try {
+                const resp = await fetch(cfg.url, {
+                    method: 'POST', body: data,
+                    headers: { 'X-CSRFToken': tokenCsrf(), 'X-Requested-With': 'XMLHttpRequest' },
+                });
+                const hasil = await resp.json();
+                if (hasil.ok) {
+                    const sel = document.getElementById(cfg.select);
+                    if (sel) {
+                        const opt = document.createElement('option');
+                        opt.value = hasil.id;
+                        opt.textContent = hasil.label || hasil.name;
+                        sel.appendChild(opt);
+                        Array.from(sel.options).forEach((o) => { o.selected = (o.value === String(hasil.id)); });
+                    }
+                    cfg.fields.forEach((f) => {
+                        const el = document.getElementById(f);
+                        if (el && el.type !== 'color' && el.type !== 'hidden') el.value = '';
+                    });
+                    tutupModal(modal);
+                } else {
+                    pesan.textContent = Object.entries(hasil.errors || {})
+                        .map(([f, m]) => m).join(' ') || 'Gagal menyimpan.';
+                }
+            } catch (err) {
+                pesan.textContent = 'Gagal menyimpan: ' + err.message;
+            } finally {
+                simpan.disabled = false;
+            }
+        });
+    }
+
+    siapkanModalCepat({
+        modal: 'modal-genre', tombol: 'buka-genre-baru', simpan: 'simpan-genre', pesan: 'pesan-genre',
+        select: '{{ form.genre.id_for_label }}', nama: 'nama genre',
+        url: "{% url 'genre-quick-create' %}",
+        fields: ['genre-nama', 'genre-ket', 'genre-warna', 'genre-ikon'],
+    });
+    siapkanModalCepat({
+        modal: 'modal-rak', tombol: 'buka-rak-baru', simpan: 'simpan-rak', pesan: 'pesan-rak',
+        select: '{{ form.shelf.id_for_label }}', nama: 'nama rak',
+        url: "{% url 'shelf-quick-create' %}",
+        fields: ['rak-nama', 'rak-kode', 'rak-ket', 'rak-warna'],
+    });
 </script>
 {% endblock %}

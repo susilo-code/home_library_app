@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Katalog Buku — Hirunaza's Library{% endblock %}
+{% block title %}Katalog Buku — {{ app_config.app_name|default:"Perpustakaan" }}{% endblock %}
 
 {% block content %}
 <div class="space-y-6 animate-in">
