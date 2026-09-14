@@ -18,12 +18,14 @@ Verifikasi v2 — perubahan lanjutan Hirunaza's Library Information System:
 Jalankan: .venv/Scripts/python.exe verify_features_v2.py
 """
 import os
+import sys
 
 import django
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
+from django.contrib.auth.models import User  # noqa: E402
 from django.utils.html import escape as html_escape  # noqa: E402
 from django.template.loader import get_template  # noqa: E402
 from django.test import Client  # noqa: E402
@@ -41,7 +43,15 @@ def cek(nama, kondisi, detail=""):
 
 
 c = Client()
-c.login(username="user1", password="password123")
+# Jangan terpaku pada username tertentu: pakai akun yang benar-benar ada
+# (username bisa diganti dari panel admin, mis. user1 -> hirunaza).
+_akun = User.objects.filter(is_superuser=True).first() or User.objects.first()
+if _akun:
+    c.force_login(_akun)
+    print(f"Login sebagai: {_akun.username} (superuser={_akun.is_superuser})\n")
+else:
+    print("PERINGATAN: belum ada akun di database — jalankan seed_data atau create_user\n")
+
 buku = Book.objects.first()
 genre_contoh = Genre.objects.first()
 shelf_contoh = Shelf.objects.first()
@@ -257,6 +267,15 @@ cek("Filter NON_FIKSI hanya mengembalikan buku Non-Fiksi", semua_non,
     f"{d_non['pagination']['total_items']} item")
 cek("Halaman katalog menampilkan label jenis", "Fiksi" in body)
 
+# Navigasi: Pengaturan hanya lewat menu klik-user (tidak di top bar)
+html_dash = c.get("/").content.decode()
+_nav = html_dash.split('hidden md:flex items-center gap-6', 1)[-1][:700]
+cek("Top bar TIDAK memuat menu 'Pengaturan'", 'Pengaturan' not in _nav,
+    f"cuplikan nav: {_nav[:60].strip()}")
+cek("Top bar tetap memuat Dashboard & Katalog",
+    'Dashboard' in _nav and 'Katalog Buku' in _nav)
+cek("'Pengaturan' tetap tersedia di dropdown user", 'Pengaturan' in html_dash)
+
 PAGES = [
     ("/", "Dashboard"), ("/buku/", "Katalog"), ("/buku/tambah/", "Form tambah"),
     (f"/buku/{buku.pk}/", "Detail"), (f"/buku/{buku.pk}/edit/", "Form edit"),
@@ -279,3 +298,6 @@ print("═" * 78)
 total, ok = len(hasil), sum(hasil)
 print(f"HASIL AKHIR: {ok}/{total} pemeriksaan LULUS" + (" — SEMUA BAIK ✅" if ok == total else f" — {total - ok} GAGAL ❌"))
 print("═" * 78)
+
+# Keluar dengan kode status agar bisa dipakai di CI / .bat
+sys.exit(0 if ok == total else 1)

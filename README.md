@@ -1,0 +1,144 @@
+# Hirunaza's Library Information System
+
+Aplikasi **perpustakaan rumah** multi-pengguna: catat koleksi buku keluarga, atur rak penyimpanan,
+kelola genre, dan pantau kontribusi tiap anggota — semuanya dari satu dasbor.
+
+Dibangun dengan **Django 5.2** (antarmuka) + **FastAPI** (layanan data) + **Tailwind CSS**.
+
+![Halaman Login](docs/screenshots/01-login.webp)
+
+---
+
+## ✨ Fitur
+
+| Area | Kemampuan |
+| :--- | :--- |
+| **Dashboard** | KPI total buku/genre/kontributor, komposisi Fiksi–Non-Fiksi, grafik Chart.js (genre & produktivitas perekam), jam digital realtime |
+| **Perekaman Buku** | CRUD lengkap (CBV), **autocomplete judul** dengan pencocokan mirip (fuzzy), **deteksi duplikat** tanpa peka huruf besar/kecil & spasi ganda |
+| **Katalog** | Pencarian, filter (genre, jenis, rak, status, perekam), paginasi, tampilan tabel responsif |
+| **Jenis Buku** | Pilihan tetap: **Fiksi** & **Non-Fiksi** |
+| **Genre / Kategori** | **Dinamis** — tambah/ubah/hapus dari halaman Pengaturan (slug otomatis, warna label) |
+| **Lokasi Rak Buku** | **Dinamis** — nama, kode, kapasitas, keterisian, warna label |
+| **Data Buku** | Tahun terbit, **tahun beli**, penerbit, halaman, rating, sinopsis, sampul (upload/URL) |
+| **Pengguna** | Multi-user kolaboratif; halaman **Kelola Pengguna** untuk admin (tambah, atur ulang sandi, nonaktifkan, hapus) |
+| **Profil** | Foto profil, bio, statistik pribadi |
+| **Tampilan** | Nuansa ungu tua, mode **gelap/terang**, responsif, animasi halus |
+| **Jejak Audit** | ActivityLog mencatat tambah/ubah/hapus buku, genre, rak, dan pengguna |
+
+Tangkapan layar lain tersedia di [`docs/screenshots/`](docs/screenshots).
+
+---
+
+## 🚀 Memulai Cepat
+
+```bat
+git clone https://github.com/<USERNAME>/<REPO>.git
+cd <REPO>
+setup.bat          :: sekali saja: venv, dependency, .env, migrasi
+start.bat          :: jalankan Django + FastAPI, Chrome terbuka otomatis
+```
+
+Panduan lengkap (termasuk pemecahan masalah & pemasangan di PC baru):
+**[MANUAL.md](MANUAL.md)**
+
+### Menjalankan manual
+
+```bat
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+python scripts\init_env.py            :: membuat .env + SECRET_KEY acak
+python manage.py migrate
+python manage.py seed_data            :: data contoh (opsional)
+python manage.py create_user --username admin --password Rahasia123 --superuser
+
+:: dua terminal berbeda
+python manage.py runserver 127.0.0.1:8000
+python -m uvicorn api.main:app --host 127.0.0.1 --port 8001
+```
+
+| Alamat | Isi |
+| :--- | :--- |
+| http://127.0.0.1:8000 | Aplikasi web |
+| http://127.0.0.1:8000/admin/ | Panel admin Django |
+| http://127.0.0.1:8001/docs | Dokumentasi API (Swagger) |
+| http://127.0.0.1:8001/api/health | Cek kesehatan service |
+
+> Akun setelah `seed_data`: `user1` / `password123` (peran anggota).
+> Untuk mengelola pengguna, naikkan dulu: `manage.py create_user --username user1 --superuser`.
+
+---
+
+## 🧱 Teknologi
+
+| Lapisan | Teknologi |
+| :--- | :--- |
+| Framework utama | Django 5.2 (Class-Based Views, ORM, Admin) |
+| Layanan API | FastAPI + Uvicorn (port terpisah, berbagi database via ORM) |
+| Basis data | SQLite (default) · MySQL/MariaDB · PostgreSQL — dipilih lewat `.env` |
+| Antarmuka | Django Templates + Tailwind CSS + Chart.js |
+| Konfigurasi | python-dotenv (`.env`), dependency ter-pin di `requirements.txt` |
+| Utilitas | Pillow (upload gambar), skrip `.bat` untuk Windows |
+
+---
+
+## 📁 Struktur Proyek
+
+```
+home_library_app/
+├── config/                  # settings (baca .env), urls, wsgi/asgi
+├── library/                 # aplikasi utama
+│   ├── models.py            # Book, Genre, Shelf, UserProfile, ActivityLog
+│   ├── views.py             # CBV: dashboard, CRUD buku, pengaturan, kelola pengguna, API
+│   ├── forms.py             # validasi termasuk deteksi duplikat & kata sandi
+│   ├── migrations/          # riwayat skema database
+│   └── management/commands/ # seed_data, repair_demo_data, create_user
+├── api/main.py              # service FastAPI
+├── templates/               # halaman HTML (books, accounts, settings, registration)
+├── static/                  # CSS Tailwind hasil build, ilustrasi SVG
+├── scripts/                 # init_env.py, env_export.py, list_accounts.py
+│   └── dev/                 # skrip verifikasi & render pratinjau
+├── docs/screenshots/        # tangkapan layar untuk dokumentasi
+├── manage.py
+├── requirements.txt         # dependency Python (versi di-pin)
+├── setup.bat / start.bat / stop.bat / push_github.bat
+├── MANUAL.md                # panduan pemasangan & pemecahan masalah
+└── PRD.md                   # kebutuhan produk & catatan revisi
+```
+
+---
+
+## ✅ Pengujian
+
+Skrip verifikasi mandiri (semuanya tanpa perlu server berjalan, kecuali yang diberi catatan):
+
+```bat
+.venv\Scripts\python.exe scripts\dev\verify_features_v2.py      :: 72 pemeriksaan fitur & halaman
+.venv\Scripts\python.exe scripts\dev\verify_user_management.py  :: 30 pemeriksaan kelola pengguna
+.venv\Scripts\python.exe scripts\dev\verify_start_stop_cycle.py :: 9 pemeriksaan start.bat/stop.bat (Windows)
+.venv\Scripts\python.exe scripts\dev\verify_fresh_clone.py      :: uji skenario "clone di PC baru"
+.venv\Scripts\python.exe scripts\dev\render_preview.py          :: render halaman ke preview/
+```
+
+CI otomatis (checks + kedua suite utama) berjalan lewat GitHub Actions:
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+
+---
+
+## 🔐 Keamanan & Konfigurasi
+
+- `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, dan kredensial database **tidak** ditulis di kode —
+  semuanya dibaca dari `.env` (lihat [`.env.example`](.env.example)).
+- File `.env`, database lokal, folder `media/`, `.venv/`, dan `node_modules/` diabaikan Git.
+- Kata sandi disimpan ter-hash dengan validator Django; aksi sensitif tercatat di ActivityLog.
+
+---
+
+## 📄 Lisensi
+
+Proyek pribadi — belum dilisensikan untuk distribusi publik. Hubungi pemilik repositori
+bila ingin menggunakannya.
+
+---
+
+*Versi 1.3.0 — Django 5.2 · Python 3.11 · dibuat untuk koleksi buku keluarga.*

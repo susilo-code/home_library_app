@@ -42,7 +42,8 @@ print(f"  GET /static/img/library-hero.svg -> HTTP {r.status}  {len(data)} bytes
 # ── 3. Login lewat /login/ (form ber-styling) ──────────────────────────────
 token = re.search(r'name="csrfmiddlewaretoken" value="([^"]+)"', html).group(1)
 data = urllib.parse.urlencode({
-    "username": "user1", "password": "password123", "csrfmiddlewaretoken": token,
+    "username": os.environ.get("LIB_USER", "user1"),
+    "password": os.environ.get("LIB_PASS", "password123"), "csrfmiddlewaretoken": token,
 }).encode()
 req = urllib.request.Request(BASE + "/login/", data=data, headers={"Referer": BASE + "/login/"})
 resp = opener.open(req)

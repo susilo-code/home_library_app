@@ -38,10 +38,14 @@ def post(url, payload, csrf):
     return opener.open(req)
 
 
-# Login
-csrf = get_csrf(f"{BASE}/accounts/login/")
-post(f"{BASE}/accounts/login/", {"username": "user1", "password": "password123"}, csrf)
-print("Login: OK\n")
+# Login — kredensial bisa dioverride lewat env (username bisa diganti dari panel admin)
+LOGIN_USER = os.environ.get("LIB_USER", "user1")
+LOGIN_PASS = os.environ.get("LIB_PASS", "password123")
+
+csrf = get_csrf(f"{BASE}/login/")
+post(f"{BASE}/login/", {"username": LOGIN_USER, "password": LOGIN_PASS}, csrf)
+print(f"Login sebagai '{LOGIN_USER}': OK")
+print("(bila gagal, set kredensial:  LIB_USER=namamu LIB_PASS=sandimu)\n")
 
 existing = Book.objects.first()
 print(f"Buku yang sudah ada: '{existing.title}' oleh {existing.author}")

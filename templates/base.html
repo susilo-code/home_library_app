@@ -55,7 +55,6 @@
                 <div class="hidden md:flex items-center gap-6">
                     <a href="{% url 'dashboard' %}" class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 transition-colors">Dashboard</a>
                     <a href="{% url 'book-list' %}" class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 transition-colors">Katalog Buku</a>
-                    <a href="{% url 'settings' %}" class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 transition-colors">Pengaturan</a>
                     {% if user.is_staff or user.is_superuser %}
                     <a href="{% url 'user-list' %}" class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 transition-colors">Pengguna</a>
                     {% endif %}
@@ -126,7 +125,6 @@
         {% if user.is_authenticated %}
         <hr class="border-purple-100 dark:border-purple-800">
         <a href="{% url 'profile' %}" class="block px-3 py-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-lg">Profil Saya</a>
-        <a href="{% url 'settings' %}" class="block px-3 py-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-lg">Pengaturan</a>
         {% if user.is_staff or user.is_superuser %}
         <a href="{% url 'user-list' %}" class="block px-3 py-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-lg">Kelola Pengguna</a>
         {% endif %}

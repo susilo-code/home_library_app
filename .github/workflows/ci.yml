@@ -1,0 +1,75 @@
+name: CI
+
+# Pemeriksaan otomatis setiap push & pull request.
+# Berjalan di Linux dengan SQLite sehingga tidak butuh layanan eksternal.
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  cek-dan-uji:
+    name: Django checks + suite verifikasi
+    runs-on: ubuntu-latest
+
+    env:
+      # Dipakai settings.py; nilai .env juga akan dibuat oleh script init
+      SECRET_KEY: ci-${{ github.run_id }}-bukan-rahasia-produksi
+      DEBUG: 'True'
+      ALLOWED_HOSTS: '127.0.0.1,localhost,testserver'
+      DB_ENGINE: sqlite
+      DB_NAME: db.sqlite3
+
+    steps:
+      - name: Ambil kode
+        uses: actions/checkout@v4
+
+      - name: Siapkan Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Pasang dependency
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Verifikasi dependency dapat diimpor
+        run: |
+          python -c "import django, fastapi, uvicorn, dotenv, PIL, pydantic, multipart; print('dependency OK | Django', django.get_version())"
+
+      - name: Cek konfigurasi .env (buat dari contoh)
+        run: python scripts/init_env.py
+
+      - name: Django system check
+        run: python manage.py check
+
+      - name: Pastikan tidak ada migrasi yang tertinggal
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Migrasi database
+        run: python manage.py migrate
+
+      - name: Isi data contoh
+        run: python manage.py seed_data --users 3 --books-per-user 4
+
+      - name: Suite verifikasi fitur (72 pemeriksaan)
+        run: python scripts/dev/verify_features_v2.py
+
+      - name: Suite verifikasi kelola pengguna (30 pemeriksaan)
+        run: python scripts/dev/verify_user_management.py
+
+      - name: Larangan berkas rahasia ikut ter-commit
+        run: |
+          if git ls-files --error-unmatch .env >/dev/null 2>&1; then
+            echo "::error::File .env ikut ter-commit! Hapus dari repo dan tambahkan ke .gitignore."
+            exit 1
+          fi
+          if git ls-files --error-unmatch db.sqlite3 >/dev/null 2>&1; then
+            echo "::error::db.sqlite3 ikut ter-commit! Hapus dari repo."
+            exit 1
+          fi
+          echo "Aman: .env & db.sqlite3 tidak ter-commit."
