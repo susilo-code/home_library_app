@@ -34,9 +34,13 @@ Tangkapan layar lain tersedia di [`docs/screenshots/`](docs/screenshots).
 ```bat
 git clone https://github.com/<USERNAME>/<REPO>.git
 cd <REPO>
-setup.bat          :: sekali saja: venv, dependency, .env, migrasi
+setup.bat          :: sekali saja: siapkan Python (bila perlu), venv, dependency, .env, migrasi
 start.bat          :: jalankan Django + FastAPI, Chrome terbuka otomatis
 ```
+
+> **PC baru tidak perlu punya Python lebih dulu.** `setup.bat` memakai Python yang sudah ada,
+> atau mengunduh Python 3.11 sendiri lewat `uv` (dan memasang `uv` otomatis bila belum ada).
+> Syarat satu-satunya saat setup: **koneksi internet**.
 
 Panduan lengkap (termasuk pemecahan masalah & pemasangan di PC baru):
 **[MANUAL.md](MANUAL.md)**
@@ -44,7 +48,7 @@ Panduan lengkap (termasuk pemecahan masalah & pemasangan di PC baru):
 ### Menjalankan manual
 
 ```bat
-python -m venv .venv
+python -m venv .venv                 :: atau: uv venv --python 3.11 .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
 python scripts\init_env.py            :: membuat .env + SECRET_KEY acak

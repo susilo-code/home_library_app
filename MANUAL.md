@@ -12,15 +12,22 @@ Versi aplikasi: **1.2.0** · Django 5.2.17 · Python 3.11 · SQLite (default)
 
 | Kebutuhan | Versi disarankan | Wajib? | Catatan |
 | :--- | :--- | :--- | :--- |
-| **Python** | **3.11** atau 3.12 | ✅ Wajib | Hindari 3.13+ (sebagian paket belum menyediakan wheel) |
-| **Git** | 2.30+ | ✅ Wajib (untuk clone) | https://git-scm.com/downloads |
+| **Python** | **3.11** atau 3.12 | ⬜ **Tidak wajib** | `setup.bat` bisa menyiapkannya sendiri: bila `uv` ada (atau berhasil dipasang otomatis), Python 3.11 **diunduh otomatis** — lihat catatan di bawah |
+| **Koneksi internet** | — | ✅ Wajib saat setup | Untuk mengunduh Python/dependency. Setelah terpasang, aplikasi jalan offline |
+| **Git** | 2.30+ | ✅ Wajib (untuk clone) | https://git-scm.com/downloads — alternatif: unduh ZIP repo dari GitHub |
 | **Google Chrome** | versi terbaru | Disarankan | Dibuka otomatis oleh `start.bat`; browser lain tetap jalan |
 | **Node.js** | 18 / 20 / 22 | ⬜ Opsional | Hanya untuk *rebuild* Tailwind CSS. Tanpa Node pun tampilan tetap benar |
-| **uv** | terbaru | ⬜ Opsional | Membuat venv jauh lebih cepat: `pip install uv` |
+| **uv** | terbaru | ⬜ Opsional | Mempercepat pembuatan venv & bisa mengunduh Python sendiri |
 | **MySQL/PostgreSQL** | — | ⬜ Opsional | Hanya jika tidak memakai SQLite (lihat bagian 8) |
 
-> **Penting saat instalasi Python di Windows:** centang **“Add python.exe to PATH”**.
-> Tanpa itu perintah `python` tidak dikenali di Command Prompt.
+> **Soal Python: apakah PC baru harus sudah punya Python?**
+> Tidak harus. `setup.bat` mencoba berurutan:
+> 1. **Python 3.11+ yang sudah ada** di PC → langsung dipakai;
+> 2. **uv** (bila ada) → `uv venv --python 3.11` mengunduh Python 3.11 sendiri (±21 MB, tanpa hak admin);
+> 3. **Pasang uv otomatis** → lewat `winget`, lalu skrip resmi `astral.sh` (PowerShell), lalu unduh arsip dari GitHub Releases.
+>
+> Bila ketiganya gagal (mis. tanpa internet), barulah script meminta Anda memasang Python manual dari
+> https://www.python.org/downloads/ — **centang “Add python.exe to PATH”** saat instalasi.
 
 ---
 
@@ -48,18 +55,26 @@ Bila ingin mematikan semua service: **`stop.bat`**.
 
 ## 3. Cara Manual (bila ingin kendali penuh)
 
+> Cara ini mengasumsikan Python 3.11+ sudah terpasang. Bila belum punya Python sama sekali,
+> cara termudah: pasang `uv` (https://docs.astral.sh/uv/) lalu pakai baris `uv venv` di bawah —
+> uv akan mengunduh Python 3.11 sendiri tanpa perlu instalasi manual.
+
 ### Windows (Command Prompt / PowerShell)
 
 ```bat
 cd /d "D:\path\ke\home_library_app"
 
-:: 3.1 Virtual environment
+:: 3.1 Virtual environment (pilih salah satu)
 python -m venv .venv
+:: atau, bila memakai uv (Python diunduh otomatis bila belum ada):
+:: uv venv --python 3.11 .venv
+
 .venv\Scripts\activate
 
 :: 3.2 Dependency
 python -m pip install --upgrade pip
 pip install -r requirements.txt
+:: atau: uv pip install --python .venv\Scripts\python.exe -r requirements.txt
 
 :: 3.3 File .env (SECRET_KEY acak otomatis)
 python scripts\init_env.py
@@ -441,10 +456,10 @@ netstat -ano | findstr :8000
 
 ## 12. Checklist PC Baru
 
-- [ ] Python 3.11/3.12 terpasang & masuk PATH
-- [ ] `git --version` berjalan
+- [ ] Koneksi internet tersedia (dibutuhkan saat setup)
+- [ ] `git --version` berjalan — atau unduh ZIP repo dari GitHub
 - [ ] Repository berhasil di-`clone`
-- [ ] `setup.bat` selesai tanpa error
+- [ ] `setup.bat` selesai tanpa error (Python **tidak** perlu dipasang dulu — script menyiapkannya)
 - [ ] `.env` ada (berisi `SECRET_KEY` acak)
 - [ ] `python manage.py migrate` sukses
 - [ ] (opsional) `seed_data` & `createsuperuser` dijalankan
