@@ -168,6 +168,29 @@ Delapan permintaan perbaikan sekaligus:
    untuk stiker yang sebagian sudah terpakai, serta `@page A4 margin 8 mm` saat dicetak.
    Menu **Cetak Label** ditambahkan di navbar (desktop & mobile).
 
+### Revisi 8 (v1.8.0) — Pilihan ukuran label cetak
+
+1. **Ukuran label bisa dipilih**: **2 × 3 cm** (default), **3 × 4 cm**, dan
+   **4 × 5 cm**, masing-masing dengan orientasi **mendatar** (diputar 90°) atau
+   **tegak**. Dipilih dari halaman **Cetak Label** maupun langsung di bilah atas
+   lembar label (daftar buku yang sudah dipilih ikut terbawa).
+   Parameter URL: `?ukuran=2x3|3x4|4x5&orientasi=mendatar|tegak`; nilai tak
+   dikenal otomatis kembali ke default. Daftar ukuran terpusat di
+   `LabelPrintView.UKURAN_LABEL` (mudah ditambah).
+2. **Skala huruf mengikuti ukuran** (1× / 1,25× / 1,5×) supaya teks label besar
+   tetap terbaca dan label kecil tetap rapi; lebar grid A4 otomatis menyesuaikan
+   jumlah label per baris.
+3. **Bug locale ditemukan & diperbaiki**: karena `LANGUAGE_CODE='id'`, Django
+   mencetak skala desimal sebagai `1,25` sehingga CSS `calc(11pt * 1,25)` tidak
+   valid dan skala huruf diam-diam gagal. Nilai kini dikirim netral-locale
+   (`1.25`) dan ada pemeriksa khusus di verifikasi v8.
+4. **Perbaikan berkas uji yang merusak data**: `verify_perbaikan_v3.py` menulis
+   identitas aplikasi untuk pengujian tetapi payload pemulihannya tidak memuat
+   dua field baru (`developer_name`, `repo_url`) sehingga POST ditolak dan nilai
+   uji tertinggal di basis data. Kini seluruh field direkam & dipulihkan apa
+   adanya (ditambah pemeriksaan “data pengguna utuh”). Identitas aplikasi yang
+   sempat tertimpa sudah dipulihkan dari jejak `ActivityLog`.
+
 ### Revisi 7 (v1.7.0) — Logika warna font terpusat & perbaikan mode gelap
 
 1. **Satu tempat untuk dua mode.** Warna teks tidak lagi ditulis per elemen

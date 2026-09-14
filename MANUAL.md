@@ -296,26 +296,38 @@ Genre & Lokasi Rak dikelola dari menu **Pengaturan** (dinamis, tersimpan di data
 
 ---
 
-## 7c. Cetak Label Buku (2 × 3 cm)
+## 7c. Cetak Label Buku (2 × 3 / 3 × 4 / 4 × 5 cm)
 
 Menu **Cetak Label** di navbar (atau buka `/label/`).
 
 1. Pilih buku: gunakan pencarian/filter (genre, rak, atau “belum punya rak”).
 2. Centang buku yang ingin diberi label — atau klik **Cetak semua hasil filter**.
-3. Tentukan **orientasi label** dan (opsional) **lompati N label** bila lembar stiker
-   Anda sebagian sudah terpakai.
+3. Tentukan **ukuran label** dan **orientasi**, serta (opsional) **lompati N label**
+   bila lembar stiker Anda sebagian sudah terpakai.
 4. Klik **Cetak label terpilih** → halaman lembar label terbuka → klik
    **Cetak / Simpan PDF** (Ctrl+P).
 
 | Pengaturan | Nilai |
 | :--- | :--- |
-| Ukuran label | **3 × 2 cm** (mendatar, default) atau **2 × 3 cm** (tegak) |
+| Ukuran label | **2 × 3 cm** (default), **3 × 4 cm**, atau **4 × 5 cm** |
+| Orientasi | **Mendatar** (diputar 90°, lebar–tinggi bertukar) atau **Tegak** |
+| Skala huruf | Ikut membesar mengikuti ukuran label (2×3 → 1×, 3×4 → 1,25×, 4×5 → 1,5×) agar tetap terbaca |
 | Isi label | Lokasi rak (menonjol) + kode rak, judul, penulis, jenis buku, nama pemilik |
 | Kertas | A4, margin cetak 8 mm (`@page`) |
 | Baris atas label | Kode rak (atau nama rak bila kode kosong); buku **tanpa rak** diberi label merah “TANPA RAK” |
 
+Ukuran bisa diganti **langsung di halaman lembar label** (dua menu pilihan di bilah
+atas) tanpa kehilangan buku yang sudah dipilih — daftar buku ikut terbawa.
+
+Tautan langsung juga bisa dipakai, contoh: `/label/cetak/?ids=12,13&ukuran=4x5&orientasi=tegak`.
+Nilai `ukuran` yang tidak dikenal akan otomatis kembali ke **2 × 3 cm**.
+
 > Nama pemilik pada label diatur di **Pengaturan → Identitas Aplikasi → Nama Pemilik
 > (pada label cetak)**. Bila dikosongkan, label menampilkan nomor ID buku.
+>
+> Cara mengubah ukuran: pilih opsi di halaman **Cetak Label** (sebelum mencetak)
+> atau di bilah atas halaman lembar label. Daftar ukuran tersedia di
+> `library/views.py` → `LabelPrintView.UKURAN_LABEL` bila ingin menambah ukuran lain.
 
 ---
 
