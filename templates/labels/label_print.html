@@ -6,20 +6,22 @@
     <title>Cetak Label Buku — {{ app_config.app_name|default:"Perpustakaan" }}</title>
     <style>
         /* ══════════════════════════════════════════════════════════════════
-           Label buku — UKURAN TETAP
-           mendatar : 3 cm (lebar) × 2 cm (tinggi)   [default]
-           tegak    : 2 cm (lebar) × 3 cm (tinggi)
+           Label buku — UKURAN DAPAT DIPILIH
+             2 × 3 cm  (default)   ·  3 × 4 cm  ·  4 × 5 cm
+           Orientasi: mendatar (diputar 90°) atau tegak.
+           Ukuran huruf ikut membesar mengikuti ukuran label (--skala),
+           sehingga label besar tetap terbaca dan label kecil tetap rapi.
            Cetak: A4, margin 8 mm.
            ══════════════════════════════════════════════════════════════════ */
         :root {
-            --lebar-label: 3cm;
-            --tinggi-label: 2cm;
+            --lebar-label: {{ lebar_cm }}cm;
+            --tinggi-label: {{ tinggi_cm }}cm;
+            --skala: {{ skala }};
             --jarak: 2mm;
             --garis: #9aa0ae;
             --tinta: #111827;
             --tinta-lembut: #4b5563;
         }
-        .tegak { --lebar-label: 2cm; --tinggi-label: 3cm; }
 
         * { box-sizing: border-box; }
 
@@ -38,11 +40,12 @@
             gap: 10px; align-items: center; justify-content: space-between;
             box-shadow: 0 1px 3px rgba(0,0,0,.12); font-size: 13px;
         }
-        .toolbar a, .toolbar button {
+        .toolbar a, .toolbar button, .toolbar select {
             font: inherit; text-decoration: none; cursor: pointer;
             padding: 7px 12px; border-radius: 7px; border: 1px solid #d1d5db;
             background: #fff; color: #374151;
         }
+        .toolbar label { display: flex; align-items: center; gap: 6px; color: #4b5563; }
         .toolbar button.utama { background: #6d28d9; border-color: #6d28d9; color: #fff; font-weight: 600; }
         .toolbar .info { color: #4b5563; }
         .toolbar .info b { color: #111827; }
@@ -63,7 +66,7 @@
             width: var(--lebar-label);
             height: var(--tinggi-label);
             border: 1px dashed var(--garis);
-            padding: 1.4mm 1.6mm;
+            padding: calc(1.4mm * var(--skala)) calc(1.6mm * var(--skala));
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -74,29 +77,32 @@
         }
         .label .atas { display: flex; align-items: baseline; gap: 1mm; }
         .label .rak {
-            font-size: 11pt; font-weight: 700; line-height: 1; letter-spacing: .2px;
+            font-size: calc(11pt * var(--skala)); font-weight: 700; line-height: 1;
+            letter-spacing: .2px;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .label .nama-rak {
-            font-size: 5.2pt; color: var(--tinta-lembut); line-height: 1.1;
+            font-size: calc(5.2pt * var(--skala)); color: var(--tinta-lembut); line-height: 1.1;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .label .judul {
-            font-size: 6.2pt; font-weight: 600; line-height: 1.15; margin-top: .6mm;
+            font-size: calc(6.2pt * var(--skala)); font-weight: 600; line-height: 1.15;
+            margin-top: calc(.6mm * var(--skala));
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
             overflow: hidden;
         }
         .label .penulis {
-            font-size: 5.2pt; color: var(--tinta-lembut); line-height: 1.1;
+            font-size: calc(5.2pt * var(--skala)); color: var(--tinta-lembut); line-height: 1.1;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .label .kaki {
             display: flex; justify-content: space-between; align-items: center;
-            font-size: 4.6pt; color: #6b7280; gap: 1mm;
+            font-size: calc(4.6pt * var(--skala)); color: #6b7280; gap: 1mm;
         }
         .label .pemilik { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .label .jenis {
-            font-size: 4.6pt; font-weight: 700; text-transform: uppercase; letter-spacing: .3px;
+            font-size: calc(4.6pt * var(--skala)); font-weight: 700; text-transform: uppercase;
+            letter-spacing: .3px;
             white-space: nowrap;
         }
         .label.tanpa-rak { border-color: #dc2626; }
@@ -120,20 +126,36 @@
         }
     </style>
 </head>
-<body class="{{ orientasi }}">
+<body>
 
 <div class="toolbar">
     <div class="info">
         <b>{{ books|length }}</b> label siap dicetak ·
-        ukuran <b>{% if orientasi == 'tegak' %}2 × 3 cm (tegak){% else %}3 × 2 cm (mendatar){% endif %}</b>
+        ukuran <b>{{ label_ukuran }}</b>
     </div>
-    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <a href="?{{ query_tanpa_orientasi }}{% if query_tanpa_orientasi %}&{% endif %}orientasi={% if orientasi == 'tegak' %}mendatar{% else %}tegak{% endif %}">
-            {% if orientasi == 'tegak' %}Ubah ke mendatar (3×2){% else %}Ubah ke tegak (2×3){% endif %}
-        </a>
+    <form method="get" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        {# bawa serta filter/pilihan buku yang sedang aktif #}
+        {% for p in param_lain %}
+        <input type="hidden" name="{{ p.nama }}" value="{{ p.nilai }}">
+        {% endfor %}
+        <label style="display:flex; align-items:center; gap:6px;">
+            Ukuran
+            <select name="ukuran" onchange="this.form.submit()">
+                {% for o in opsi_ukuran %}
+                <option value="{{ o.kode }}"{% if o.kode == ukuran %} selected{% endif %}>{{ o.label }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label style="display:flex; align-items:center; gap:6px;">
+            Orientasi
+            <select name="orientasi" onchange="this.form.submit()">
+                <option value="mendatar"{% if orientasi == 'mendatar' %} selected{% endif %}>Mendatar (diputar)</option>
+                <option value="tegak"{% if orientasi == 'tegak' %} selected{% endif %}>Tegak</option>
+            </select>
+        </label>
         <a href="{% url 'label-select' %}">← Pilih buku lain</a>
-        <button class="utama" onclick="window.print()">Cetak / Simpan PDF</button>
-    </div>
+        <button class="utama" type="button" onclick="window.print()">Cetak / Simpan PDF</button>
+    </form>
 </div>
 
 {% if books %}

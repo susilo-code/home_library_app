@@ -670,12 +670,25 @@ class LabelSelectView(LoginRequiredMixin, ListView):
 
 class LabelPrintView(LoginRequiredMixin, TemplateView):
     """
-    Lembar label siap cetak: tiap label 3 × 2 cm (mendatar) atau 2 × 3 cm (tegak).
+    Lembar label siap cetak.
+
+    Ukuran label bisa dipilih (lebar × tinggi): **2 × 3 cm** (default),
+    **3 × 4 cm**, atau **4 × 5 cm**; masing-masing bisa **mendatar** (diputar
+    90° sehingga lebar/tinggi bertukar) atau **tegak**. Ukuran huruf ikut
+    membesar mengikuti ukuran label (`skala`) supaya tetap terbaca.
 
     Isi label: lokasi rak (menonjol), judul, penulis, dan nama pemilik (opsional).
     Parameter: ?ids=1,2,3  atau  ?semua=1&<filter yang sama dengan LabelSelectView>
     """
     template_name = 'labels/label_print.html'
+
+    # kode: (sisi pendek cm, sisi panjang cm, skala huruf)
+    UKURAN_LABEL = {
+        '2x3': (2, 3, 1.0),
+        '3x4': (3, 4, 1.25),
+        '4x5': (4, 5, 1.5),
+    }
+    UKURAN_DEFAULT = '2x3'
 
     def get_queryset(self):
         p = self.request.GET
@@ -700,13 +713,46 @@ class LabelPrintView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['books'] = self.get_queryset()
-        # orientasi: 'mendatar' (3×2 cm, default) atau 'tegak' (2×3 cm)
-        context['orientasi'] = 'tegak' if self.request.GET.get('orientasi') == 'tegak' else 'mendatar'
-        context['mulai_dari'] = self.request.GET.get('mulai', '')     # lompati N label pertama
-        # Query string tanpa 'orientasi' — untuk tombol ganti orientasi
-        params = self.request.GET.copy()
-        params.pop('orientasi', None)
-        context['query_tanpa_orientasi'] = params.urlencode()
+        p = self.request.GET
+
+        # ── Ukuran label: pilihan 2×3 / 3×4 / 4×5 cm (kode tak dikenal -> default) ──
+        kode = p.get('ukuran', self.UKURAN_DEFAULT)
+        if kode not in self.UKURAN_LABEL:
+            kode = self.UKURAN_DEFAULT
+        sisi_pendek, sisi_panjang, skala = self.UKURAN_LABEL[kode]
+
+        # ── Orientasi: mendatar = lebar/tinggi bertukar (diputar 90°) ──
+        orientasi = 'tegak' if p.get('orientasi') == 'tegak' else 'mendatar'
+        lebar, tinggi = sisi_pendek, sisi_panjang
+        if orientasi == 'mendatar':
+            lebar, tinggi = tinggi, lebar
+
+        context.update({
+            'ukuran': kode,
+            'orientasi': orientasi,
+            'lebar_cm': lebar,
+            'tinggi_cm': tinggi,
+            # PENTING: skala dikirim sebagai teks netral-locale (titik desimal).
+            # Bila dibiarkan sebagai float, LANGUAGE_CODE='id' membuat Django
+            # mencetak "1,25" sehingga CSS `calc(11pt * 1,25)` jadi tidak valid
+            # dan skala huruf diam-diam tidak diterapkan.
+            'skala': f"{skala:g}",
+            'label_ukuran': f"{lebar} × {tinggi} cm ({orientasi})",
+            'opsi_ukuran': [
+                {'kode': k, 'label': f"{min(a, b)} × {max(a, b)} cm"}
+                for k, (a, b, _) in self.UKURAN_LABEL.items()
+            ],
+            'mulai_dari': p.get('mulai', ''),      # lompati N label pertama
+        })
+
+        # Parameter selain ukuran/orientasi -> dipakai ulang oleh pemilih di toolbar
+        params = p.copy()
+        for kunci in ('ukuran', 'orientasi'):
+            params.pop(kunci, None)
+        context['param_lain'] = [
+            {'nama': kunci, 'nilai': nilai}
+            for kunci, daftar in params.lists() for nilai in daftar
+        ]
         return context
 
 

@@ -52,13 +52,24 @@ print('1. JUDUL APLIKASI DINAMIS (bisa disetting)')
 print('═' * 78)
 cfg = SiteConfig.get_solo()
 cek('Model SiteConfig ada & berisi nilai awal', bool(cfg.app_name), cfg.app_name)
-judul_asli, singkat_asli = cfg.app_name, cfg.app_short_name
+# Rekam SEMUA field identitas di awal supaya bisa dipulihkan apa adanya.
+# (Sebelumnya hanya app_name/app_short_name yang direkam, dan payload
+#  pemulihannya memakai nilai yang sudah tercemar oleh uji -> data pengguna
+#  tertimpa nama uji.)
+FIELD_IDENTITAS = ['app_name', 'app_short_name', 'tagline', 'label_owner',
+                   'developer_name', 'repo_url']
+identitas_asli = {f: getattr(cfg, f) for f in FIELD_IDENTITAS}
+judul_asli, singkat_asli = identitas_asli['app_name'], identitas_asli['app_short_name']
 
 r = c.post(reverse('app-identity'), {
     'app_name': 'Perpustakaan Keluarga Uji',
     'app_short_name': 'Perpus Uji',
     'tagline': 'Tagline Uji Coba',
     'label_owner': 'Keluarga Uji',
+    # v1.6 menambah dua field identitas pengembang; keduanya wajib dikirim
+    # (jika tidak, form dianggap tidak lengkap dan POST tidak diterima).
+    'developer_name': 'susilo',
+    'repo_url': 'https://github.com/susilo-code/home_library_app',
 })
 cek('POST ubah identitas diterima (redirect)', r.status_code == 302)
 cfg.refresh_from_db()
@@ -76,13 +87,13 @@ cek('Tagline tampil di halaman login', 'Tagline Uji Coba' in html_login)
 cek('Nama pemilik tampil di halaman Pengaturan',
     'Keluarga Uji' in c.get(reverse('settings')).content.decode())
 
-# kembalikan judul semula
-c.post(reverse('app-identity'), {
-    'app_name': judul_asli, 'app_short_name': singkat_asli,
-    'tagline': cfg.tagline, 'label_owner': cfg.label_owner,
-})
+# kembalikan SELURUH identitas seperti semula (semua field wajib dikirim)
+c.post(reverse('app-identity'), identitas_asli)
 cfg.refresh_from_db()
 cek('Judul bisa dikembalikan seperti semula', cfg.app_name == judul_asli, cfg.app_name)
+cek('Seluruh identitas pulih (tak ada data pengguna yang tertimpa)',
+    all(getattr(cfg, f) == identitas_asli[f] for f in FIELD_IDENTITAS),
+    ', '.join(f for f in FIELD_IDENTITAS if getattr(cfg, f) != identitas_asli[f]) or 'semua sama')
 
 print()
 print('═' * 78)
@@ -245,6 +256,8 @@ cek('Menampilkan keterangan ukuran label', '2 × 3 cm' in html_label)
 cek('Ada tombol cetak label terpilih', 'Cetak label terpilih' in html_label)
 cek('Ada opsi cetak semua hasil filter', 'Cetak semua hasil filter' in html_label)
 cek('Ada pilihan orientasi label', 'name="orientasi"' in html_label)
+cek('Ada pilihan UKURAN label (2×3/3×4/4×5)', 'name="ukuran"' in html_label
+    and '2 × 3 cm' in html_label and '3 × 4 cm' in html_label and '4 × 5 cm' in html_label)
 
 buku_rak = Book.objects.exclude(shelf=None).select_related('shelf').first()
 cek('Ada buku dengan rak untuk diuji', buku_rak is not None)
@@ -252,16 +265,17 @@ if buku_rak:
     r = c.get(reverse('label-print'), {'ids': str(buku_rak.pk)})
     lembar = r.content.decode()
     cek('Lembar label terbuka (HTTP 200)', r.status_code == 200)
-    cek('Ukuran label 3cm x 2cm tertulis di CSS',
+    cek('Ukuran default 3cm x 2cm (2×3 mendatar) tertulis di CSS',
         '--lebar-label: 3cm' in lembar and '--tinggi-label: 2cm' in lembar)
-    cek('Orientasi tegak 2cm x 3cm tersedia', '.tegak { --lebar-label: 2cm' in lembar)
+    # v1.8: ukuran kini dipilih lewat parameter, bukan kelas .tegak
+    r_tegak = c.get(reverse('label-print'), {'ids': str(buku_rak.pk), 'orientasi': 'tegak'})
+    cek("Orientasi 'tegak' menghasilkan 2cm x 3cm",
+        '--lebar-label: 2cm' in r_tegak.content.decode()
+        and '--tinggi-label: 3cm' in r_tegak.content.decode())
     cek('Label memuat LOKASI RAK', buku_rak.shelf.name in lembar)
     cek('Label memuat kode rak', (buku_rak.shelf.code or buku_rak.shelf.name) in lembar)
     cek('Label memuat judul buku', buku_rak.title[:25] in lembar)
     cek('Ada aturan cetak A4 (@page)', '@page { size: A4' in lembar)
-
-    r_tegak = c.get(reverse('label-print'), {'ids': str(buku_rak.pk), 'orientasi': 'tegak'})
-    cek("Orientasi 'tegak' aktif saat diminta", 'body class="tegak"' in r_tegak.content.decode())
 
 daftar = list(Book.objects.all()[:3])
 r = c.get(reverse('label-print'), {'ids': ','.join(str(b.pk) for b in daftar)})

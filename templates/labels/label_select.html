@@ -15,7 +15,8 @@
                 Cetak Label Buku
             </h1>
             <p class="mt-1 text-sm teks-kedua">
-                Label ukuran <strong>2 × 3 cm</strong> berisi lokasi rak — untuk ditempel pada buku.
+                Label ukuran <strong>2 × 3 cm</strong>, <strong>3 × 4 cm</strong>, atau
+                <strong>4 × 5 cm</strong> (bisa mendatar/tegak) berisi lokasi rak — untuk ditempel pada buku.
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
@@ -79,9 +80,16 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs teks-kedua"><b id="jumlah-terpilih">0</b> dipilih</span>
-                    <select name="orientasi" class="rounded-lg border border-purple-200 bg-white px-3 py-2 text-xs dark:border-purple-800 dark:bg-purple-950">
-                        <option value="mendatar">Label 3 × 2 cm (mendatar)</option>
-                        <option value="tegak">Label 2 × 3 cm (tegak)</option>
+                    <select name="ukuran" title="Ukuran label yang dicetak"
+                            class="rounded-lg border border-purple-200 bg-white px-3 py-2 text-xs dark:border-purple-800 dark:bg-purple-950">
+                        <option value="2x3">Label 2 × 3 cm</option>
+                        <option value="3x4">Label 3 × 4 cm</option>
+                        <option value="4x5">Label 4 × 5 cm</option>
+                    </select>
+                    <select name="orientasi" title="Arah label: mendatar diputar 90°"
+                            class="rounded-lg border border-purple-200 bg-white px-3 py-2 text-xs dark:border-purple-800 dark:bg-purple-950">
+                        <option value="mendatar">Mendatar (diputar)</option>
+                        <option value="tegak">Tegak</option>
                     </select>
                     <input type="number" name="mulai" min="0" placeholder="Lompati N"
                            title="Lewati N label pertama (untuk stiker yang sebagian sudah terpakai)"
