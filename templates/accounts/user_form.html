@@ -6,8 +6,8 @@
 <div class="mx-auto max-w-2xl animate-in">
     <div class="mb-6 flex items-center justify-between gap-4">
         <div>
-            <h1 class="font-display text-3xl font-bold text-purple-800 dark:text-purple-200">Ubah Pengguna</h1>
-            <p class="mt-1 text-purple-500 dark:text-purple-400">
+            <h1 class="font-display text-3xl font-bold teks-utama">Ubah Pengguna</h1>
+            <p class="mt-1 teks-kedua">
                 Akun <strong>{{ pengguna.username }}</strong> &middot; {{ jumlah_buku }} buku dicatat
             </p>
         </div>
@@ -25,8 +25,8 @@
                 <div class="flex items-center gap-4 rounded-xl border border-purple-100 bg-purple-50 p-4 dark:border-purple-800 dark:bg-purple-950/50">
                     <img src="{{ pengguna.profile.avatar_url }}" alt="{{ pengguna.username }}" class="h-14 w-14 rounded-full border-2 border-purple-200 dark:border-purple-700">
                     <div>
-                        <p class="font-medium text-purple-800 dark:text-purple-200">{{ pengguna.username }}</p>
-                        <p class="text-xs text-purple-500 dark:text-purple-400">
+                        <p class="font-medium teks-utama">{{ pengguna.username }}</p>
+                        <p class="text-xs teks-kedua">
                             Bergabung {{ pengguna.date_joined|date:"d F Y" }}
                             {% if pengguna.last_login %} &middot; login terakhir {{ pengguna.last_login|date:"d M Y H:i" }}{% endif %}
                         </p>
@@ -37,44 +37,44 @@
                     <div>
                         {{ form.first_name.label_tag }}
                         {{ form.first_name }}
-                        {% if form.first_name.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.first_name.errors.0 }}</p>{% endif %}
+                        {% if form.first_name.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.first_name.errors.0 }}</p>{% endif %}
                     </div>
                     <div>
                         {{ form.last_name.label_tag }}
                         {{ form.last_name }}
-                        {% if form.last_name.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.last_name.errors.0 }}</p>{% endif %}
+                        {% if form.last_name.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.last_name.errors.0 }}</p>{% endif %}
                     </div>
                     <div class="sm:col-span-2">
                         {{ form.email.label_tag }}
                         {{ form.email }}
-                        {% if form.email.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.email.errors.0 }}</p>{% endif %}
+                        {% if form.email.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.email.errors.0 }}</p>{% endif %}
                     </div>
                 </div>
 
                 <div class="border-t border-purple-100 pt-5 dark:border-purple-800">
                     {{ form.password_baru.label_tag }}
                     {{ form.password_baru }}
-                    <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.password_baru.help_text }}</p>
-                    {% if form.password_baru.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.password_baru.errors.0 }}</p>{% endif %}
+                    <p class="mt-1 text-xs teks-samar">{{ form.password_baru.help_text }}</p>
+                    {% if form.password_baru.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.password_baru.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div class="space-y-3 border-t border-purple-100 pt-5 dark:border-purple-800">
                     <label class="flex items-start gap-3">
                         {{ form.is_active }}
-                        <span class="text-sm text-purple-700 dark:text-purple-300">
+                        <span class="text-sm teks-utama">
                             {{ form.is_active.label }}
-                            <span class="block text-xs text-purple-400 dark:text-purple-500">Hilangkan centang untuk menonaktifkan tanpa menghapus datanya.</span>
+                            <span class="block text-xs teks-samar">Hilangkan centang untuk menonaktifkan tanpa menghapus datanya.</span>
                         </span>
                     </label>
                     <label class="flex items-start gap-3">
                         {{ form.is_staff }}
-                        <span class="text-sm text-purple-700 dark:text-purple-300">
+                        <span class="text-sm teks-utama">
                             {{ form.is_staff.label }}
-                            <span class="block text-xs text-purple-400 dark:text-purple-500">Staff dapat mengelola pengguna, genre, dan rak.</span>
+                            <span class="block text-xs teks-samar">Staff dapat mengelola pengguna, genre, dan rak.</span>
                         </span>
                     </label>
                     {% if diri_sendiri %}
-                    <p class="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-700 dark:border-amber-700/40 dark:bg-amber-900/20 dark:text-amber-300">
+                    <p class="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs teks-peringatan dark:border-amber-700/40 dark:bg-amber-900/20">
                         Ini akun Anda sendiri — status aktif &amp; akses staff tidak bisa dicabut dari sini.
                     </p>
                     {% endif %}

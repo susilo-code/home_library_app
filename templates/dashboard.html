@@ -15,8 +15,8 @@
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="font-display text-3xl font-bold text-purple-800 dark:text-purple-200">Dashboard</h1>
-            <p class="text-purple-500 dark:text-purple-400 mt-1">Selamat datang, <strong>{{ user.username }}</strong>! Berikut ringkasan perpustakaan Anda.</p>
+            <h1 class="font-display text-3xl font-bold teks-utama">Dashboard</h1>
+            <p class="teks-kedua mt-1">Selamat datang, <strong>{{ user.username }}</strong>! Berikut ringkasan perpustakaan Anda.</p>
         </div>
         <a href="{% url 'book-create' %}" class="btn-primary w-full sm:w-auto">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -26,10 +26,10 @@
 
     <!-- KPI Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="stat-card bg-gradient-to-br from-purple-500 to-purple-700 text-white shadow-lg">
+        <div class="stat-card bg-gradient-to-br from-purple-700 to-purple-900 text-white shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-purple-100 text-sm font-medium">Total Buku</p>
+                    <p class="text-sm font-medium text-white">Total Buku</p>
                     <p class="text-4xl font-bold mt-1">{{ total_books }}</p>
                 </div>
                 <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
@@ -38,10 +38,10 @@
             </div>
         </div>
 
-        <div class="stat-card bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-lg">
+        <div class="stat-card bg-gradient-to-br from-indigo-700 to-indigo-900 text-white shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-indigo-100 text-sm font-medium">Total Genre</p>
+                    <p class="text-sm font-medium text-white">Total Genre</p>
                     <p class="text-4xl font-bold mt-1">{{ total_genres }}</p>
                 </div>
                 <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
@@ -50,10 +50,10 @@
             </div>
         </div>
 
-        <div class="stat-card bg-gradient-to-br from-pink-500 to-pink-700 text-white shadow-lg">
+        <div class="stat-card bg-gradient-to-br from-pink-700 to-pink-900 text-white shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-pink-100 text-sm font-medium">User Aktif</p>
+                    <p class="text-sm font-medium text-white">User Aktif</p>
                     <p class="text-4xl font-bold mt-1">{{ total_users }}</p>
                 </div>
                 <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
@@ -62,10 +62,10 @@
             </div>
         </div>
 
-        <div class="stat-card bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-lg">
+        <div class="stat-card bg-gradient-to-br from-emerald-700 to-emerald-900 text-white shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-emerald-100 text-sm font-medium">Belum Selesai Dibaca</p>
+                    <p class="text-sm font-medium text-white">Belum Selesai Dibaca</p>
                     <p class="text-4xl font-bold mt-1">{{ belum_selesai }}</p>
                 </div>
                 <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
@@ -80,24 +80,24 @@
         <div class="card p-5">
             <div class="flex items-center justify-between gap-4">
                 <div>
-                    <p class="text-sm font-medium text-purple-500 dark:text-purple-400">Jenis Buku — Fiksi</p>
-                    <p class="mt-1 font-display text-3xl font-bold" style="color: #8A4FFF">{{ total_fiksi }}</p>
-                    <p class="text-xs text-purple-400 dark:text-purple-500">buku</p>
+                    <p class="text-sm font-medium teks-kedua">Jenis Buku — Fiksi</p>
+                    <p class="mt-1 font-display text-3xl font-bold teks-aksen">{{ total_fiksi }}</p>
+                    <p class="text-xs teks-samar">buku</p>
                 </div>
                 <div class="flex h-14 w-14 items-center justify-center rounded-2xl" style="background-color: #8A4FFF20">
-                    <svg class="h-7 w-7" style="color: #8A4FFF" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    <svg class="h-7 w-7 teks-aksen" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                 </div>
             </div>
         </div>
         <div class="card p-5">
             <div class="flex items-center justify-between gap-4">
                 <div>
-                    <p class="text-sm font-medium text-purple-500 dark:text-purple-400">Jenis Buku — Non-Fiksi</p>
-                    <p class="mt-1 font-display text-3xl font-bold" style="color: #06B6D4">{{ total_non_fiksi }}</p>
-                    <p class="text-xs text-purple-400 dark:text-purple-500">buku</p>
+                    <p class="text-sm font-medium teks-kedua">Jenis Buku — Non-Fiksi</p>
+                    <p class="mt-1 font-display text-3xl font-bold teks-aksen-dua">{{ total_non_fiksi }}</p>
+                    <p class="text-xs teks-samar">buku</p>
                 </div>
                 <div class="flex h-14 w-14 items-center justify-center rounded-2xl" style="background-color: #06B6D420">
-                    <svg class="h-7 w-7" style="color: #06B6D4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <svg class="h-7 w-7 teks-aksen-dua" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                 </div>
             </div>
         </div>
@@ -108,7 +108,7 @@
         <!-- Genre Distribution Chart -->
         <div class="card">
             <div class="card-header">
-                <h2 class="font-display text-lg font-semibold text-purple-800 dark:text-purple-200 flex items-center gap-2">
+                <h2 class="font-display text-lg font-semibold teks-utama flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/></svg>
                     Distribusi Buku per Genre
                 </h2>
@@ -118,7 +118,7 @@
                     <canvas id="genreChart"></canvas>
                 </div>
                 {% if not genre_labels|length %}
-                <div class="text-center py-12 text-purple-500 dark:text-purple-400">
+                <div class="text-center py-12 teks-kedua">
                     <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     <p>Belum ada data genre</p>
                 </div>
@@ -129,7 +129,7 @@
         <!-- Top 5 Genre Chart -->
         <div class="card">
             <div class="card-header">
-                <h2 class="font-display text-lg font-semibold text-purple-800 dark:text-purple-200 flex items-center gap-2">
+                <h2 class="font-display text-lg font-semibold teks-utama flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                     Top 5 Genre (jumlah buku terbanyak)
                 </h2>
@@ -139,7 +139,7 @@
                     <canvas id="topGenreChart"></canvas>
                 </div>
                 {% if not top_genre_labels|length %}
-                <div class="text-center py-12 text-purple-500 dark:text-purple-400">
+                <div class="text-center py-12 teks-kedua">
                     <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     <p>Belum ada data genre</p>
                 </div>
@@ -153,11 +153,11 @@
         <!-- Recent Activities -->
         <div class="card">
             <div class="card-header flex items-center justify-between">
-                <h2 class="font-display text-lg font-semibold text-purple-800 dark:text-purple-200 flex items-center gap-2">
+                <h2 class="font-display text-lg font-semibold teks-utama flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     Aktivitas Terbaru
                 </h2>
-                <a href="{% url 'book-list' %}" class="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200">Lihat semua</a>
+                <a href="{% url 'book-list' %}" class="text-sm teks-kedua hover:text-purple-800 dark:hover:text-purple-200">Lihat semua</a>
             </div>
             <div class="card-body p-0">
                 <div class="divide-y divide-purple-100 dark:divide-purple-800">
@@ -167,14 +167,14 @@
                             <img src="{{ activity.user.profile.avatar_url }}" alt="{{ activity.user.username }}" class="w-8 h-8 rounded-full">
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-purple-800 dark:text-purple-200">{{ activity.user.username }}</p>
-                            <p class="text-sm text-purple-600 dark:text-purple-400">{{ activity.detail }}</p>
-                            <p class="text-xs text-purple-400 dark:text-purple-500 mt-1">{{ activity.timestamp|date:"d M Y H:i" }}</p>
+                            <p class="text-sm font-medium teks-utama">{{ activity.user.username }}</p>
+                            <p class="text-sm teks-kedua">{{ activity.detail }}</p>
+                            <p class="text-xs teks-samar mt-1">{{ activity.timestamp|date:"d M Y H:i" }}</p>
                         </div>
                         <span class="badge-purple text-xs">{{ activity.action }}</span>
                     </div>
                     {% empty %}
-                    <div class="text-center py-12 text-purple-500 dark:text-purple-400">
+                    <div class="text-center py-12 teks-kedua">
                         <p>Belum ada aktivitas</p>
                     </div>
                     {% endfor %}
@@ -185,11 +185,11 @@
         <!-- Recent Books Added -->
         <div class="card">
             <div class="card-header flex items-center justify-between">
-                <h2 class="font-display text-lg font-semibold text-purple-800 dark:text-purple-200 flex items-center gap-2">
+                <h2 class="font-display text-lg font-semibold teks-utama flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                     Buku Terbaru Ditambahkan
                 </h2>
-                <a href="{% url 'book-list' %}" class="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200">Lihat semua</a>
+                <a href="{% url 'book-list' %}" class="text-sm teks-kedua hover:text-purple-800 dark:hover:text-purple-200">Lihat semua</a>
             </div>
             <div class="card-body p-0">
                 <div class="divide-y divide-purple-100 dark:divide-purple-800">
@@ -197,22 +197,22 @@
                     <a href="{{ book.get_absolute_url }}" class="block px-6 py-4 hover:bg-purple-50 dark:hover:bg-purple-950/50 transition-colors flex items-center gap-4">
                         <img src="{{ book.display_cover }}" alt="{{ book.title }}" class="w-14 h-20 object-cover rounded-lg shadow-sm border border-purple-100 dark:border-purple-800">
                         <div class="flex-1 min-w-0">
-                            <p class="font-medium text-purple-800 dark:text-purple-200 truncate">{{ book.title }}</p>
-                            <p class="text-sm text-purple-500 dark:text-purple-400 truncate">{{ book.author }}</p>
+                            <p class="font-medium teks-utama truncate">{{ book.title }}</p>
+                            <p class="text-sm teks-kedua truncate">{{ book.author }}</p>
                             <div class="flex items-center gap-2 mt-1">
                                 {% if book.genre %}
-                                <span class="badge" style="background-color: {{ book.genre.color_code }}20; color: {{ book.genre.color_code }};">{{ book.genre.name }}</span>
+                                <span class="badge-genre" style="--warna-genre: {{ book.genre.color_code }}">{{ book.genre.name }}</span>
                                 {% endif %}
                                 <span class="badge-{{ book.status|lower }}">{{ book.get_status_display }}</span>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-xs text-purple-400 dark:text-purple-500">{{ book.created_at|date:"d M Y" }}</p>
-                            <p class="text-xs text-purple-500 dark:text-purple-400">oleh {{ book.recorded_by.username }}</p>
+                            <p class="text-xs teks-samar">{{ book.created_at|date:"d M Y" }}</p>
+                            <p class="text-xs teks-kedua">oleh {{ book.recorded_by.username }}</p>
                         </div>
                     </a>
                     {% empty %}
-                    <div class="text-center py-12 text-purple-500 dark:text-purple-400">
+                    <div class="text-center py-12 teks-kedua">
                         <p>Belum ada buku</p>
                     </div>
                     {% endfor %}
@@ -228,6 +228,11 @@
 <script>
     const css = (nama) => getComputedStyle(document.documentElement).getPropertyValue(nama).trim();
 
+    // Wadah grafik pada lingkup skrip: diisi di bawah, dipakai lagi oleh
+    // listener `themechange` agar warna ikut berubah tanpa refresh.
+    let grafikDonut = null;
+    let grafikBatang = null;
+
     // ── Donut: Distribusi Buku per Genre — menampilkan PERSENTASE ──
     const genreLabels = {{ genre_labels|safe }};
     const genreCounts = {{ genre_counts|safe }};
@@ -235,7 +240,7 @@
     const genrePercents = {{ genre_percents|safe }};
 
     if (genreLabels.length > 0) {
-        new Chart(document.getElementById('genreChart'), {
+        grafikDonut = new Chart(document.getElementById('genreChart'), {
             type: 'doughnut',
             data: {
                 // Persentase ikut tampil pada keterangan (legend) di bawah grafik
@@ -258,14 +263,14 @@
                             usePointStyle: true,
                             pointStyle: 'circle',
                             font: { family: 'Inter', size: 12 },
-                            color: css('--color-text-secondary')
+                            color: () => css('--color-text-secondary')
                         }
                     },
                     tooltip: {
-                        backgroundColor: css('--color-bg-secondary'),
-                        titleColor: css('--color-text-primary'),
-                        bodyColor: css('--color-text-secondary'),
-                        borderColor: css('--color-border'),
+                        backgroundColor: () => css('--color-bg-secondary'),
+                        titleColor: () => css('--color-text-primary'),
+                        bodyColor: () => css('--color-text-secondary'),
+                        borderColor: () => css('--color-border'),
                         borderWidth: 1,
                         padding: 12,
                         callbacks: {
@@ -312,7 +317,7 @@
     const topGenreColors = {{ top_genre_colors|safe }};
 
     if (topGenreLabels.length > 0) {
-        new Chart(document.getElementById('topGenreChart'), {
+        grafikBatang = new Chart(document.getElementById('topGenreChart'), {
             type: 'bar',
             data: {
                 labels: topGenreLabels,
@@ -333,10 +338,10 @@
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: css('--color-bg-secondary'),
-                        titleColor: css('--color-text-primary'),
-                        bodyColor: css('--color-text-secondary'),
-                        borderColor: css('--color-border'),
+                        backgroundColor: () => css('--color-bg-secondary'),
+                        titleColor: () => css('--color-text-primary'),
+                        bodyColor: () => css('--color-text-secondary'),
+                        borderColor: () => css('--color-border'),
                         borderWidth: 1,
                         padding: 12,
                         callbacks: {
@@ -347,17 +352,17 @@
                 scales: {
                     x: {
                         beginAtZero: true,
-                        grid: { color: css('--color-border') + '40' },
+                        grid: { color: () => css('--color-border') + '40' },
                         ticks: {
                             precision: 0,
-                            color: css('--color-text-muted'),
+                            color: () => css('--color-text-muted'),
                             font: { family: 'Inter', size: 11 }
                         }
                     },
                     y: {
                         grid: { display: false },
                         ticks: {
-                            color: css('--color-text-secondary'),
+                            color: () => css('--color-text-secondary'),
                             font: { family: 'Inter', size: 12 }
                         }
                     }
@@ -381,5 +386,13 @@
             }]
         });
     }
+
+    // ── Daftarkan grafik & gambar ulang saat tema berganti ──
+    // Tanpa ini, warna teks grafik tetap memakai tema lama sampai halaman
+    // di-refresh (keluhan: kontras grafik lemah sesudah toggle).
+    window.__grafik = [grafikDonut, grafikBatang].filter(Boolean);
+    document.addEventListener('themechange', () => {
+        window.__grafik.forEach((g) => g.update('none'));
+    });
 </script>
 {% endblock %}

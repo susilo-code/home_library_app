@@ -7,21 +7,21 @@
     <div class="card">
         <div class="card-body text-center py-12">
             <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                <svg class="w-10 h-10 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <svg class="w-10 h-10 teks-bahaya" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
             </div>
             
-            <h1 class="font-display text-2xl font-bold text-purple-800 dark:text-purple-200 mb-2">Hapus Buku</h1>
-            <p class="text-purple-500 dark:text-purple-400 mb-6">Apakah Anda yakin ingin menghapus buku ini?</p>
+            <h1 class="font-display text-2xl font-bold teks-utama mb-2">Hapus Buku</h1>
+            <p class="teks-kedua mb-6">Apakah Anda yakin ingin menghapus buku ini?</p>
             
             <div class="bg-purple-50 dark:bg-purple-950/50 rounded-lg p-4 mb-6 text-left border border-purple-100 dark:border-purple-800">
-                <p class="font-medium text-purple-800 dark:text-purple-200">{{ object.title }}</p>
-                <p class="text-purple-500 dark:text-purple-400 text-sm">{{ object.author }}</p>
+                <p class="font-medium teks-utama">{{ object.title }}</p>
+                <p class="teks-kedua text-sm">{{ object.author }}</p>
                 {% if object.genre %}
-                <span class="badge mt-2 inline-block" style="background-color: {{ object.genre.color_code }}20; color: {{ object.genre.color_code }};">{{ object.genre.name }}</span>
+                <span class="badge-genre mt-2 inline-block" style="--warna-genre: {{ object.genre.color_code }}">{{ object.genre.name }}</span>
                 {% endif %}
             </div>
             
-            <p class="text-sm text-purple-500 dark:text-purple-400 mb-8">Tindakan ini tidak dapat dibatalkan. Data buku akan dihapus permanen.</p>
+            <p class="text-sm teks-kedua mb-8">Tindakan ini tidak dapat dibatalkan. Data buku akan dihapus permanen.</p>
             
             <form method="post" class="flex flex-col sm:flex-row gap-3 justify-center">
                 {% csrf_token %}

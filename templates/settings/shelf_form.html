@@ -6,10 +6,10 @@
 <div class="mx-auto max-w-xl animate-in">
     <div class="mb-6 flex items-center justify-between gap-4">
         <div>
-            <h1 class="font-display text-3xl font-bold text-purple-800 dark:text-purple-200">
+            <h1 class="font-display text-3xl font-bold teks-utama">
                 {% if object %}Edit Lokasi Rak{% else %}Tambah Lokasi Rak{% endif %}
             </h1>
-            <p class="mt-1 text-purple-500 dark:text-purple-400">Data master rak buku — tampil sebagai pilihan di form perekaman</p>
+            <p class="mt-1 teks-kedua">Data master rak buku — tampil sebagai pilihan di form perekaman</p>
         </div>
         <a href="{% url 'settings' %}#rak-buku" class="btn-secondary">
             <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
@@ -25,35 +25,35 @@
                 <div>
                     {{ form.name.label_tag }}
                     {{ form.name }}
-                    {% if form.name.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.name.errors.0 }}</p>{% endif %}
+                    {% if form.name.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.name.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div>
                     {{ form.code.label_tag }}
                     {{ form.code }}
-                    {% if form.code.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.code.errors.0 }}</p>{% endif %}
+                    {% if form.code.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.code.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div>
                     {{ form.description.label_tag }}
                     {{ form.description }}
-                    {% if form.description.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.description.errors.0 }}</p>{% endif %}
+                    {% if form.description.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.description.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                         {{ form.color_code.label_tag }}
                         {{ form.color_code }}
-                        {% if form.color_code.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.color_code.errors.0 }}</p>{% endif %}
+                        {% if form.color_code.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.color_code.errors.0 }}</p>{% endif %}
                     </div>
                     <div class="flex items-center gap-3 pt-6">
                         {{ form.is_active }}
-                        <label for="{{ form.is_active.id_for_label }}" class="text-sm font-medium text-purple-700 dark:text-purple-300">{{ form.is_active.label }}</label>
+                        <label for="{{ form.is_active.id_for_label }}" class="text-sm font-medium teks-utama">{{ form.is_active.label }}</label>
                     </div>
                 </div>
 
                 {% if object %}
-                <div class="rounded-lg border border-purple-100 bg-purple-50 p-3 text-sm text-purple-600 dark:border-purple-800 dark:bg-purple-950/50 dark:text-purple-300">
+                <div class="rounded-lg border border-purple-100 bg-purple-50 p-3 text-sm teks-utama dark:border-purple-800 dark:bg-purple-950/50">
                     Saat ini dipakai oleh <strong>{{ object.book_count }}</strong> buku.
                 </div>
                 {% endif %}

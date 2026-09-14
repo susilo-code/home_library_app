@@ -168,6 +168,41 @@ Delapan permintaan perbaikan sekaligus:
    untuk stiker yang sebagian sudah terpakai, serta `@page A4 margin 8 mm` saat dicetak.
    Menu **Cetak Label** ditambahkan di navbar (desktop & mobile).
 
+### Revisi 7 (v1.7.0) — Logika warna font terpusat & perbaikan mode gelap
+
+1. **Satu tempat untuk dua mode.** Warna teks tidak lagi ditulis per elemen
+   (`text-purple-800 dark:text-purple-200` dihapus dari seluruh template — 370+
+   penggantian). Semua warna kini berasal dari variabel di `static/css/input.css`:
+   `:root` untuk mode terang, `.dark` untuk mode gelap, dipakai lewat kelas
+   semantik `.teks-utama/.teks-kedua/.teks-samar/.teks-aksen/.teks-aksen-dua/
+   .teks-bahaya/.teks-sukses/.teks-peringatan`. Diperiksa otomatis: kedua blok
+   wajib punya set variabel yang sama (verifikasi v7, 62/62 lulus).
+2. **Bug toggle tema (keluhan: “kontras jadi lemah sesudah ganti toggle, pulih
+   setelah refresh”)** — akar masalah: warna grafik Chart.js dibaca **sekali**
+   saat inisialisasi, sehingga tetap memakai warna tema sebelumnya. Perbaikan:
+   semua opsi warna grafik menjadi *scriptable* (`() => css('--…')`), grafik
+   didaftarkan di `window.__grafik`, dan `base.html` mengirim event
+   `themechange` yang memicu penggambaran ulang. Diuji: mengklik tombol tema
+   tanpa refresh kini langsung mengubah warna grafik (uji toggle di audit).
+3. **Audit kontras terukur (WCAG) dua mode.** Alat baru
+   `scripts/dev/audit_kontras_browser.py` mengukur *computed style* di Chrome
+   untuk setiap elemen berteks (latar efektif diwarisi, alpha di-*blend*,
+   gradien dinilai per stop) pada 8 halaman × 2 mode, plus uji klik toggle.
+   Hasil: dari **266** elemen di bawah ambang → **0**.
+   Ditambah `scripts/dev/cek_css_lokal.py` (cakupan kelas CSS) dan
+   `scripts/dev/verify_perbaikan_v7.py` (struktur + hitung kontras variabel).
+4. **Label genre/rak berwarna bebas** kini memakai `.badge-genre` dengan
+   `color-mix()`: warna dari basis data hanya dikirim sebagai `--warna-genre`,
+   sehingga kontras terjamin untuk warna apa pun (sebelumnya teks putih di atas
+   warna terang tidak terbaca).
+5. **Tailwind CDN dihapus** dari `base.html` & `login.html`. Sebelumnya dua
+   sistem CSS berjalan bersamaan (CDN + `output.css`), membuat warna bisa
+   berbeda antar halaman dan bergantung pada setelan sistem operasi. Kini
+   `output.css` adalah satu-satunya sumber gaya.
+6. **Kartu KPI dashboard** digelapkan (`from-<warna>-700 to-<warna>-900`) dengan
+   label putih penuh, dan angka Fiksi/Non-Fiksi memakai kelas aksen (bukan warna
+   inline `#8A4FFF`/`#06B6D4`) agar terang-gelapnya konsisten.
+
 ### Revisi 6 (v1.6.0)
 
 1. **Menu “Tentang Aplikasi” + modal** — item keempat di top bar (ikon *info* dalam kotak

@@ -9,10 +9,10 @@
     <!-- Header + tombol aksi (selalu terlihat tanpa scroll) -->
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h1 class="font-display text-3xl font-bold text-purple-800 dark:text-purple-200">
+            <h1 class="font-display text-3xl font-bold teks-utama">
                 {% if object %}Edit Buku{% else %}Tambah Buku Baru{% endif %}
             </h1>
-            <p class="mt-1 text-purple-500 dark:text-purple-400">
+            <p class="mt-1 teks-kedua">
                 {% if object %}Perbarui informasi buku &ldquo;{{ object.title }}&rdquo;{% else %}Isi informasi utama, detail lain bisa dibuka bila diperlukan{% endif %}
             </p>
         </div>
@@ -31,7 +31,7 @@
 
             {# ── Peringatan duplikat dari server (tidak memblokir) ── #}
             {% if form.duplicate_warning %}
-            <div class="mb-6 flex items-start gap-3 rounded-r-lg border-l-4 border-amber-400 bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+            <div class="mb-6 flex items-start gap-3 rounded-r-lg border-l-4 border-amber-400 bg-amber-50 p-4 text-sm teks-peringatan dark:bg-amber-900/20">
                 <svg class="mt-0.5 h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                 <div>
                     <p class="font-semibold">Kemungkinan duplikat</p>
@@ -41,7 +41,7 @@
             {% endif %}
 
             {% if form.errors %}
-            <div class="mb-6 flex items-start gap-3 rounded-r-lg border-l-4 border-red-400 bg-red-50 p-4 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
+            <div class="mb-6 flex items-start gap-3 rounded-r-lg border-l-4 border-red-400 bg-red-50 p-4 text-sm teks-bahaya dark:bg-red-900/20">
                 <svg class="mt-0.5 h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <div>
                     <p class="font-semibold">Ada {{ form.errors|length }} isian yang perlu diperbaiki</p>
@@ -55,8 +55,8 @@
 
                 {# ══════════ INFORMASI UTAMA (selalu terlihat) ══════════ #}
                 <section>
-                    <h3 class="mb-4 flex items-center gap-2 font-display text-lg font-semibold text-purple-800 dark:text-purple-200">
-                        <svg class="h-5 w-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <h3 class="mb-4 flex items-center gap-2 font-display text-lg font-semibold teks-utama">
+                        <svg class="h-5 w-5 teks-kedua" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         Informasi Utama
                     </h3>
 
@@ -68,26 +68,26 @@
                             <div class="relative">
                                 {{ form.title }}
                                 <span id="ac-spinner" class="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2">
-                                    <svg class="h-5 w-5 animate-spin text-purple-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/></svg>
+                                    <svg class="h-5 w-5 animate-spin teks-samar" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/></svg>
                                 </span>
                             </div>
 
                             <!-- Dropdown saran judul mirip -->
                             <div id="ac-panel"
                                  class="absolute left-0 right-0 z-40 mt-1 hidden max-h-80 overflow-y-auto scrollbar-thin rounded-xl border border-purple-200 bg-white shadow-2xl dark:border-purple-800 dark:bg-purple-slate-900">
-                                <div id="ac-hint" class="border-b border-purple-100 px-4 py-2 text-xs text-purple-500 dark:border-purple-800 dark:text-purple-400"></div>
+                                <div id="ac-hint" class="border-b border-purple-100 px-4 py-2 text-xs teks-kedua dark:border-purple-800"></div>
                                 <ul id="ac-list" class="divide-y divide-purple-100 dark:divide-purple-800" role="listbox"></ul>
                             </div>
 
                             <!-- Peringatan duplikat langsung di sisi klien -->
                             <div id="ac-dup-warning"
-                                 class="mt-2 hidden items-start gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-700/50 dark:bg-amber-900/20 dark:text-amber-200">
+                                 class="mt-2 hidden items-start gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs teks-peringatan dark:border-amber-700/50 dark:bg-amber-900/20">
                                 <svg class="mt-0.5 h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                                 <span id="ac-dup-text"></span>
                             </div>
 
-                            {% if form.title.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.title.errors.0 }}</p>{% endif %}
-                            <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">
+                            {% if form.title.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.title.errors.0 }}</p>{% endif %}
+                            <p class="mt-1 text-xs teks-samar">
                                 Pencocokan judul mengabaikan huruf besar/kecil &amp; spasi ganda.
                             </p>
                         </div>
@@ -96,42 +96,42 @@
                         <div class="md:col-span-2">
                             {{ form.author.label_tag }}
                             {{ form.author }}
-                            {% if form.author.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.author.errors.0 }}</p>{% endif %}
+                            {% if form.author.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.author.errors.0 }}</p>{% endif %}
                         </div>
 
                         <!-- Jenis Buku (Fiksi / Non-Fiksi) -->
                         <div>
                             {{ form.book_type.label_tag }}
                             {{ form.book_type }}
-                            <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.book_type.help_text }}</p>
-                            {% if form.book_type.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.book_type.errors.0 }}</p>{% endif %}
+                            <p class="mt-1 text-xs teks-samar">{{ form.book_type.help_text }}</p>
+                            {% if form.book_type.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.book_type.errors.0 }}</p>{% endif %}
                         </div>
 
                         <!-- Status -->
                         <div>
                             {{ form.status.label_tag }}
                             {{ form.status }}
-                            {% if form.status.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.status.errors.0 }}</p>{% endif %}
+                            {% if form.status.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.status.errors.0 }}</p>{% endif %}
                         </div>
 
                         <!-- Genre / Kategori (dinamis) -->
                         <div>
                             <div class="mb-1.5 flex items-center justify-between">
-                                <label for="{{ form.genre.id_for_label }}" class="block text-sm font-medium text-purple-700 dark:text-purple-300">{{ form.genre.label }}</label>
-                                <button type="button" id="buka-genre-baru" class="text-xs font-semibold text-purple-600 hover:underline dark:text-purple-300">+ Tambah genre</button>
+                                <label for="{{ form.genre.id_for_label }}" class="block text-sm font-medium teks-utama">{{ form.genre.label }}</label>
+                                <button type="button" id="buka-genre-baru" class="text-xs font-semibold teks-utama hover:underline">+ Tambah genre</button>
                             </div>
                             {{ form.genre }}
-                            {% if form.genre.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.genre.errors.0 }}</p>{% endif %}
+                            {% if form.genre.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.genre.errors.0 }}</p>{% endif %}
                         </div>
 
                         <!-- Lokasi Rak (dinamis) -->
                         <div>
                             <div class="mb-1.5 flex items-center justify-between">
-                                <label for="{{ form.shelf.id_for_label }}" class="block text-sm font-medium text-purple-700 dark:text-purple-300">{{ form.shelf.label }}</label>
-                                <button type="button" id="buka-rak-baru" class="text-xs font-semibold text-purple-600 hover:underline dark:text-purple-300">+ Tambah rak</button>
+                                <label for="{{ form.shelf.id_for_label }}" class="block text-sm font-medium teks-utama">{{ form.shelf.label }}</label>
+                                <button type="button" id="buka-rak-baru" class="text-xs font-semibold teks-utama hover:underline">+ Tambah rak</button>
                             </div>
                             {{ form.shelf }}
-                            {% if form.shelf.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.shelf.errors.0 }}</p>{% endif %}
+                            {% if form.shelf.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.shelf.errors.0 }}</p>{% endif %}
                         </div>
                     </div>
                 </section>
@@ -140,19 +140,19 @@
                 <div class="rounded-xl border border-purple-100 p-4 dark:border-purple-800">
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <div>
-                            <p class="flex items-center gap-2 font-medium text-purple-800 dark:text-purple-200">
-                                <svg class="h-5 w-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                            <p class="flex items-center gap-2 font-medium teks-utama">
+                                <svg class="h-5 w-5 teks-kedua" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                                 Detail Buku
-                                <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal text-purple-600 dark:bg-purple-900 dark:text-purple-300">opsional</span>
+                                <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal teks-utama dark:bg-purple-900">opsional</span>
                             </p>
-                            <p id="ringkas-detail-info" class="mt-1 text-xs text-purple-400 dark:text-purple-500">
+                            <p id="ringkas-detail-info" class="mt-1 text-xs teks-samar">
                                 ISBN, tahun terbit, tahun beli, penerbit, jumlah halaman, rating
                             </p>
                         </div>
                         <button type="button" id="buka-detail" class="btn-secondary whitespace-nowrap">Isi Detail Buku</button>
                     </div>
                     {% if detail_error %}
-                    <p class="mt-2 flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
+                    <p class="mt-2 flex items-center gap-1.5 text-sm teks-bahaya">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
                         Ada isian detail yang perlu diperbaiki — klik "Isi Detail Buku".
                     </p>
@@ -162,31 +162,31 @@
                 {# ══════════ SAMPUL BUKU (terlipat) ══════════ #}
                 <details class="group rounded-xl border border-purple-100 dark:border-purple-800" {% if cover_error %}open{% endif %}>
                     <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-3.5 select-none">
-                        <span class="flex items-center gap-2 font-medium text-purple-800 dark:text-purple-200">
-                            <svg class="h-5 w-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span class="flex items-center gap-2 font-medium teks-utama">
+                            <svg class="h-5 w-5 teks-kedua" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             Sampul Buku
-                            <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal text-purple-600 dark:bg-purple-900 dark:text-purple-300">opsional</span>
+                            <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal teks-utama dark:bg-purple-900">opsional</span>
                         </span>
-                        <svg class="h-5 w-5 text-purple-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <svg class="h-5 w-5 teks-samar transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </summary>
                     <div class="grid grid-cols-1 gap-4 border-t border-purple-100 p-4 dark:border-purple-800 md:grid-cols-2">
                         <div>
                             {{ form.cover_image.label_tag }}
                             {{ form.cover_image }}
-                            {% if form.cover_image.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.cover_image.errors.0 }}</p>{% endif %}
-                            <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.cover_image.help_text }}</p>
+                            {% if form.cover_image.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.cover_image.errors.0 }}</p>{% endif %}
+                            <p class="mt-1 text-xs teks-samar">{{ form.cover_image.help_text }}</p>
                             <div id="cover-preview" class="mt-3 hidden">
-                                <p class="mb-1 text-xs text-purple-500 dark:text-purple-400">Pratinjau:</p>
+                                <p class="mb-1 text-xs teks-kedua">Pratinjau:</p>
                                 <img id="cover-preview-img" src="" alt="Pratinjau sampul" class="h-44 w-32 rounded-lg border border-purple-200 object-cover shadow-sm dark:border-purple-700">
                             </div>
                         </div>
                         <div>
                             {{ form.cover_url.label_tag }}
                             {{ form.cover_url }}
-                            {% if form.cover_url.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.cover_url.errors.0 }}</p>{% endif %}
-                            <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.cover_url.help_text }}</p>
+                            {% if form.cover_url.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.cover_url.errors.0 }}</p>{% endif %}
+                            <p class="mt-1 text-xs teks-samar">{{ form.cover_url.help_text }}</p>
                             <div id="cover-url-preview" class="mt-3 hidden">
-                                <p class="mb-1 text-xs text-purple-500 dark:text-purple-400">Pratinjau:</p>
+                                <p class="mb-1 text-xs teks-kedua">Pratinjau:</p>
                                 <img id="cover-url-preview-img" src="" alt="Pratinjau sampul" class="h-44 w-32 rounded-lg border border-purple-200 object-cover shadow-sm dark:border-purple-700">
                             </div>
                         </div>
@@ -196,21 +196,21 @@
                 {# ══════════ SINOPSIS (terlipat) ══════════ #}
                 <details class="group rounded-xl border border-purple-100 dark:border-purple-800" {% if summary_error %}open{% endif %}>
                     <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-3.5 select-none">
-                        <span class="flex items-center gap-2 font-medium text-purple-800 dark:text-purple-200">
-                            <svg class="h-5 w-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V5z"/></svg>
+                        <span class="flex items-center gap-2 font-medium teks-utama">
+                            <svg class="h-5 w-5 teks-kedua" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V5z"/></svg>
                             Sinopsis / Catatan Pribadi
-                            <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal text-purple-600 dark:bg-purple-900 dark:text-purple-300">opsional</span>
+                            <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal teks-utama dark:bg-purple-900">opsional</span>
                         </span>
-                        <svg class="h-5 w-5 text-purple-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <svg class="h-5 w-5 teks-samar transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </summary>
                     <div class="border-t border-purple-100 p-4 dark:border-purple-800">
                         {{ form.summary }}
-                        {% if form.summary.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.summary.errors.0 }}</p>{% endif %}
+                        {% if form.summary.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.summary.errors.0 }}</p>{% endif %}
                     </div>
                 </details>
 
-                <p class="text-center text-xs text-purple-400 dark:text-purple-500">
-                    Field bertanda <span class="font-semibold text-purple-600 dark:text-purple-300">*</span> wajib diisi.
+                <p class="text-center text-xs teks-samar">
+                    Field bertanda <span class="font-semibold teks-utama">*</span> wajib diisi.
                 </p>
 
                 {# ══════════ MODAL: DETAIL BUKU ══════════ #}
@@ -219,11 +219,11 @@
                     <div class="relative z-10 flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-purple-200 bg-white shadow-2xl dark:border-purple-800 dark:bg-purple-slate-900">
                         <div class="flex items-center justify-between border-b border-purple-100 px-5 py-4 dark:border-purple-800">
                             <div>
-                                <h2 id="judul-modal-detail" class="font-display text-lg font-bold text-purple-800 dark:text-purple-200">Detail Buku</h2>
-                                <p class="text-xs text-purple-400 dark:text-purple-500">Semua isian di sini opsional — boleh dikosongkan.</p>
+                                <h2 id="judul-modal-detail" class="font-display text-lg font-bold teks-utama">Detail Buku</h2>
+                                <p class="text-xs teks-samar">Semua isian di sini opsional — boleh dikosongkan.</p>
                             </div>
                             <button type="button" data-tutup-detail aria-label="Tutup"
-                                    class="rounded-lg p-2 text-purple-400 transition hover:bg-purple-100 dark:hover:bg-purple-900">
+                                    class="rounded-lg p-2 teks-samar transition hover:bg-purple-100 dark:hover:bg-purple-900">
                                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
                         </div>
@@ -233,40 +233,40 @@
                                 <div>
                                     {{ form.isbn.label_tag }}
                                     {{ form.isbn }}
-                                    {% if form.isbn.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.isbn.errors.0 }}</p>{% endif %}
+                                    {% if form.isbn.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.isbn.errors.0 }}</p>{% endif %}
                                 </div>
                                 <div>
                                     {{ form.publication_year.label_tag }}
                                     {{ form.publication_year }}
-                                    {% if form.publication_year.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.publication_year.errors.0 }}</p>{% endif %}
+                                    {% if form.publication_year.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.publication_year.errors.0 }}</p>{% endif %}
                                 </div>
                                 <div>
                                     {{ form.purchase_year.label_tag }}
                                     {{ form.purchase_year }}
-                                    <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.purchase_year.help_text }}</p>
-                                    {% if form.purchase_year.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.purchase_year.errors.0 }}</p>{% endif %}
+                                    <p class="mt-1 text-xs teks-samar">{{ form.purchase_year.help_text }}</p>
+                                    {% if form.purchase_year.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.purchase_year.errors.0 }}</p>{% endif %}
                                 </div>
                                 <div>
                                     {{ form.publisher.label_tag }}
                                     {{ form.publisher }}
-                                    {% if form.publisher.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.publisher.errors.0 }}</p>{% endif %}
+                                    {% if form.publisher.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.publisher.errors.0 }}</p>{% endif %}
                                 </div>
                                 <div>
                                     {{ form.pages.label_tag }}
                                     {{ form.pages }}
-                                    {% if form.pages.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.pages.errors.0 }}</p>{% endif %}
+                                    {% if form.pages.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.pages.errors.0 }}</p>{% endif %}
                                 </div>
                                 <div class="md:col-span-2">
                                     {{ form.rating.label_tag }}
                                     {{ form.rating }}
-                                    <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.rating.help_text }}</p>
-                                    {% if form.rating.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.rating.errors.0 }}</p>{% endif %}
+                                    <p class="mt-1 text-xs teks-samar">{{ form.rating.help_text }}</p>
+                                    {% if form.rating.errors %}<p class="mt-1 text-sm teks-bahaya">{{ form.rating.errors.0 }}</p>{% endif %}
                                 </div>
                             </div>
                         </div>
 
                         <div class="flex items-center justify-between gap-3 border-t border-purple-100 bg-purple-50/70 px-5 py-3 dark:border-purple-800 dark:bg-purple-950/40">
-                            <span id="ringkas-detail" class="text-xs text-purple-500 dark:text-purple-400"></span>
+                            <span id="ringkas-detail" class="text-xs teks-kedua"></span>
                             <button type="button" data-tutup-detail class="btn-primary">Selesai</button>
                         </div>
                     </div>
@@ -277,25 +277,25 @@
             <div id="modal-genre" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true">
                 <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-tutup></div>
                 <div class="relative z-10 w-full max-w-md rounded-2xl border border-purple-200 bg-white p-5 shadow-2xl dark:border-purple-800 dark:bg-purple-slate-900">
-                    <h2 class="font-display text-lg font-bold text-purple-800 dark:text-purple-200">Tambah Genre / Kategori</h2>
-                    <p class="mb-4 text-xs text-purple-400 dark:text-purple-500">Tersimpan langsung dan otomatis terpilih di form ini.</p>
+                    <h2 class="font-display text-lg font-bold teks-utama">Tambah Genre / Kategori</h2>
+                    <p class="mb-4 text-xs teks-samar">Tersimpan langsung dan otomatis terpilih di form ini.</p>
                     <div class="space-y-3">
                         <div>
-                            <label for="genre-nama" class="mb-1 block text-sm font-medium text-purple-700 dark:text-purple-300">Nama Genre</label>
+                            <label for="genre-nama" class="mb-1 block text-sm font-medium teks-utama">Nama Genre</label>
                             <input type="text" id="genre-nama" name="name" maxlength="100" class="input" placeholder="Contoh: Sejarah">
                         </div>
                         <div>
-                            <label for="genre-ket" class="mb-1 block text-sm font-medium text-purple-700 dark:text-purple-300">Keterangan (opsional)</label>
+                            <label for="genre-ket" class="mb-1 block text-sm font-medium teks-utama">Keterangan (opsional)</label>
                             <input type="text" id="genre-ket" name="description" maxlength="255" class="input" placeholder="Contoh: buku sejarah & biografi">
                         </div>
                         <div>
-                            <label for="genre-warna" class="mb-1 block text-sm font-medium text-purple-700 dark:text-purple-300">Warna Label</label>
+                            <label for="genre-warna" class="mb-1 block text-sm font-medium teks-utama">Warna Label</label>
                             <input type="color" id="genre-warna" name="color_code" value="#8A4FFF"
                                    class="h-10 w-24 cursor-pointer rounded-lg border border-purple-200 bg-white dark:border-purple-800 dark:bg-purple-950">
                         </div>
                         <input type="hidden" id="genre-ikon" name="icon" value="bookmark">
                     </div>
-                    <p id="pesan-genre" class="mt-3 text-sm text-red-600 dark:text-red-400"></p>
+                    <p id="pesan-genre" class="mt-3 text-sm teks-bahaya"></p>
                     <div class="mt-4 flex justify-end gap-2">
                         <button type="button" class="btn-secondary" data-tutup>Batal</button>
                         <button type="button" id="simpan-genre" class="btn-primary">Simpan Genre</button>
@@ -307,28 +307,28 @@
             <div id="modal-rak" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true">
                 <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-tutup></div>
                 <div class="relative z-10 w-full max-w-md rounded-2xl border border-purple-200 bg-white p-5 shadow-2xl dark:border-purple-800 dark:bg-purple-slate-900">
-                    <h2 class="font-display text-lg font-bold text-purple-800 dark:text-purple-200">Tambah Lokasi Rak</h2>
-                    <p class="mb-4 text-xs text-purple-400 dark:text-purple-500">Tersimpan langsung dan otomatis terpilih di form ini.</p>
+                    <h2 class="font-display text-lg font-bold teks-utama">Tambah Lokasi Rak</h2>
+                    <p class="mb-4 text-xs teks-samar">Tersimpan langsung dan otomatis terpilih di form ini.</p>
                     <div class="space-y-3">
                         <div>
-                            <label for="rak-nama" class="mb-1 block text-sm font-medium text-purple-700 dark:text-purple-300">Nama Lokasi Rak</label>
+                            <label for="rak-nama" class="mb-1 block text-sm font-medium teks-utama">Nama Lokasi Rak</label>
                             <input type="text" id="rak-nama" name="name" maxlength="100" class="input" placeholder="Contoh: Rak A-1 (Kamar Depan)">
                         </div>
                         <div>
-                            <label for="rak-kode" class="mb-1 block text-sm font-medium text-purple-700 dark:text-purple-300">Kode Rak (opsional)</label>
+                            <label for="rak-kode" class="mb-1 block text-sm font-medium teks-utama">Kode Rak (opsional)</label>
                             <input type="text" id="rak-kode" name="code" maxlength="30" class="input" placeholder="Contoh: A1">
                         </div>
                         <div>
-                            <label for="rak-ket" class="mb-1 block text-sm font-medium text-purple-700 dark:text-purple-300">Keterangan (opsional)</label>
+                            <label for="rak-ket" class="mb-1 block text-sm font-medium teks-utama">Keterangan (opsional)</label>
                             <input type="text" id="rak-ket" name="description" maxlength="255" class="input" placeholder="Contoh: rak kayu dekat jendela">
                         </div>
                         <div>
-                            <label for="rak-warna" class="mb-1 block text-sm font-medium text-purple-700 dark:text-purple-300">Warna Label</label>
+                            <label for="rak-warna" class="mb-1 block text-sm font-medium teks-utama">Warna Label</label>
                             <input type="color" id="rak-warna" name="color_code" value="#8A4FFF"
                                    class="h-10 w-24 cursor-pointer rounded-lg border border-purple-200 bg-white dark:border-purple-800 dark:bg-purple-950">
                         </div>
                     </div>
-                    <p id="pesan-rak" class="mt-3 text-sm text-red-600 dark:text-red-400"></p>
+                    <p id="pesan-rak" class="mt-3 text-sm teks-bahaya"></p>
                     <div class="mt-4 flex justify-end gap-2">
                         <button type="button" class="btn-secondary" data-tutup>Batal</button>
                         <button type="button" id="simpan-rak" class="btn-primary">Simpan Rak</button>
@@ -342,7 +342,7 @@
 {# ══════════ AKSI MELAYANG: SELALU TERLIHAT TANPA SCROLL ══════════ #}
 <div class="fixed bottom-0 left-0 right-0 z-40 border-t border-purple-100 bg-white/95 backdrop-blur dark:border-purple-800 dark:bg-purple-slate-900/95">
     <div class="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <p class="hidden text-xs text-purple-500 dark:text-purple-400 sm:block">
+        <p class="hidden text-xs teks-kedua sm:block">
             {% if object %}Ubah data lalu simpan{% else %}Simpan kapan saja — detail opsional boleh dikosongkan{% endif %}
         </p>
         <div class="flex w-full gap-2 sm:w-auto">
@@ -403,8 +403,8 @@
         hint.innerHTML = 'Ditemukan <strong>' + items.length + '</strong> judul mirip di koleksi:';
         list.innerHTML = items.map((it, i) => {
             const badge = it.exact
-                ? '<span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">SUDAH ADA</span>'
-                : '<span class="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-medium text-purple-600 dark:bg-purple-900 dark:text-purple-300">mirip ' + Math.round(it.similarity * 100) + '%</span>';
+                ? '<span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold teks-peringatan dark:bg-amber-900/40">SUDAH ADA</span>'
+                : '<span class="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-medium teks-utama dark:bg-purple-900">mirip ' + Math.round(it.similarity * 100) + '%</span>';
             const meta = [];
             if (it.count > 1) meta.push(it.count + '\u00d7 di koleksi');
             if (it.shelf) meta.push('rak: ' + esc(it.shelf));
@@ -413,8 +413,8 @@
                 + ' class="ac-item cursor-pointer px-4 py-2.5 transition-colors hover:bg-purple-50 dark:hover:bg-purple-950/60">'
                 + '<div class="flex items-start justify-between gap-3">'
                 + '<div class="min-w-0">'
-                + '<p class="truncate text-sm font-medium text-purple-800 dark:text-purple-200">' + esc(it.title) + '</p>'
-                + '<p class="truncate text-xs text-purple-500 dark:text-purple-400">' + esc(it.author) + (meta.length ? ' \u00b7 ' + meta.join(' \u00b7 ') : '') + '</p>'
+                + '<p class="truncate text-sm font-medium teks-utama">' + esc(it.title) + '</p>'
+                + '<p class="truncate text-xs teks-kedua">' + esc(it.author) + (meta.length ? ' \u00b7 ' + meta.join(' \u00b7 ') : '') + '</p>'
                 + '</div>' + badge + '</div></li>';
         }).join('');
         showPanel();

@@ -1,0 +1,42 @@
+fix(warna): logika warna font terpusat + perbaikan kontras mode gelap & toggle (v1.7.0)
+
+Masalah yang dilaporkan: di mode gelap ada teks yang tidak terlihat (terutama
+dashboard), dan sesudah menekan tombol tema kontras jadi lemah sampai halaman
+di-refresh.
+
+Akar masalah yang ditemukan (diukur, bukan ditebak):
+1. Warna teks ditulis per elemen (`text-x dark:text-y`) sehingga mudah terlewat
+   dan tidak konsisten antar halaman.
+2. Warna grafik Chart.js dibaca SEKALI saat inisialisasi -> setelah toggle tema
+   tetap memakai warna tema lama sampai refresh (inilah keluhan "kontras lemah
+   sesudah ganti toggle").
+3. Ada dua sistem CSS berjalan bersamaan: Tailwind CDN + output.css lokal.
+4. Label genre/rak memakai teks putih di atas warna dari basis data apa adanya
+   -> tidak terbaca untuk warna terang.
+
+Perbaikan:
+1. LOGIKA TERPUSAT di static/css/input.css: :root (mode terang) & .dark (mode
+   gelap) mendefinisikan variabel warna; template memakai kelas semantik
+   .teks-utama/.teks-kedua/.teks-samar/.teks-aksen/.teks-aksen-dua/.teks-bahaya/
+   .teks-sukses/.teks-peringatan. 370+ pasangan warna per elemen dihapus.
+2. Grafik: semua opsi warna jadi scriptable (() => css('--...')), chart
+   didaftarkan di window.__grafik, base.html mengirim event 'themechange' yang
+   memicu chart.update() -> warna ikut tema TANPA refresh.
+3. Tailwind CDN dihapus dari base.html & login.html (satu sumber: output.css).
+4. .badge-genre + color-mix(): warna basis data hanya dikirim sebagai
+   --warna-genre, kontras dijamin di kedua mode untuk warna apa pun.
+5. Kartu KPI digelapkan (from-X-700 to-X-900) + label putih; angka Fiksi/
+   Non-Fiksi memakai kelas aksen (bukan inline #8A4FFF/#06B6D4).
+
+Alat verifikasi baru:
+  scripts/dev/audit_kontras_browser.py  ukur komputasi kontras WCAG di Chrome,
+                                        9 halaman x 2 mode + uji klik toggle
+  scripts/dev/verify_perbaikan_v7.py    struktur logika warna + hitung kontras
+  scripts/dev/screenshot_tema.py        tangkapan layar dua mode
+  scripts/dev/sapuan_kelas_warna.py     alat migrasi (idempoten)
+
+Hasil terukur:
+  audit kontras   : 266 elemen di bawah ambang -> 0 (dua mode), 0 uji toggle gagal
+  verify v7       : 62/62 lulus
+  regresi lama    : v6 58/58, v5 26/26, v4 27/27, features_v2 78/78, pengguna 30/30
+  cakupan CSS     : 509/509 kelas template tersedia di CSS lokal

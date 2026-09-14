@@ -8,8 +8,8 @@
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="font-display text-3xl font-bold text-purple-800 dark:text-purple-200">Katalog Buku</h1>
-            <p class="text-purple-500 dark:text-purple-400 mt-1">Kelola dan jelajahi koleksi buku perpustakaan rumah</p>
+            <h1 class="font-display text-3xl font-bold teks-utama">Katalog Buku</h1>
+            <p class="teks-kedua mt-1">Kelola dan jelajahi koleksi buku perpustakaan rumah</p>
         </div>
         <a href="{% url 'book-create' %}" class="btn-primary w-full sm:w-auto">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -26,7 +26,7 @@
                     <div class="lg:col-span-3">
                         <label for="q" class="label">Pencarian</label>
                         <div class="relative">
-                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 teks-samar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             <input type="text" name="q" id="q" value="{{ current_filters.q }}"
                                    placeholder="Cari judul, penulis, ISBN, perekam, rak, atau jenis buku..."
                                    class="input pl-10">
@@ -103,10 +103,10 @@
     <!-- Books Table -->
     <div class="card">
         <div class="card-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <h2 class="font-display text-lg font-semibold text-purple-800 dark:text-purple-200">
+            <h2 class="font-display text-lg font-semibold teks-utama">
                 Daftar Buku ({{ page_obj.paginator.count }} buku)
             </h2>
-            <span class="text-sm text-purple-500 dark:text-purple-400">Halaman {{ page_obj.number }} dari {{ page_obj.paginator.num_pages }}</span>
+            <span class="text-sm teks-kedua">Halaman {{ page_obj.number }} dari {{ page_obj.paginator.num_pages }}</span>
         </div>
         <div class="card-body p-0">
             <div class="table-container">
@@ -131,25 +131,25 @@
                                 <img src="{{ book.display_cover }}" alt="{{ book.title }}" class="w-14 h-20 object-cover rounded-lg shadow-sm border border-purple-100 dark:border-purple-800">
                             </td>
                             <td>
-                                <a href="{{ book.get_absolute_url }}" class="font-medium text-purple-800 dark:text-purple-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors block truncate max-w-xs">{{ book.title }}</a>
-                                <p class="text-sm text-purple-500 dark:text-purple-400 truncate max-w-xs">{{ book.author }}</p>
-                                {% if book.isbn %}<p class="text-xs text-purple-400 dark:text-purple-500 font-mono">ISBN: {{ book.isbn }}</p>{% endif %}
+                                <a href="{{ book.get_absolute_url }}" class="font-medium teks-utama hover:text-purple-600 dark:hover:text-purple-400 transition-colors block truncate max-w-xs">{{ book.title }}</a>
+                                <p class="text-sm teks-kedua truncate max-w-xs">{{ book.author }}</p>
+                                {% if book.isbn %}<p class="text-xs teks-samar font-mono">ISBN: {{ book.isbn }}</p>{% endif %}
                             </td>
                             <td class="hidden md:table-cell">
                                 {% if book.genre %}
-                                <span class="badge" style="background-color: {{ book.genre.color_code }}20; color: {{ book.genre.color_code }};">{{ book.genre.name }}</span>
-                                {% else %}<span class="text-sm text-purple-400 dark:text-purple-500">-</span>{% endif %}
+                                <span class="badge-genre" style="--warna-genre: {{ book.genre.color_code }}">{{ book.genre.name }}</span>
+                                {% else %}<span class="text-sm teks-samar">-</span>{% endif %}
                             </td>
                             <td class="hidden lg:table-cell">
-                                <span class="badge" style="background-color: {{ book.book_type_color }}20; color: {{ book.book_type_color }};">{{ book.get_book_type_display }}</span>
+                                <span class="badge-genre" style="--warna-genre: {{ book.book_type_color }}">{{ book.get_book_type_display }}</span>
                             </td>
                             <td class="hidden xl:table-cell">
                                 {% if book.shelf %}
                                 <div class="flex items-center gap-2">
                                     <span class="h-2.5 w-2.5 flex-shrink-0 rounded-full" style="background-color: {{ book.shelf.color_code }}"></span>
-                                    <span class="text-sm text-purple-700 dark:text-purple-300">{{ book.shelf.name }}</span>
+                                    <span class="text-sm teks-utama">{{ book.shelf.name }}</span>
                                 </div>
-                                {% else %}<span class="text-sm text-purple-400 dark:text-purple-500">-</span>{% endif %}
+                                {% else %}<span class="text-sm teks-samar">-</span>{% endif %}
                             </td>
                             <td class="hidden lg:table-cell">
                                 {% if book.status == 'COMPLETED' %}<span class="badge-green">{{ book.get_status_display }}</span>
@@ -159,27 +159,27 @@
                             <td class="hidden xl:table-cell">
                                 <div class="flex items-center gap-1">
                                     {% for i in "12345"|make_list %}
-                                    <svg class="w-4 h-4 {% if forloop.counter <= book.rating %}text-yellow-400{% else %}text-purple-200 dark:text-purple-700{% endif %}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="w-4 h-4 {% if forloop.counter <= book.rating %}text-yellow-400{% else %}teks-samar{% endif %}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                     {% endfor %}
                                 </div>
                             </td>
                             <td class="hidden md:table-cell">
                                 <div class="flex items-center gap-2">
                                     <img src="{{ book.recorded_by.profile.avatar_url }}" alt="{{ book.recorded_by.username }}" class="w-6 h-6 rounded-full">
-                                    <span class="text-sm text-purple-700 dark:text-purple-300">{{ book.recorded_by.username }}</span>
+                                    <span class="text-sm teks-utama">{{ book.recorded_by.username }}</span>
                                 </div>
                             </td>
                             <td>
                                 <div class="flex items-center gap-1">
-                                    <a href="{{ book.get_absolute_url }}" class="p-1.5 rounded-lg text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 transition-colors" title="Lihat Detail">
+                                    <a href="{{ book.get_absolute_url }}" class="p-1.5 rounded-lg teks-kedua hover:bg-purple-100 dark:hover:bg-purple-900 transition-colors" title="Lihat Detail">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                     </a>
-                                    <a href="{% url 'book-update' book.pk %}" class="p-1.5 rounded-lg text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors" title="Edit">
+                                    <a href="{% url 'book-update' book.pk %}" class="p-1.5 rounded-lg teks-kedua hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors" title="Edit">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                     </a>
                                     <form action="{% url 'book-delete' book.pk %}" method="post" class="inline">
                                         {% csrf_token %}
-                                        <button type="submit" class="p-1.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors" title="Hapus" onclick="return confirm('Yakin ingin menghapus buku ini?')">
+                                        <button type="submit" class="p-1.5 rounded-lg teks-bahaya hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors" title="Hapus" onclick="return confirm('Yakin ingin menghapus buku ini?')">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                         </button>
                                     </form>
@@ -189,9 +189,9 @@
                         {% empty %}
                         <tr>
                             <td colspan="9" class="text-center py-12">
-                                <svg class="w-16 h-16 mx-auto mb-4 text-purple-300 dark:text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                                <p class="text-purple-500 dark:text-purple-400 text-lg">Tidak ada buku ditemukan</p>
-                                <p class="text-purple-400 dark:text-purple-500 mt-1">Coba ubah filter atau tambahkan buku baru</p>
+                                <svg class="w-16 h-16 mx-auto mb-4 teks-samar" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                <p class="teks-kedua text-lg">Tidak ada buku ditemukan</p>
+                                <p class="teks-samar mt-1">Coba ubah filter atau tambahkan buku baru</p>
                             </td>
                         </tr>
                         {% endfor %}
@@ -203,7 +203,7 @@
             {% if page_obj.paginator.num_pages > 1 %}
             <div class="px-6 py-4 border-t border-purple-100 dark:border-purple-800">
                 <nav class="flex items-center justify-between">
-                    <p class="text-sm text-purple-500 dark:text-purple-400">
+                    <p class="text-sm teks-kedua">
                         Menampilkan {{ page_obj.start_index }} - {{ page_obj.end_index }} dari {{ page_obj.paginator.count }} buku
                     </p>
                     <div class="flex items-center gap-1">

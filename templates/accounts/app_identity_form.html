@@ -5,8 +5,8 @@
 {% block content %}
 <div class="mx-auto max-w-2xl animate-in">
     <div class="mb-6">
-        <h1 class="font-display text-2xl font-bold text-purple-800 dark:text-purple-200">Identitas Aplikasi</h1>
-        <p class="mt-1 text-sm text-purple-500 dark:text-purple-400">
+        <h1 class="font-display text-2xl font-bold teks-utama">Identitas Aplikasi</h1>
+        <p class="mt-1 text-sm teks-kedua">
             Judul ini dipakai di judul tab browser, navbar, footer, halaman login, dan label cetak.
         </p>
     </div>
@@ -17,22 +17,22 @@
                 {% csrf_token %}
 
                 {% if form.non_field_errors %}
-                <div class="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/40 dark:text-red-300">
+                <div class="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm teks-bahaya dark:border-red-800 dark:bg-red-950/40">
                     {{ form.non_field_errors }}
                 </div>
                 {% endif %}
 
                 {% for field in form %}
                 <div>
-                    <label for="{{ field.id_for_label }}" class="mb-1.5 block text-sm font-medium text-purple-800 dark:text-purple-200">
+                    <label for="{{ field.id_for_label }}" class="mb-1.5 block text-sm font-medium teks-utama">
                         {{ field.label }}
                     </label>
                     {{ field }}
                     {% if field.help_text %}
-                    <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ field.help_text }}</p>
+                    <p class="mt-1 text-xs teks-samar">{{ field.help_text }}</p>
                     {% endif %}
                     {% if field.errors %}
-                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ field.errors.0 }}</p>
+                    <p class="mt-1 text-sm teks-bahaya">{{ field.errors.0 }}</p>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -47,17 +47,17 @@
 
     <div class="card mt-5">
         <div class="card-body">
-            <p class="text-sm font-semibold text-purple-800 dark:text-purple-200">Pratinjau</p>
+            <p class="text-sm font-semibold teks-utama">Pratinjau</p>
             <div class="mt-3 rounded-xl border border-purple-200 bg-purple-50/60 p-4 dark:border-purple-800 dark:bg-purple-950/40">
-                <p class="font-display text-lg font-bold text-purple-800 dark:text-purple-200" id="pratinjau-nama">
+                <p class="font-display text-lg font-bold teks-utama" id="pratinjau-nama">
                     {{ app_config.app_name }}
                 </p>
-                <p class="text-xs text-purple-500 dark:text-purple-400" id="pratinjau-tagline">{{ app_config.tagline }}</p>
-                <p class="mt-2 text-[11px] font-semibold uppercase tracking-wider text-purple-400" id="pratinjau-singkat">
+                <p class="text-xs teks-kedua" id="pratinjau-tagline">{{ app_config.tagline }}</p>
+                <p class="mt-2 text-[11px] font-semibold uppercase tracking-wider teks-samar" id="pratinjau-singkat">
                     {{ app_config.app_short_name }}
                 </p>
             </div>
-            <p class="mt-2 text-xs text-purple-400 dark:text-purple-500">
+            <p class="mt-2 text-xs teks-samar">
                 Nilai berubah mengikuti isian di atas saat Anda mengetik.
             </p>
         </div>

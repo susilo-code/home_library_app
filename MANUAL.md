@@ -431,6 +431,48 @@ Hapus file itu lalu `python manage.py migrate` untuk memulai dari nol.
 
 ---
 
+### Logika warna teks (terang & gelap) — satu tempat
+
+Sejak v1.7 warna teks **tidak lagi ditulis per elemen** (tidak ada lagi
+`text-purple-800 dark:text-purple-200`). Semua warna font diatur di
+`static/css/input.css`:
+
+```css
+:root { --color-text-primary: #2e1a47; ... }   /* mode terang */
+.dark { --color-text-primary: #f5f0ff; ... }   /* mode gelap  */
+```
+
+Kelas yang dipakai di template:
+
+| Kelas | Untuk |
+| :--- | :--- |
+| `.teks-utama` | judul dan isi penting |
+| `.teks-kedua` | subjudul, label, tautan |
+| `.teks-samar` | keterangan kecil, slug |
+| `.teks-aksen` / `.teks-aksen-dua` | angka/huruf menonjol |
+| `.teks-bahaya` / `.teks-sukses` / `.teks-peringatan` | warna status |
+
+Mau mengganti warna? Ubah nilainya di blok `:root` (terang) **dan** `.dark`
+(gelap), lalu jalankan `npm run build` — seluruh halaman ikut berubah tanpa
+menyentuh template.
+
+Label genre/rak berwarna bebas dari basis data memakai `.badge-genre`
+(warna hanya dikirim sebagai variabel `--warna-genre`), sehingga kontrasnya
+dijamin di kedua mode untuk warna apa pun.
+
+**Alat pemeriksa:**
+
+```bat
+.venv\Scripts\python.exe scripts\dev\verify_perbaikan_v7.py      :: struktur + hitung kontras variabel
+.venv\Scripts\python.exe scripts\dev\audit_kontras_browser.py     :: ukur kontras sungguhan di Chrome (dua mode + uji toggle tema)
+```
+
+`audit_kontras_browser.py` mengukur lewat *computed style* Chrome: memeriksa
+setiap elemen berteks, menghitung rasio WCAG, dan **mengklik tombol tema**
+untuk memastikan warna langsung berubah tanpa perlu refresh.
+
+---
+
 ## 9. Tailwind CSS
 
 `static/css/output.css` **ikut di-commit**, sehingga aplikasi tetap tampil rapi

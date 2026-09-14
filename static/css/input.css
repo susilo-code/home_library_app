@@ -5,28 +5,63 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @layer base {
+  /*
+    ══════════════════════════════════════════════════════════════════════
+    LOGIKA WARNA TERPUSAT — satu tempat untuk DUA mode
+    ══════════════════════════════════════════════════════════════════════
+    Semua warna teks & permukaan ditentukan di sini. Mode gelap TIDAK lagi
+    ditulis per elemen (`text-x dark:text-y`), cukup satu variabel:
+      · :root  = mode terang
+      · .dark  = mode gelap   (kelas ini dipasang pada <html> oleh tombol tema)
+    Kelas pemakaiannya: .teks-utama / .teks-kedua / .teks-samar / .teks-aksen
+    / .teks-bahaya (lihat @layer components di bawah).
+  */
   :root {
+    /* Permukaan (latar) */
     --color-bg-primary: #f7f5fa;
     --color-bg-secondary: #ffffff;
     --color-bg-tertiary: #efe9f4;
+    /* Teks — diuji kontras ≥ 4.5:1 terhadap latarnya */
     --color-text-primary: #2e1a47;
-    --color-text-secondary: #5e436c;
-    --color-text-muted: #8b6b9e;
-    --color-border: #d6c6ff;
+    --color-text-secondary: #5b3f6d;
+    --color-text-muted: #6d5580;
+    --color-text-on-accent: #ffffff;
+    /* Aksen & status */
     --color-accent: #8A4FFF;
     --color-accent-hover: #742eff;
+    /* Tombol/latar aksen pekat: cukup gelap agar teks putih ≥ 4.5:1 */
+    --color-accent-solid: #7e22ce;
+    --color-accent-2: #0e7490;        /* aksen kedua (cyan) */
+    --color-accent-solid-hover: #6b21a8;
+    --color-bg-tertiary-hover: #e4daf0;
+    --color-danger-text: #b91c1c;
+    --color-warning-text: #92400e;
+    --color-success-text: #047857;
+    --color-border: #d6c6ff;
   }
 
   .dark {
+    /* Permukaan (latar) */
     --color-bg-primary: #120B1C;
     --color-bg-secondary: #1A1126;
     --color-bg-tertiary: #2E1A47;
+    /* Teks — varian gelap dibuat LEBIH TERANG agar tidak tenggelam di latar */
     --color-text-primary: #f5f0ff;
     --color-text-secondary: #d6c6ff;
-    --color-text-muted: #b899ff;
+    --color-text-muted: #bda6ff;
+    --color-text-on-accent: #ffffff;
+    /* Aksen & status */
+    --color-accent: #a97bff;
+    --color-accent-hover: #c4a3ff;
+    /* Tombol aksen pekat di mode gelap tetap #7e22ce/#9333ea agar teks putih lolos */
+    --color-accent-solid: #9333ea;
+    --color-accent-2: #22d3ee;        /* aksen kedua (cyan) */
+    --color-accent-solid-hover: #7e22ce;
+    --color-bg-tertiary-hover: #3a2159;
+    --color-danger-text: #fca5a5;
+    --color-warning-text: #fcd34d;
+    --color-success-text: #6ee7b7;
     --color-border: #4c18b8;
-    --color-accent: #9a6eff;
-    --color-accent-hover: #b899ff;
   }
 
   * {
@@ -34,7 +69,14 @@
   }
 
   body {
-    @apply bg-purple-slate-50 dark:bg-purple-slate-950 text-purple-slate-900 dark:text-purple-slate-50 font-sans antialiased transition-colors duration-300;
+    /*
+      Latar & warna teks dasar diambil dari variabel (bukan kelas `dark:`
+      per elemen), sehingga SELURUH halaman otomatis benar di kedua mode —
+      termasuk teks yang hanya mewarisi warna.
+    */
+    @apply font-sans antialiased transition-colors duration-300;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
   }
 
   html {
@@ -47,44 +89,104 @@
 }
 
 @layer components {
+  /* ══════════════════════════════════════════════════════════════════════
+     KELAS TEKS SEMANTIK — dipakai di seluruh template
+     ══════════════════════════════════════════════════════════════════════
+     Cukup satu kelas; warna otomatis mengikuti mode terang/gelap lewat
+     variabel di :root / .dark. Ganti pemakaian `text-x dark:text-y`
+     dengan kelas ini supaya kontras terjaga di kedua mode.
+       .teks-utama   → judul, isi penting      (--color-text-primary)
+       .teks-kedua   → subjudul, label, tautan (--color-text-secondary)
+       .teks-samar   → keterangan kecil, slug  (--color-text-muted)
+       .teks-aksen   → angka/huruf menonjol    (--color-accent)
+       .teks-bahaya  → peringatan/hapus        (--color-danger-text)
+       .teks-sukses  → status berhasil         (--color-success-text)
+  */
+  .teks-utama { color: var(--color-text-primary); }
+  .teks-kedua { color: var(--color-text-secondary); }
+  .teks-samar { color: var(--color-text-muted); }
+  .teks-aksen { color: var(--color-accent); }
+  .teks-aksen-dua { color: var(--color-accent-2); }
+  .teks-bahaya { color: var(--color-danger-text); }
+  .teks-sukses { color: var(--color-success-text); }
+  .teks-peringatan { color: var(--color-warning-text); }
+
+  /*
+     Label genre/warna dinamis dari database: warna apa pun (termasuk yang
+     gelap) otomatis dibuat kontras di kedua mode, karena warna teks dicampur
+     ke arah hitam (mode terang) atau ke arah putih (mode gelap).
+     Pakai: <span class="badge-genre" style="--warna-genre: #06B6D4">…</span>
+  */
+  .badge-genre {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    background-color: color-mix(in srgb, var(--warna-genre, var(--color-accent)) 16%, transparent);
+    color: color-mix(in srgb, var(--warna-genre, var(--color-accent)) 62%, #000);
+  }
+
+  .dark .badge-genre {
+    background-color: color-mix(in srgb, var(--warna-genre, var(--color-accent)) 26%, transparent);
+    color: color-mix(in srgb, var(--warna-genre, var(--color-accent)) 28%, #fff);
+  }
+
   .btn {
     @apply inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-primary {
-    @apply btn bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500 dark:bg-purple-500 dark:hover:bg-purple-600 dark:focus:ring-purple-400;
+    /* Tombol utama: latar & teks dari variabel. Mode gelap memakai aksen yang
+       tetap cukup gelap agar teks putih ≥ 4.5:1 (purple-500 terlalu terang). */
+    @apply btn text-white;
+    background-color: var(--color-accent-solid);
   }
+  .btn-primary:hover { background-color: var(--color-accent-solid-hover); }
 
   .btn-secondary {
-    @apply btn bg-purple-100 text-purple-800 hover:bg-purple-200 focus:ring-purple-400 dark:bg-purple-900 dark:text-purple-200 dark:hover:bg-purple-800 dark:focus:ring-purple-600;
+    @apply btn;
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
   }
+  .btn-secondary:hover { background-color: var(--color-bg-tertiary-hover); }
 
   .btn-outline {
-    @apply btn border-2 border-purple-600 text-purple-700 hover:bg-purple-50 focus:ring-purple-500 dark:border-purple-400 dark:text-purple-300 dark:hover:bg-purple-950 dark:focus:ring-purple-400;
+    @apply btn border-2;
+    border-color: var(--color-accent);
+    color: var(--color-text-primary);
   }
+  .btn-outline:hover { background-color: var(--color-bg-tertiary); }
 
   .btn-danger {
-    @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+    @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 dark:bg-red-700 dark:hover:bg-red-800;
   }
 
   .btn-ghost {
-    @apply btn text-purple-600 hover:bg-purple-50 focus:ring-purple-400 dark:text-purple-400 dark:hover:bg-purple-950;
+    @apply btn;
+    color: var(--color-text-secondary);
   }
+  .btn-ghost:hover { background-color: var(--color-bg-tertiary); }
 
   .input {
-    @apply w-full px-4 py-2.5 text-sm bg-white dark:bg-purple-950 border border-purple-200 dark:border-purple-700 rounded-lg text-purple-900 dark:text-purple-50 placeholder-purple-400 dark:placeholder-purple-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent;
+    @apply w-full px-4 py-2.5 text-sm rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent;
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
   }
+  .input::placeholder { color: var(--color-text-muted); opacity: 1; }
 
   .label {
-    @apply block text-sm font-medium text-purple-700 dark:text-purple-300 mb-1.5;
+    @apply block text-sm font-medium mb-1.5;
+    color: var(--color-text-secondary);
   }
 
   .card {
-    @apply bg-white dark:bg-purple-slate-900 rounded-xl shadow-sm border border-purple-100 dark:border-purple-800 overflow-hidden transition-shadow duration-200 hover:shadow-md;
+    @apply rounded-xl shadow-sm overflow-hidden transition-shadow duration-200 hover:shadow-md;
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
   }
 
   .card-header {
-    @apply px-6 py-4 border-b border-purple-100 dark:border-purple-800 bg-purple-50 dark:bg-purple-950;
+    @apply px-6 py-4;
+    background-color: var(--color-bg-tertiary);
+    border-bottom: 1px solid var(--color-border);
   }
 
   .card-body {
@@ -120,11 +222,13 @@
   }
 
   .stat-value {
-    @apply text-3xl font-bold text-purple-700 dark:text-purple-300;
+    @apply text-3xl font-bold;
+    color: var(--color-text-primary);
   }
 
   .stat-label {
-    @apply text-sm text-purple-500 dark:text-purple-400 mt-1;
+    @apply text-sm mt-1;
+    color: var(--color-text-secondary);
   }
 
   .table-container {
@@ -136,11 +240,16 @@
   }
 
   .table th {
-    @apply px-4 py-3 text-left text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider bg-purple-50 dark:bg-purple-950 border-b border-purple-100 dark:border-purple-800;
+    @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider;
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-border);
   }
 
   .table td {
-    @apply px-4 py-3 border-b border-purple-100 dark:border-purple-800 text-purple-800 dark:text-purple-200;
+    @apply px-4 py-3;
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border);
   }
 
   .table tbody tr {
@@ -152,11 +261,18 @@
   }
 
   .sidebar-link {
-    @apply flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-950 hover:text-purple-800 dark:hover:text-purple-200;
+    @apply flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200;
+    color: var(--color-text-secondary);
+  }
+  .sidebar-link:hover {
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
   }
 
   .sidebar-link.active {
-    @apply bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 font-semibold;
+    @apply font-semibold;
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
   }
 
   .dropdown-menu {
@@ -168,7 +284,12 @@
   }
 
   .dropdown-item {
-    @apply block px-4 py-2 text-sm text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950 transition-colors;
+    @apply block px-4 py-2 text-sm transition-colors;
+    color: var(--color-text-secondary);
+  }
+  .dropdown-item:hover {
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
   }
 
   .modal-overlay {

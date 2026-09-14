@@ -9,8 +9,8 @@
     <!-- Header -->
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h1 class="font-display text-3xl font-bold text-purple-800 dark:text-purple-200">Pengaturan</h1>
-            <p class="mt-1 text-purple-500 dark:text-purple-400">Kelola preferensi tampilan dan data master perpustakaan</p>
+            <h1 class="font-display text-3xl font-bold teks-utama">Pengaturan</h1>
+            <p class="mt-1 teks-kedua">Kelola preferensi tampilan dan data master perpustakaan</p>
         </div>
         <a href="{% url 'dashboard' %}" class="btn-secondary w-full sm:w-auto">
             <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
@@ -20,16 +20,16 @@
 
     <!-- Navigasi cepat -->
     <div class="mb-6 flex flex-wrap gap-2">
-        <a href="#tema" class="rounded-full border border-purple-200 bg-purple-50 px-4 py-1.5 text-sm font-medium text-purple-700 transition hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950 dark:text-purple-300">Tampilan</a>
-        <a href="#genre-kategori" class="rounded-full border border-purple-200 bg-purple-50 px-4 py-1.5 text-sm font-medium text-purple-700 transition hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950 dark:text-purple-300">Genre / Kategori</a>
-        <a href="#rak-buku" class="rounded-full border border-purple-200 bg-purple-50 px-4 py-1.5 text-sm font-medium text-purple-700 transition hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950 dark:text-purple-300">Lokasi Rak Buku</a>
-        <a href="#akun" class="rounded-full border border-purple-200 bg-purple-50 px-4 py-1.5 text-sm font-medium text-purple-700 transition hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950 dark:text-purple-300">Akun</a>
+        <a href="#tema" class="rounded-full border border-purple-200 bg-purple-50 px-4 py-1.5 text-sm font-medium teks-utama transition hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950">Tampilan</a>
+        <a href="#genre-kategori" class="rounded-full border border-purple-200 bg-purple-50 px-4 py-1.5 text-sm font-medium teks-utama transition hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950">Genre / Kategori</a>
+        <a href="#rak-buku" class="rounded-full border border-purple-200 bg-purple-50 px-4 py-1.5 text-sm font-medium teks-utama transition hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950">Lokasi Rak Buku</a>
+        <a href="#akun" class="rounded-full border border-purple-200 bg-purple-50 px-4 py-1.5 text-sm font-medium teks-utama transition hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950">Akun</a>
     </div>
 
     <!-- ══════════ TEMA ══════════ -->
     <section id="tema" class="card mb-6 scroll-mt-24">
         <div class="card-header">
-            <h2 class="flex items-center gap-2 font-display text-lg font-semibold text-purple-800 dark:text-purple-200">
+            <h2 class="flex items-center gap-2 font-display text-lg font-semibold teks-utama">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 Tampilan &amp; Tema
             </h2>
@@ -47,11 +47,11 @@
                                 {% if value == 'light' %}
                                 <svg class="h-6 w-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                                 {% else %}
-                                <svg class="h-6 w-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                                <svg class="h-6 w-6 teks-kedua" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                                 {% endif %}
-                                <span class="font-medium text-purple-800 dark:text-purple-200">{{ label }}</span>
+                                <span class="font-medium teks-utama">{{ label }}</span>
                             </div>
-                            <p class="mt-1 text-xs text-purple-500 dark:text-purple-400">
+                            <p class="mt-1 text-xs teks-kedua">
                                 {% if value == 'light' %}Mode terang untuk siang hari{% else %}Mode gelap, nyaman di mata{% endif %}
                             </p>
                         </div>
@@ -71,12 +71,12 @@
     <!-- ══════════ GENRE / KATEGORI (DINAMIS) ══════════ -->
     <section id="genre-kategori" class="card mb-6 scroll-mt-24">
         <div class="card-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <h2 class="flex items-center gap-2 font-display text-lg font-semibold text-purple-800 dark:text-purple-200">
+            <h2 class="flex items-center gap-2 font-display text-lg font-semibold teks-utama">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
                 Genre / Kategori
-                <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal text-purple-600 dark:bg-purple-900 dark:text-purple-300">{{ genres|length }} genre</span>
+                <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal teks-utama dark:bg-purple-900">{{ genres|length }} genre</span>
             </h2>
-            <p class="text-xs text-purple-400 dark:text-purple-500">Dibuat dinamis — langsung muncul di form perekaman</p>
+            <p class="text-xs teks-samar">Dibuat dinamis — langsung muncul di form perekaman</p>
         </div>
         <div class="card-body p-0">
             <div class="overflow-x-auto">
@@ -96,27 +96,27 @@
                                 <div class="flex items-center gap-2">
                                     <span class="h-3 w-3 flex-shrink-0 rounded-full" style="background-color: {{ g.color_code }}"></span>
                                     <div>
-                                        <span class="font-medium text-purple-800 dark:text-purple-200">{{ g.name }}</span>
-                                        <p class="text-xs font-mono text-purple-400 dark:text-purple-500">/{{ g.slug }}/</p>
+                                        <span class="font-medium teks-utama">{{ g.name }}</span>
+                                        <p class="text-xs font-mono teks-samar">/{{ g.slug }}/</p>
                                     </div>
                                     {% if not g.is_active %}<span class="badge-red text-[10px]">nonaktif</span>{% endif %}
                                 </div>
                             </td>
-                            <td class="hidden text-sm text-purple-500 dark:text-purple-400 sm:table-cell">{{ g.description|default:"—" }}</td>
-                            <td class="text-center font-semibold text-purple-700 dark:text-purple-300">{{ g.book_count }}</td>
+                            <td class="hidden text-sm teks-kedua sm:table-cell">{{ g.description|default:"—" }}</td>
+                            <td class="text-center font-semibold teks-utama">{{ g.book_count }}</td>
                             <td>
                                 <div class="flex items-center gap-1">
-                                    <a href="{% url 'genre-update' g.pk %}" class="rounded-lg p-1.5 text-indigo-600 transition hover:bg-indigo-100 dark:text-indigo-400 dark:hover:bg-indigo-900/30" title="Edit">
+                                    <a href="{% url 'genre-update' g.pk %}" class="rounded-lg p-1.5 teks-kedua transition hover:bg-indigo-100 dark:hover:bg-indigo-900/30" title="Edit">
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                     </a>
-                                    <a href="{% url 'genre-delete' g.pk %}" class="rounded-lg p-1.5 text-red-600 transition hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900/30" title="Hapus">
+                                    <a href="{% url 'genre-delete' g.pk %}" class="rounded-lg p-1.5 teks-bahaya transition hover:bg-red-100 dark:hover:bg-red-900/30" title="Hapus">
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                     </a>
                                 </div>
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="4" class="py-8 text-center text-purple-500 dark:text-purple-400">Belum ada genre. Tambahkan di bawah ini.</td></tr>
+                        <tr><td colspan="4" class="py-8 text-center teks-kedua">Belum ada genre. Tambahkan di bawah ini.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -124,8 +124,8 @@
 
             <!-- Form cepat tambah genre -->
             <div class="border-t border-purple-100 bg-purple-50/60 p-4 dark:border-purple-800 dark:bg-purple-950/40">
-                <p class="mb-3 flex items-center gap-2 text-sm font-semibold text-purple-800 dark:text-purple-200">
-                    <svg class="h-4 w-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <p class="mb-3 flex items-center gap-2 text-sm font-semibold teks-utama">
+                    <svg class="h-4 w-4 teks-kedua" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     Tambah Genre / Kategori Baru
                 </p>
                 <form method="post" action="{% url 'genre-create' %}" class="grid grid-cols-1 gap-3 sm:grid-cols-12">
@@ -142,7 +142,7 @@
                         <button type="submit" class="btn-primary flex-1 whitespace-nowrap">Tambah</button>
                     </div>
                 </form>
-                <p class="mt-2 text-xs text-purple-400 dark:text-purple-500">Butuh keterangan lengkap? <a href="{% url 'genre-create' %}" class="underline hover:text-purple-600 dark:hover:text-purple-300">buka formulir lengkap</a>.</p>
+                <p class="mt-2 text-xs teks-samar">Butuh keterangan lengkap? <a href="{% url 'genre-create' %}" class="underline hover:text-purple-600 dark:hover:text-purple-300">buka formulir lengkap</a>.</p>
             </div>
         </div>
     </section>
@@ -150,12 +150,12 @@
     <!-- ══════════ LOKASI RAK BUKU (DINAMIS) ══════════ -->
     <section id="rak-buku" class="card mb-6 scroll-mt-24">
         <div class="card-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <h2 class="flex items-center gap-2 font-display text-lg font-semibold text-purple-800 dark:text-purple-200">
+            <h2 class="flex items-center gap-2 font-display text-lg font-semibold teks-utama">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10M4 18h7"/></svg>
                 Lokasi Rak Buku
-                <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal text-purple-600 dark:bg-purple-900 dark:text-purple-300">{{ shelves|length }} rak</span>
+                <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal teks-utama dark:bg-purple-900">{{ shelves|length }} rak</span>
             </h2>
-            <p class="text-xs text-purple-400 dark:text-purple-500">Rak fisik penyimpanan buku di rumah</p>
+            <p class="text-xs teks-samar">Rak fisik penyimpanan buku di rumah</p>
         </div>
         <div class="card-body p-0">
             <div class="overflow-x-auto">
@@ -175,27 +175,27 @@
                                 <div class="flex items-start gap-2">
                                     <span class="mt-1 h-3 w-3 flex-shrink-0 rounded-full" style="background-color: {{ s.color_code }}"></span>
                                     <div>
-                                        <p class="font-medium text-purple-800 dark:text-purple-200">{{ s.name }}</p>
-                                        {% if s.description %}<p class="text-xs text-purple-500 dark:text-purple-400">{{ s.description }}</p>{% endif %}
+                                        <p class="font-medium teks-utama">{{ s.name }}</p>
+                                        {% if s.description %}<p class="text-xs teks-kedua">{{ s.description }}</p>{% endif %}
                                         {% if not s.is_active %}<span class="badge-red mt-1 inline-block text-[10px]">nonaktif</span>{% endif %}
                                     </div>
                                 </div>
                             </td>
                             <td class="hidden font-mono text-sm sm:table-cell">{{ s.code|default:"—" }}</td>
-                            <td class="text-center font-semibold text-purple-700 dark:text-purple-300">{{ s.book_count }}</td>
+                            <td class="text-center font-semibold teks-utama">{{ s.book_count }}</td>
                             <td>
                                 <div class="flex items-center gap-1">
-                                    <a href="{% url 'shelf-update' s.pk %}" class="rounded-lg p-1.5 text-indigo-600 transition hover:bg-indigo-100 dark:text-indigo-400 dark:hover:bg-indigo-900/30" title="Edit">
+                                    <a href="{% url 'shelf-update' s.pk %}" class="rounded-lg p-1.5 teks-kedua transition hover:bg-indigo-100 dark:hover:bg-indigo-900/30" title="Edit">
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                     </a>
-                                    <a href="{% url 'shelf-delete' s.pk %}" class="rounded-lg p-1.5 text-red-600 transition hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900/30" title="Hapus">
+                                    <a href="{% url 'shelf-delete' s.pk %}" class="rounded-lg p-1.5 teks-bahaya transition hover:bg-red-100 dark:hover:bg-red-900/30" title="Hapus">
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                     </a>
                                 </div>
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="4" class="py-8 text-center text-purple-500 dark:text-purple-400">Belum ada lokasi rak. Tambahkan di bawah ini.</td></tr>
+                        <tr><td colspan="4" class="py-8 text-center teks-kedua">Belum ada lokasi rak. Tambahkan di bawah ini.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -203,8 +203,8 @@
 
             <!-- Form cepat tambah rak -->
             <div class="border-t border-purple-100 bg-purple-50/60 p-4 dark:border-purple-800 dark:bg-purple-950/40">
-                <p class="mb-3 flex items-center gap-2 text-sm font-semibold text-purple-800 dark:text-purple-200">
-                    <svg class="h-4 w-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <p class="mb-3 flex items-center gap-2 text-sm font-semibold teks-utama">
+                    <svg class="h-4 w-4 teks-kedua" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     Tambah Lokasi Rak Baru
                 </p>
                 <form method="post" action="{% url 'shelf-create' %}" class="grid grid-cols-1 gap-3 sm:grid-cols-12">
@@ -221,7 +221,7 @@
                         <button type="submit" class="btn-primary flex-1 whitespace-nowrap">Tambah</button>
                     </div>
                 </form>
-                <p class="mt-2 text-xs text-purple-400 dark:text-purple-500">Butuh keterangan lengkap? <a href="{% url 'shelf-create' %}" class="underline hover:text-purple-600 dark:hover:text-purple-300">buka formulir lengkap</a>.</p>
+                <p class="mt-2 text-xs teks-samar">Butuh keterangan lengkap? <a href="{% url 'shelf-create' %}" class="underline hover:text-purple-600 dark:hover:text-purple-300">buka formulir lengkap</a>.</p>
             </div>
         </div>
     </section>
@@ -229,7 +229,7 @@
     <!-- ══════════ AKUN ══════════ -->
     <section id="akun" class="card mb-6 scroll-mt-24">
         <div class="card-header">
-            <h2 class="flex items-center gap-2 font-display text-lg font-semibold text-purple-800 dark:text-purple-200">
+            <h2 class="flex items-center gap-2 font-display text-lg font-semibold teks-utama">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                 Keamanan Akun
             </h2>
@@ -237,15 +237,15 @@
         <div class="card-body space-y-4">
             <div class="flex flex-col gap-4 rounded-lg border border-purple-100 bg-purple-50 p-4 dark:border-purple-800 dark:bg-purple-950/50 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <p class="font-medium text-purple-800 dark:text-purple-200">Ubah Kata Sandi</p>
-                    <p class="text-sm text-purple-500 dark:text-purple-400">Perbarui kata sandi akun Anda untuk keamanan</p>
+                    <p class="font-medium teks-utama">Ubah Kata Sandi</p>
+                    <p class="text-sm teks-kedua">Perbarui kata sandi akun Anda untuk keamanan</p>
                 </div>
                 <a href="{% url 'password_change' %}" class="btn-secondary w-full sm:w-auto">Ubah Kata Sandi</a>
             </div>
             <div class="flex flex-col gap-4 rounded-lg border border-purple-100 bg-purple-50 p-4 dark:border-purple-800 dark:bg-purple-950/50 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <p class="font-medium text-purple-800 dark:text-purple-200">Edit Profil</p>
-                    <p class="text-sm text-purple-500 dark:text-purple-400">Perbarui foto, bio, dan informasi kontak</p>
+                    <p class="font-medium teks-utama">Edit Profil</p>
+                    <p class="text-sm teks-kedua">Perbarui foto, bio, dan informasi kontak</p>
                 </div>
                 <a href="{% url 'profile-update' %}" class="btn-secondary w-full sm:w-auto">Edit Profil</a>
             </div>
@@ -257,10 +257,10 @@
     <section id="identitas" class="card mb-6 scroll-mt-24">
         <div class="card-header flex flex-wrap items-center justify-between gap-3">
             <div>
-                <h2 class="flex items-center gap-2 text-lg font-semibold text-purple-800 dark:text-purple-200">
+                <h2 class="flex items-center gap-2 text-lg font-semibold teks-utama">
                     Identitas Aplikasi
                 </h2>
-                <p class="text-xs text-purple-400 dark:text-purple-500">
+                <p class="text-xs teks-samar">
                     Judul aplikasi dapat diubah — dipakai di tab browser, navbar, footer, halaman login, dan label cetak.
                 </p>
             </div>
@@ -269,20 +269,20 @@
         <div class="card-body">
             <dl class="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
                 <div>
-                    <dt class="text-xs uppercase tracking-wide text-purple-400">Judul Aplikasi</dt>
-                    <dd class="font-medium text-purple-800 dark:text-purple-200">{{ app_config.app_name }}</dd>
+                    <dt class="text-xs uppercase tracking-wide teks-samar">Judul Aplikasi</dt>
+                    <dd class="font-medium teks-utama">{{ app_config.app_name }}</dd>
                 </div>
                 <div>
-                    <dt class="text-xs uppercase tracking-wide text-purple-400">Nama Singkat (navbar)</dt>
-                    <dd class="font-medium text-purple-800 dark:text-purple-200">{{ app_config.app_short_name }}</dd>
+                    <dt class="text-xs uppercase tracking-wide teks-samar">Nama Singkat (navbar)</dt>
+                    <dd class="font-medium teks-utama">{{ app_config.app_short_name }}</dd>
                 </div>
                 <div>
-                    <dt class="text-xs uppercase tracking-wide text-purple-400">Tagline</dt>
-                    <dd class="text-purple-700 dark:text-purple-300">{{ app_config.tagline|default:"—" }}</dd>
+                    <dt class="text-xs uppercase tracking-wide teks-samar">Tagline</dt>
+                    <dd class="teks-utama">{{ app_config.tagline|default:"—" }}</dd>
                 </div>
                 <div>
-                    <dt class="text-xs uppercase tracking-wide text-purple-400">Nama Pemilik (label cetak)</dt>
-                    <dd class="text-purple-700 dark:text-purple-300">{{ app_config.label_owner|default:"— belum diisi —" }}</dd>
+                    <dt class="text-xs uppercase tracking-wide teks-samar">Nama Pemilik (label cetak)</dt>
+                    <dd class="teks-utama">{{ app_config.label_owner|default:"— belum diisi —" }}</dd>
                 </div>
             </dl>
         </div>
@@ -293,7 +293,7 @@
     {% if user.is_staff or user.is_superuser %}
     <section id="pengguna" class="card mb-6 scroll-mt-24">
         <div class="card-header">
-            <h2 class="flex items-center gap-2 font-display text-lg font-semibold text-purple-800 dark:text-purple-200">
+            <h2 class="flex items-center gap-2 font-display text-lg font-semibold teks-utama">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 Kelola Pengguna
             </h2>
@@ -301,8 +301,8 @@
         <div class="card-body">
             <div class="flex flex-col gap-4 rounded-lg border border-purple-100 bg-purple-50 p-4 dark:border-purple-800 dark:bg-purple-950/50 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <p class="font-medium text-purple-800 dark:text-purple-200">Tambah / ubah pengguna</p>
-                    <p class="text-sm text-purple-500 dark:text-purple-400">
+                    <p class="font-medium teks-utama">Tambah / ubah pengguna</p>
+                    <p class="text-sm teks-kedua">
                         Buat akun untuk anggota keluarga lain, atur ulang kata sandi, atau nonaktifkan akun.
                     </p>
                 </div>
@@ -315,11 +315,11 @@
     <!-- Info -->
     <section class="card border-purple-200 bg-purple-50 dark:border-purple-800 dark:bg-purple-950/50">
         <div class="card-body">
-            <h3 class="mb-2 flex items-center gap-2 font-display font-semibold text-purple-800 dark:text-purple-200">
+            <h3 class="mb-2 flex items-center gap-2 font-display font-semibold teks-utama">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 Informasi Aplikasi
             </h3>
-            <dl class="space-y-2 text-sm text-purple-700 dark:text-purple-300">
+            <dl class="space-y-2 text-sm teks-utama">
                 <div class="flex justify-between"><dt>Nama Sistem</dt><dd>Hirunaza&rsquo;s Library Information System</dd></div>
                 <div class="flex justify-between"><dt>Versi</dt><dd class="font-mono">1.2.0</dd></div>
                 <div class="flex justify-between"><dt>Framework</dt><dd>Django 5.2 + Tailwind CSS</dd></div>

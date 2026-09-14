@@ -8,8 +8,8 @@
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-            <h1 class="font-display text-3xl font-bold text-purple-800 dark:text-purple-200">Edit Profil</h1>
-            <p class="text-purple-500 dark:text-purple-400 mt-1">Perbarui informasi profil Anda</p>
+            <h1 class="font-display text-3xl font-bold teks-utama">Edit Profil</h1>
+            <p class="teks-kedua mt-1">Perbarui informasi profil Anda</p>
         </div>
         <a href="{% url 'profile' %}" class="btn-secondary w-full sm:w-auto">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
@@ -34,21 +34,21 @@
                         </div>
                         {{ form.avatar }}
                         {% if form.avatar.errors %}
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.avatar.errors.0 }}</p>
+                        <p class="mt-1 text-sm teks-bahaya">{{ form.avatar.errors.0 }}</p>
                         {% endif %}
-                        <p class="text-xs text-purple-400 dark:text-purple-500 mt-2">Klik untuk mengganti foto profil (max 2MB)</p>
+                        <p class="text-xs teks-samar mt-2">Klik untuk mengganti foto profil (max 2MB)</p>
                     </label>
                 </div>
 
                 <div class="border-t border-purple-100 dark:border-purple-800 pt-6">
-                    <h3 class="font-display text-lg font-semibold text-purple-800 dark:text-purple-200 mb-4">Informasi Pribadi</h3>
+                    <h3 class="font-display text-lg font-semibold teks-utama mb-4">Informasi Pribadi</h3>
                     
                     <div class="space-y-4">
                         <div>
                             {{ form.bio.label_tag }}
                             {{ form.bio }}
                             {% if form.bio.errors %}
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.bio.errors.0 }}</p>
+                            <p class="mt-1 text-sm teks-bahaya">{{ form.bio.errors.0 }}</p>
                             {% endif %}
                         </div>
                         
@@ -56,7 +56,7 @@
                             {{ form.phone.label_tag }}
                             {{ form.phone }}
                             {% if form.phone.errors %}
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.phone.errors.0 }}</p>
+                            <p class="mt-1 text-sm teks-bahaya">{{ form.phone.errors.0 }}</p>
                             {% endif %}
                         </div>
                     </div>
