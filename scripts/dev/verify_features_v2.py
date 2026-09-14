@@ -225,6 +225,14 @@ cek("Isi kutipan lengkap",
     and "perihnya kebodohan" in html_login)
 cek("Kalimat lama sudah hilang", "Kelola koleksi buku rumah secara kolaboratif" not in html_login)
 
+# Kontras judul: gradient HARUS memakai warna terang (WCAG)
+cek("Gradient judul memakai warna terang (from-white via-purple-200 to-purple-300)",
+    "from-white via-purple-200 to-purple-300" in html_login)
+cek("Gradient gelap lama (royal-500/plum-500) sudah tidak dipakai",
+    "from-purple-200 via-royal-500 to-plum-500" not in html_login)
+cek("Lapisan gelap .hero-scrim dipakai di belakang judul", "hero-scrim" in html_login)
+cek("Judul punya bayangan teks (drop-shadow)", "drop-shadow-[0_4px_18px_rgba(0,0,0,.9)]" in html_login)
+
 print()
 print("═" * 78)
 print("7. REGRESI FITUR SEBELUMNYA")

@@ -38,10 +38,19 @@
             transition: background-color 5000s ease-in-out 0s;
         }
         .hero-panel {
-            background-image: linear-gradient(150deg, rgba(13,5,23,.55) 0%, rgba(30,11,46,.75) 55%, rgba(13,5,23,.92) 100%),
+            background-image: linear-gradient(150deg, rgba(13,5,23,.70) 0%, rgba(30,11,46,.84) 55%, rgba(13,5,23,.95) 100%),
                               url('{% static "img/library-hero.svg" %}');
             background-size: cover;
             background-position: center;
+        }
+        /* Lapisan gelap tambahan tepat di belakang judul agar teks selalu kontras,
+           termasuk di atas bagian ilustrasi yang paling terang. */
+        .hero-scrim {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 70% 58% at 22% 46%,
+                        rgba(10,4,18,.93) 0%, rgba(10,4,18,.62) 52%, rgba(10,4,18,0) 82%);
         }
         .glass {
             background: linear-gradient(160deg, rgba(46,26,71,.72), rgba(18,8,31,.92));
@@ -66,6 +75,7 @@
         <!-- Ornamen cahaya -->
         <div class="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-royal-500/25 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-plum-700/40 blur-3xl"></div>
+        <div class="hero-scrim"></div>
 
         <!-- Brand -->
         <div class="relative flex items-center gap-3 rise rise-1">
@@ -83,9 +93,9 @@
                 <span class="h-1.5 w-1.5 rounded-full bg-royal-500"></span>
                 Sistem Informasi Perpustakaan Pribadi
             </p>
-            <h1 class="font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-white rise rise-2 sm:text-5xl lg:text-6xl">
-                Hirunaza&rsquo;s<br>
-                <span class="bg-gradient-to-r from-purple-200 via-royal-500 to-plum-500 bg-clip-text text-transparent">
+            <h1 class="font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-white drop-shadow-[0_4px_18px_rgba(0,0,0,.9)] rise rise-2 sm:text-5xl lg:text-6xl">
+                <span class="drop-shadow-[0_2px_8px_rgba(0,0,0,.85)]">Hirunaza&rsquo;s</span><br>
+                <span class="bg-gradient-to-r from-white via-purple-200 to-purple-300 bg-clip-text text-transparent">
                     Library Information System
                 </span>
             </h1>
@@ -113,7 +123,7 @@
             </ul>
         </div>
 
-        <p class="relative hidden text-xs text-purple-200/40 lg:block">
+        <p class="relative hidden text-xs text-purple-200/65 lg:block">
             &copy; {% now "Y" %} Hirunaza&rsquo;s Library Information System
         </p>
     </section>
@@ -133,7 +143,7 @@
                     </div>
                     <div>
                         <h2 class="font-display text-xl font-bold text-white">Masuk ke Akun</h2>
-                        <p class="text-xs text-purple-200/60">Hirunaza&rsquo;s Library Information System</p>
+                        <p class="text-xs font-medium text-purple-100/90">Hirunaza&rsquo;s Library Information System</p>
                     </div>
                 </div>
 
@@ -194,7 +204,7 @@
                 </div>
             </div>
 
-            <p class="mt-6 text-center text-xs text-purple-200/40 lg:hidden">
+            <p class="mt-6 text-center text-xs text-purple-200/65 lg:hidden">
                 &copy; {% now "Y" %} Hirunaza&rsquo;s Library Information System
             </p>
         </div>
