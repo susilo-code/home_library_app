@@ -231,10 +231,14 @@ Genre & Lokasi Rak dikelola dari menu **Pengaturan** (dinamis, tersimpan di data
 ```bat
 .venv\Scripts\python.exe scripts\dev\verify_features_v2.py    :: 72 pemeriksaan fitur & halaman
 .venv\Scripts\python.exe scripts\dev\test_start_bat.py        :: uji start.bat + kedua service
+.venv\Scripts\python.exe scripts\dev\verify_fresh_clone.py    :: uji skenario "clone di PC baru" dari nol
 .venv\Scripts\python.exe scripts\dev\render_preview.py        :: render halaman ke folder preview/
 ```
 
 Semua skrip itu sudah punya *bootstrap* sendiri, jadi bisa dijalankan dari direktori mana pun.
+`verify_fresh_clone.py` adalah bukti bahwa panduan ini benar-benar bekerja: ia meng-clone repo
+ke folder sementara, membuat venv baru, memasang dependency, menjalankan migrasi & seeder,
+lalu memastikan halaman login merespons **HTTP 200**.
 
 ---
 
