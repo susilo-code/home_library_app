@@ -88,3 +88,7 @@ ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 .DS_Store
+# Berkas pesan commit sementara & log uji
+_commit_msg.txt
+_audit_kontras.log
+_v7.log
