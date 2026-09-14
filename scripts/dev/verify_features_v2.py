@@ -277,7 +277,10 @@ cek("Halaman katalog menampilkan label jenis", "Fiksi" in body)
 
 # Navigasi: Pengaturan hanya lewat menu klik-user (tidak di top bar)
 html_dash = c.get("/").content.decode()
-_nav = html_dash.split('hidden md:flex items-center gap-6', 1)[-1][:700]
+# Potong tepat di penutup blok navigasi (bukan N karakter tetap) karena isi nav
+# kini memuat ikon sehingga jauh lebih panjang.
+_blok = html_dash.split('hidden md:flex items-center gap-6', 1)[-1]
+_nav = _blok[: _blok.find('</div>')]
 cek("Top bar TIDAK memuat menu 'Pengaturan'", 'Pengaturan' not in _nav,
     f"cuplikan nav: {_nav[:60].strip()}")
 cek("Top bar tetap memuat Dashboard & Katalog",

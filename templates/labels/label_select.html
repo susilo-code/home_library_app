@@ -18,7 +18,13 @@
                 Label ukuran <strong>2 × 3 cm</strong> berisi lokasi rak — untuk ditempel pada buku.
             </p>
         </div>
-        <a href="{% url 'book-list' %}" class="btn-secondary">← Kembali ke Katalog</a>
+        <div class="flex flex-wrap items-center gap-2">
+            <a href="{% url 'book-create' %}" class="btn-primary flex items-center gap-1.5">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Tambah Buku
+            </a>
+            <a href="{% url 'book-list' %}" class="btn-secondary">← Kembali ke Katalog</a>
+        </div>
     </div>
 
     <!-- Filter -->

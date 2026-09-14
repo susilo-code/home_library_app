@@ -44,8 +44,20 @@ c.force_login(admin_user)
 print(f'Login sebagai: {admin_user.username}\n')
 
 dashboard = c.get(reverse('dashboard')).content.decode()
-nav = dashboard.split('hidden md:flex items-center gap-6', 1)[-1][:1000]
-menu_mobile = dashboard.split('id="mobile-menu"', 1)[-1][:2000]
+# Ambil utuh isi blok navigasi (dipotong di penutup </div>), bukan sekadar N karakter:
+# sejak ada ikon, blok nav jauh lebih panjang dari potongan tetap.
+_blok_nav = dashboard.split('hidden md:flex items-center gap-6', 1)[-1]
+nav = _blok_nav[: _blok_nav.find('</div>')]
+# Menu mobile: potong tepat sebelum tag <main> (bukan N karakter tetap),
+# supaya tidak ikut menyerap isi halaman yang punya tombol "Tambah Buku Baru".
+# Catatan: JANGAN memakai '</nav>' — di beberapa halaman ada <nav> lain (paginasi).
+_sisa_menu = dashboard.split('id="mobile-menu"', 1)[-1]
+for _penutup in ('<main', '</header>'):
+    if _penutup in _sisa_menu:
+        menu_mobile = _sisa_menu[: _sisa_menu.find(_penutup)]
+        break
+else:
+    menu_mobile = _sisa_menu[:4000]
 
 print('═' * 78)
 print('1. TOP BAR DIBERSIHKAN')
