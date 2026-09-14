@@ -1,0 +1,79 @@
+# ══════════════════════════════════════════════════════════════════════
+#  .gitignore — Hirunaza's Library Information System
+#  Yang DIABAIKAN: isi .venv, database lokal, upload media, .env (rahasia)
+#  Yang TETAP DI-COMMIT: kode sumber, migrasi, template, static/css/output.css
+# ══════════════════════════════════════════════════════════════════════
+
+# ─── Python ───────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+build/
+dist/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ─── Virtual environment ──────────────────────────────────────────────
+# Jangan commit venv: dibuat ulang di PC lain lewat setup.bat
+.venv/
+venv/
+env/
+ENV/
+virtualenv/
+
+# ─── Django ───────────────────────────────────────────────────────────
+db.sqlite3
+db.sqlite3-journal
+db.sqlite3-wal
+db.sqlite3-shm
+*.log
+local_settings.py
+staticfiles/
+# Catatan: "staticfiles/" di atas = hasil "collectstatic" (dibangun ulang saat deploy)
+
+# ─── Media upload (foto profil & sampul buku milik pengguna) ──────────
+# Seluruh isi diabaikan, kecuali file .gitkeep agar struktur folder tetap ada.
+media/**
+!media/**/
+!media/**/.gitkeep
+
+# ─── Node.js (hanya untuk build Tailwind, opsional) ───────────────────
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+.npm/
+# Catatan: static/css/output.css SENGAJA di-commit agar aplikasi
+# tetap tampil rapi walau Node.js belum terpasang di PC baru.
+
+# ─── Rahasia & konfigurasi lokal ──────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ─── Hasil verifikasi / pratinjau (dibuat ulang oleh script) ──────────
+preview/
+preview*.png
+verify_*.log
+
+# ─── Editor & OS ──────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store

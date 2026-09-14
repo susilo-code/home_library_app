@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Hapus {{ jenis }} — Hirunaza's Library{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-md animate-in">
+    <div class="card">
+        <div class="card-body py-12 text-center">
+            <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                <svg class="h-10 w-10 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </div>
+
+            <h1 class="mb-2 font-display text-2xl font-bold text-purple-800 dark:text-purple-200">Hapus {{ jenis }}?</h1>
+            <p class="mb-6 text-purple-500 dark:text-purple-400">Data berikut akan dihapus dari daftar pilihan:</p>
+
+            <div class="mb-6 rounded-lg border border-purple-100 bg-purple-50 p-4 text-left dark:border-purple-800 dark:bg-purple-950/50">
+                <p class="font-medium text-purple-800 dark:text-purple-200">{{ object }}</p>
+                {% if object.description %}<p class="text-sm text-purple-500 dark:text-purple-400">{{ object.description }}</p>{% endif %}
+                <p class="mt-2 text-xs text-amber-600 dark:text-amber-400">{{ dampak }}</p>
+            </div>
+
+            <form method="post" class="flex flex-col justify-center gap-3 sm:flex-row">
+                {% csrf_token %}
+                <button type="submit" class="btn-danger w-full sm:w-auto">
+                    <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    Ya, Hapus
+                </button>
+                <a href="{{ kembali_url }}" class="btn-secondary w-full text-center sm:w-auto">Batal</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

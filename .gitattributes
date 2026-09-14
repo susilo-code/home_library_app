@@ -1,0 +1,36 @@
+# ══════════════════════════════════════════════════════════════════════
+#  .gitattributes — jaga konsistensi akhir baris antar PC (Windows/Linux)
+#  Tanpa ini, file .bat bisa rusak saat di-clone di Linux, dan skrip
+#  Python bisa "kotor" terus-menerus di git status.
+# ══════════════════════════════════════════════════════════════════════
+
+# Default: deteksi otomatis, simpan sebagai LF di repositori
+* text=auto eol=lf
+
+# File batch Windows WAJIB CRLF agar Command Prompt membacanya dengan benar
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# File yang tidak boleh diubah barisnya
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.xlsx binary
+
+# Perkakas
+.gitattributes text
+.gitignore text
+*.md text
+*.py text
+*.html text
+*.css text
+*.js text
+*.json text
+*.svg text
+*.txt text

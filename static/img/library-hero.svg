@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Ilustrasi perpustakaan rumah dengan rak buku">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0%" stop-color="#12081F"/>
+      <stop offset="45%" stop-color="#1E0B2E"/>
+      <stop offset="100%" stop-color="#2E1A47"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="38%" r="55%">
+      <stop offset="0%" stop-color="#8A4FFF" stop-opacity="0.35"/>
+      <stop offset="60%" stop-color="#522B5B" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#12081F" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="lampLight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFD79A" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#FFD79A" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="shelfWood" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3B1E54"/>
+      <stop offset="50%" stop-color="#4A2568"/>
+      <stop offset="100%" stop-color="#3B1E54"/>
+    </linearGradient>
+    <linearGradient id="moonGlow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#EFE4FF"/>
+      <stop offset="100%" stop-color="#B899FF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Latar -->
+  <rect width="1200" height="900" fill="url(#bgGrad)"/>
+  <rect width="1200" height="900" fill="url(#glow)"/>
+
+  <!-- Bintang halus -->
+  <g fill="#D6C6FF" opacity="0.5">
+    <circle cx="120" cy="90" r="2"/><circle cx="260" cy="55" r="1.6"/>
+    <circle cx="420" cy="120" r="1.8"/><circle cx="980" cy="70" r="2"/>
+    <circle cx="1090" cy="150" r="1.5"/><circle cx="880" cy="115" r="1.4"/>
+    <circle cx="180" cy="200" r="1.3"/><circle cx="1150" cy="300" r="1.6"/>
+  </g>
+
+  <!-- Jendela melengkung dengan cahaya bulan -->
+  <g transform="translate(760,110)">
+    <path d="M0 190 V70 A95 95 0 0 1 190 70 V190 Z" fill="#1A0F2B" stroke="#6B4A93" stroke-width="4"/>
+    <path d="M12 182 V70 A83 83 0 0 1 178 70 V182 Z" fill="#241640"/>
+    <circle cx="130" cy="72" r="30" fill="url(#moonGlow)" opacity="0.95"/>
+    <circle cx="120" cy="63" r="6" fill="#2E1A47" opacity="0.25"/>
+    <circle cx="140" cy="82" r="4" fill="#2E1A47" opacity="0.2"/>
+    <line x1="95" y1="12" x2="95" y2="182" stroke="#6B4A93" stroke-width="3"/>
+    <line x1="12" y1="110" x2="178" y2="110" stroke="#6B4A93" stroke-width="3"/>
+    <!-- Cahaya jatuh dari jendela -->
+    <path d="M12 182 L-40 320 H230 L178 182 Z" fill="#B899FF" opacity="0.10"/>
+  </g>
+
+  <!-- Rak buku utama -->
+  <g>
+    <!-- Bingkai rak -->
+    <rect x="150" y="230" width="620" height="520" rx="18" fill="#2A1740" stroke="#6B4A93" stroke-width="5"/>
+
+    <!-- Papan rak -->
+    <g fill="url(#shelfWood)" stroke="#6B4A93" stroke-width="3">
+      <rect x="168" y="355" width="584" height="20" rx="6"/>
+      <rect x="168" y="480" width="584" height="20" rx="6"/>
+      <rect x="168" y="605" width="584" height="20" rx="6"/>
+      <rect x="168" y="725" width="584" height="16" rx="6"/>
+    </g>
+
+    <!-- Baris 1: buku-buku -->
+    <g>
+      <rect x="196" y="258" width="30" height="97" rx="4" fill="#8A4FFF"/>
+      <rect x="230" y="272" width="26" height="83" rx="4" fill="#EC4899"/>
+      <rect x="260" y="250" width="34" height="105" rx="4" fill="#10B981"/>
+      <rect x="298" y="280" width="24" height="75" rx="4" fill="#F59E0B"/>
+      <rect x="326" y="264" width="30" height="91" rx="4" fill="#06B6D4"/>
+      <rect x="360" y="286" width="22" height="69" rx="4" fill="#A855F7"/>
+      <rect x="386" y="256" width="34" height="99" rx="4" fill="#EFE4FF"/>
+      <rect x="424" y="276" width="26" height="79" rx="4" fill="#6366F1"/>
+      <rect x="454" y="262" width="28" height="93" rx="4" fill="#14B8A6"/>
+      <!-- buku bersandar -->
+      <g transform="rotate(18 520 355)">
+        <rect x="500" y="266" width="28" height="89" rx="4" fill="#F97316"/>
+      </g>
+      <!-- koleksi gelap di ujung -->
+      <rect x="640" y="272" width="26" height="83" rx="4" fill="#4C18B8"/>
+      <rect x="670" y="258" width="30" height="97" rx="4" fill="#735384"/>
+      <rect x="704" y="284" width="24" height="71" rx="4" fill="#84CC16"/>
+    </g>
+
+    <!-- Baris 2 -->
+    <g>
+      <rect x="196" y="384" width="34" height="96" rx="4" fill="#06B6D4"/>
+      <rect x="234" y="398" width="26" height="82" rx="4" fill="#8A4FFF"/>
+      <rect x="264" y="376" width="30" height="104" rx="4" fill="#F59E0B"/>
+      <rect x="298" y="406" width="24" height="74" rx="4" fill="#EC4899"/>
+      <rect x="326" y="390" width="32" height="90" rx="4" fill="#10B981"/>
+      <rect x="362" y="380" width="26" height="100" rx="4" fill="#EFE4FF"/>
+      <rect x="392" y="400" width="30" height="80" rx="4" fill="#6366F1"/>
+      <rect x="426" y="386" width="24" height="94" rx="4" fill="#A855F7"/>
+      <rect x="454" y="374" width="32" height="106" rx="4" fill="#14B8A6"/>
+      <!-- tumpukan buku tidur horizontal -->
+      <rect x="500" y="456" width="120" height="14" rx="4" fill="#8A4FFF"/>
+      <rect x="506" y="442" width="110" height="14" rx="4" fill="#EC4899"/>
+      <rect x="512" y="428" width="98" height="14" rx="4" fill="#F59E0B"/>
+      <rect x="650" y="452" width="80" height="18" rx="5" fill="#4C18B8"/>
+    </g>
+
+    <!-- Baris 3 -->
+    <g>
+      <rect x="196" y="512" width="28" height="93" rx="4" fill="#EC4899"/>
+      <rect x="228" y="526" width="26" height="79" rx="4" fill="#8A4FFF"/>
+      <rect x="258" y="504" width="32" height="101" rx="4" fill="#10B981"/>
+      <rect x="294" y="534" width="24" height="71" rx="4" fill="#F59E0B"/>
+      <rect x="322" y="518" width="30" height="87" rx="4" fill="#EFE4FF"/>
+      <rect x="356" y="508" width="26" height="97" rx="4" fill="#6366F1"/>
+      <rect x="386" y="530" width="30" height="75" rx="4" fill="#06B6D4"/>
+      <rect x="420" y="514" width="24" height="91" rx="4" fill="#A855F7"/>
+      <rect x="448" y="522" width="32" height="83" rx="4" fill="#14B8A6"/>
+      <rect x="640" y="520" width="30" height="85" rx="4" fill="#84CC16"/>
+      <rect x="674" y="536" width="26" height="69" rx="4" fill="#F97316"/>
+      <rect x="704" y="512" width="28" height="93" rx="4" fill="#735384"/>
+    </g>
+
+    <!-- Baris 4 -->
+    <g>
+      <rect x="196" y="638" width="30" height="87" rx="4" fill="#F59E0B"/>
+      <rect x="230" y="652" width="26" height="73" rx="4" fill="#8A4FFF"/>
+      <rect x="260" y="630" width="32" height="95" rx="4" fill="#EC4899"/>
+      <rect x="296" y="660" width="24" height="65" rx="4" fill="#10B981"/>
+      <rect x="324" y="644" width="30" height="81" rx="4" fill="#06B6D4"/>
+      <rect x="358" y="634" width="26" height="91" rx="4" fill="#EFE4FF"/>
+      <rect x="388" y="656" width="30" height="69" rx="4" fill="#6366F1"/>
+      <rect x="422" y="640" width="26" height="85" rx="4" fill="#A855F7"/>
+      <rect x="452" y="648" width="30" height="77" rx="4" fill="#14B8A6"/>
+      <rect x="640" y="646" width="28" height="79" rx="4" fill="#84CC16"/>
+      <rect x="672" y="632" width="30" height="93" rx="4" fill="#4C18B8"/>
+      <rect x="706" y="658" width="24" height="67" rx="4" fill="#F97316"/>
+    </g>
+  </g>
+
+  <!-- Meja baca -->
+  <rect x="120" y="750" width="700" height="26" rx="8" fill="#3B1E54" stroke="#6B4A93" stroke-width="4"/>
+  <rect x="170" y="776" width="22" height="80" rx="6" fill="#2A1740"/>
+  <rect x="748" y="776" width="22" height="80" rx="6" fill="#2A1740"/>
+
+  <!-- Lampu meja + cahaya -->
+  <g transform="translate(700,640)">
+    <path d="M0 110 H70 L60 40 H10 Z" fill="#F59E0B" opacity="0.95"/>
+    <rect x="32" y="110" width="6" height="34" fill="#735384"/>
+    <ellipse cx="35" cy="146" rx="26" ry="7" fill="#4C18B8"/>
+    <path d="M10 40 L-70 108 H140 L60 40 Z" fill="url(#lampLight)"/>
+  </g>
+
+  <!-- Tanaman hias -->
+  <g transform="translate(880,620)">
+    <path d="M60 220 H140 L130 120 H70 Z" fill="#4C18B8" stroke="#6B4A93" stroke-width="3"/>
+    <g fill="#10B981">
+      <path d="M100 120 C60 90 40 40 70 10 C96 42 104 82 100 120 Z"/>
+      <path d="M100 120 C140 92 168 46 140 14 C112 46 100 84 100 120 Z" opacity="0.85"/>
+      <path d="M100 124 C70 108 30 96 12 108 C40 136 76 138 100 124 Z" opacity="0.75"/>
+      <path d="M100 124 C132 106 176 100 194 112 C166 140 128 140 100 124 Z" opacity="0.7"/>
+    </g>
+  </g>
+
+  <!-- Buku terbuka di meja -->
+  <g transform="translate(300,690)">
+    <path d="M0 40 Q60 8 120 40 L120 66 Q60 34 0 66 Z" fill="#EFE4FF"/>
+    <path d="M120 40 Q180 8 240 40 L240 66 Q180 34 120 66 Z" fill="#D6C6FF"/>
+    <path d="M118 38 L122 70" stroke="#8A4FFF" stroke-width="3"/>
+  </g>
+
+  <!-- Cangkir kopi -->
+  <g transform="translate(560,700)">
+    <rect x="0" y="18" width="46" height="34" rx="8" fill="#EFE4FF"/>
+    <path d="M46 26 h12 a10 10 0 0 1 0 20 h-12" fill="none" stroke="#EFE4FF" stroke-width="6"/>
+    <path d="M10 8 q8 -10 18 0 q8 -10 18 0" fill="none" stroke="#B899FF" stroke-width="4" opacity="0.8"/>
+  </g>
+
+  <!-- Lantai -->
+  <rect x="0" y="856" width="1200" height="44" fill="#1A0F2B"/>
+  <rect x="0" y="850" width="1200" height="8" fill="#522B5B" opacity="0.7"/>
+</svg>

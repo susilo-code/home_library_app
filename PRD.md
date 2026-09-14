@@ -1,0 +1,123 @@
+# Product Requirement Document (PRD): Home Library App
+
+## 1. Ringkasan Eksekutif & Tujuan Project
+**Home Library App** adalah aplikasi manajemen perpustakaan rumah berbasis kolaboratif yang memungkinkan multiple pengguna untuk mencatat, mengelola, dan memantau koleksi buku bersama. Aplikasi ini dirancang dengan estetika visual elegan (nuansa Ungu Tua & Putih Redup / Slate), hemat di mata (eye-friendly), serta mendukung pengalihan Dark Mode / Light Mode secara mulus.
+
+---
+
+## 2. Target Pengguna & Karakteristik
+- **Multi-User Collaborative**: Setiap pengguna terdaftar dapat menambahkan dan mengedit data buku.
+- **Transparansi Koleksi**: Seluruh pengguna dapat melihat hasil perekaman dari pengguna lain, memantau kontributor teraktif, serta mencari koleksi buku secara terpusat.
+
+---
+
+## 3. Fitur Utama & Spesifikasi Teknis
+
+### A. Dashboard Interaktif & Stat Analysis
+1. **Ringkasan KPI Card**:
+   - Total Jumlah Buku dalam Perpustakaan.
+   - Total Genre / Kategori Terdaftar.
+   - Total Kontributor Teraktif (Pengguna).
+2. **Visualisasi Grafik (Chart.js)**:
+   - **Distribusi Buku per Genre** (Doughnut / Pie Chart).
+   - **Produktivitas Perekaman per User** (Bar Chart membandingkan jumlah buku yang di-input tiap user).
+3. **Widget Jam Digital Realtime**:
+   - Tampilan jam, menit, detik & tanggal terkini dengan animasi halus di header / dashboard.
+
+### B. Manajemen Data Buku (Form & DataTable)
+1. **Form Perekaman Buku (CBV Create/Update)**:
+   - Judul Buku, Penulis, ISBN, Genre, Tahun Terbit, Penerbit, Jumlah Halaman, Status Baca (Belum Dibaca, Sedang Dibaca, Selesai Dibaca), Deskripsi, & Cover URL/Image.
+2. **DataTable & Filter Advanced**:
+   - Pencarian Instan (Live Search judul, penulis, ISBN).
+   - Filter Multi-kriteria (Filter per Genre, Filter per User perekam, Filter per Status Baca).
+   - Pagination & Sorting (Judul, Tanggal Input, Tahun Terbit).
+
+### C. Profil Pengguna & Pengaturan (Settings)
+1. **Profile Management**:
+   - Tampilan profil user, bio, serta Foto Profil (Avatar Upload).
+   - Statistik individu (jumlah buku yang dikontribusikan).
+2. **Settings**:
+   - Pengaturan Preferensi Tampilan (Dark/Light mode).
+   - Pengaturan Sistem & Informasi Akun.
+
+### D. UI/UX & Tema Visual
+- **Palet Warna**:
+  - Primary / Accent: Deep Purple (`#3B1E54`, `#2E1A47`, `#522B5B`).
+  - Background Light Mode: Soft Off-White (`#F7F5FA`, `#EFEBF4`).
+  - Background Dark Mode: Deep Midnight Purple (`#120B1C`, `#1A1126`).
+  - Text: High Contrast Slate & Muted Lilac (`#DFD7BF`, `#8B7E74`, `#E0E0E0`).
+- **Dark & Light Mode Toggle**: Pengalihan tema yang tersimpan di `localStorage` browser.
+- **Responsif**: Layout fleksibel untuk desktop, tablet, dan mobile.
+
+---
+
+## 4. Arsitektur Software & Tech Stack
+
+| Komponen | Teknologi | Keterangan |
+| :--- | :--- | :--- |
+| **Backend Framework** | Django 5.x | Class-Based Views (CBV) untuk routing & render template |
+| **API Backend Service** | FastAPI + Uvicorn | High-performance endpoints untuk stats dashboard & datatable JSON |
+| **Frontend Rendering** | Django Templates + HTMX | Modular template inheritence & dynamic updating |
+| **Styling** | Tailwind CSS (Local Bundle) | Custom Purple Slate Palette & Dark Mode Config |
+| **Database** | SQLite / MySQL | Persistensi data koleksi buku & profil pengguna |
+| **Python Environment** | `uv venv` Python 3.11 | Isolasi dependensi & manajemen paket cepat |
+
+---
+
+## 5. Struktur Data (Data Models)
+
+1. **User / UserProfile**:
+   - `user`: OneToOneField(User)
+   - `avatar`: ImageField / URL
+   - `bio`: TextField
+   - `created_at`: DateTimeField
+
+2. **Genre**:
+   - `name`: CharField (Unique)
+   - `color_code`: CharField (Hex Code untuk Badge UI)
+   - `description`: TextField
+
+3. **Book**:
+   - `title`: CharField
+   - `author`: CharField
+   - `isbn`: CharField
+   - `genre`: ForeignKey(Genre)
+   - `recorded_by`: ForeignKey(User)
+   - `status`: CharField (UNREAD, READING, COMPLETED)
+   - `rating`: IntegerField (1-5 star)
+   - `publisher`: CharField
+   - `publication_year`: IntegerField
+   - `pages`: IntegerField
+   - `summary`: TextField
+   - `cover_url`: URLField / CharField
+   - `created_at`: DateTimeField
+   - `updated_at`: DateTimeField
+
+---
+
+## 6. Rencana Eksekusi & Tahapan Implementasi
+1. **Tahap 1**: Setup Environment `uv venv` & Instalasi Package (Django, FastAPI, Uvicorn, Pillow, Jinja2).
+2. **Tahap 2**: Inisialisasi Django Project & App Structure (`home_library` & `library_app`).
+3. **Tahap 3**: Implementasi Model Database & Migrasi.
+4. **Tahap 4**: Pembuatan Seeder Data Dummy (User, Genre, Buku, Activity Logs).
+5. **Tahap 5**: Implementasi Django Class-Based Views (CBV) & FastAPI Service.
+6. **Tahap 6**: Desain UI/UX Django Templates dengan Tailwind CSS Local, Jam Digital JS, Chart.js, & Switcher Dark/Light Mode.
+7. **Tahap 7**: Pengujian (Unit Tests & Functional Endpoint Verification) & Run Application.
+
+---
+
+## 7. Catatan Revisi
+
+### Revisi 1 (v1.1.0)
+- Halaman login didesain ulang: nuansa ungu tua, judul **Hirunaza's Library Information System**, ilustrasi perpustakaan lokal (`static/img/library-hero.svg`).
+- Form perekaman: section detail/sampul/sinopsis **terlipat** (default tertutup), tombol simpan sticky.
+- **Autocomplete judul** dengan pencocokan fuzzy (`/api/titles/`) + deteksi duplikat **tidak peka huruf besar/kecil & spasi ganda** (field normalisasi `title_normalized` / `author_normalized`).
+- Master data **Lokasi Rak Buku** dinamis (CRUD dari Pengaturan).
+
+### Revisi 2 (v1.2.0)
+- **Jenis Buku dikunci** menjadi pilihan tetap: **Fiksi** dan **Non-Fiksi** (`Book.BookCategory`); model `BookType` (master data) dihapus.
+- **Genre / Kategori menjadi DINAMIS**: tambah/ubah/hapus dari halaman **Pengaturan**, lengkap dengan slug otomatis, warna label, ikon, dan status aktif. Hanya genre aktif yang muncul di form perekaman.
+- Field baru **Tahun Beli** (`purchase_year`) dengan validasi: 1900 s.d. tahun berjalan, dan tidak boleh lebih awal dari tahun terbit.
+- Tombol **Simpan** kini selalu terlihat tanpa scroll: bar aksi melayang (`fixed bottom-0`) + tombol di header form.
+- Halaman login: kalimat sambutan diganti kutipan **Imam Syafi'i Rahimahullah** tentang menahan lelahnya belajar.
+- Migrasi: `0004` (jenis buku tetap + tahun beli + genre dinamis, mapping data dari genre) dan `0005` (backfill `Genre.created_at`).

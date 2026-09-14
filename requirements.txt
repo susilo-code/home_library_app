@@ -1,0 +1,38 @@
+# ══════════════════════════════════════════════════════════════════════
+#  Hirunaza's Library Information System — Dependency Python
+#  Diuji pada: Python 3.11.16 (Windows 10/11) & WSL2 Ubuntu
+#  Versi di-pin agar hasil instalasi identik di PC lain (anti-drift).
+#
+#  Instalasi:
+#    python -m venv .venv
+#    .venv\Scripts\activate           (Windows)
+#    source .venv/bin/activate        (Linux/macOS)
+#    pip install -r requirements.txt
+# ══════════════════════════════════════════════════════════════════════
+
+# ── Web framework & aplikasi utama ────────────────────────────────────
+Django==5.2.17
+Pillow==12.3.0                 # ImageField (foto profil & sampul buku)
+
+# ── Service API (FastAPI berjalan di port terpisah) ───────────────────
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+pydantic==2.13.5
+python-multipart==0.0.32       # parsing form-data / upload file
+
+# ── Konfigurasi lingkungan ────────────────────────────────────────────
+python-dotenv==1.2.3           # membaca file .env
+
+# ══════════════════════════════════════════════════════════════════════
+#  OPSIONAL — hanya bila memakai database eksternal (bukan SQLite).
+#  Buka komentar sesuai kebutuhan, lalu ubah DB_ENGINE di file .env
+# ══════════════════════════════════════════════════════════════════════
+
+# MySQL / MariaDB  (Laragon, XAMPP, dsb) — pure Python, TANPA compiler C
+# PyMySQL==1.1.1
+
+# PostgreSQL
+# psycopg[binary]==3.2.9
+
+# MySQL via driver resmi (butuh MySQL Connector/C di Windows)
+# mysqlclient==2.2.7

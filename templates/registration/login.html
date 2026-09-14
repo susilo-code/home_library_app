@@ -1,0 +1,220 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk — Hirunaza's Library Information System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        ink: { 900: '#0D0517', 800: '#12081F', 700: '#1A0F2B', 600: '#1E0B2E' },
+                        royal: { 500: '#8A4FFF', 600: '#742EFF', 700: '#5F1CE6', 900: '#3B1E54' },
+                        plum: { 500: '#735384', 700: '#522B5B', 900: '#2E1A47' },
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    <style>
+        /* Autofill Chrome agar tetap gelap */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus {
+            -webkit-text-fill-color: #F5F0FF;
+            -webkit-box-shadow: 0 0 0px 1000px #1E0B2E inset;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+        .hero-panel {
+            background-image: linear-gradient(150deg, rgba(13,5,23,.55) 0%, rgba(30,11,46,.75) 55%, rgba(13,5,23,.92) 100%),
+                              url('{% static "img/library-hero.svg" %}');
+            background-size: cover;
+            background-position: center;
+        }
+        .glass {
+            background: linear-gradient(160deg, rgba(46,26,71,.72), rgba(18,8,31,.92));
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(138,79,255,.25);
+            box-shadow: 0 25px 60px -25px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.05);
+        }
+        .glow-ring { box-shadow: 0 0 0 1px rgba(138,79,255,.35), 0 0 40px -8px rgba(138,79,255,.55); }
+        @keyframes floatY { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
+        .float-slow { animation: floatY 6s ease-in-out infinite; }
+        @keyframes riseIn { from { opacity:0; transform: translateY(14px) } to { opacity:1; transform: translateY(0) } }
+        .rise { animation: riseIn .6s cubic-bezier(.22,1,.36,1) both; }
+        .rise-1 { animation-delay: .06s } .rise-2 { animation-delay: .14s }
+        .rise-3 { animation-delay: .22s } .rise-4 { animation-delay: .3s }
+    </style>
+</head>
+<body class="h-full bg-ink-900 font-sans text-purple-50 antialiased">
+<div class="min-h-full lg:grid lg:grid-cols-12">
+
+    <!-- ═══════════ PANEL GAMBAR / BRANDING ═══════════ -->
+    <section class="hero-panel relative flex flex-col justify-between overflow-hidden px-6 py-10 sm:px-10 lg:col-span-7 lg:px-14 lg:py-14">
+        <!-- Ornamen cahaya -->
+        <div class="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-royal-500/25 blur-3xl"></div>
+        <div class="pointer-events-none absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-plum-700/40 blur-3xl"></div>
+
+        <!-- Brand -->
+        <div class="relative flex items-center gap-3 rise rise-1">
+            <div class="glow-ring flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-royal-500 to-plum-900">
+                <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+            </div>
+            <span class="font-display text-sm font-semibold uppercase tracking-[0.2em] text-purple-200/80">Rumah Baca</span>
+        </div>
+
+        <!-- Judul utama -->
+        <div class="relative my-10 max-w-xl lg:my-0">
+            <p class="mb-3 inline-flex items-center gap-2 rounded-full border border-purple-400/25 bg-white/5 px-3 py-1 text-xs font-medium text-purple-200/90 rise rise-1">
+                <span class="h-1.5 w-1.5 rounded-full bg-royal-500"></span>
+                Sistem Informasi Perpustakaan Pribadi
+            </p>
+            <h1 class="font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-white rise rise-2 sm:text-5xl lg:text-6xl">
+                Hirunaza&rsquo;s<br>
+                <span class="bg-gradient-to-r from-purple-200 via-royal-500 to-plum-500 bg-clip-text text-transparent">
+                    Library Information System
+                </span>
+            </h1>
+            <blockquote class="mt-6 max-w-lg rounded-2xl border-l-4 border-royal-500 bg-white/5 p-5 rise rise-3">
+                <p class="text-sm font-medium text-purple-100/80">Imam Syafi&rsquo;i Rahimahullah berkata,</p>
+                <p class="mt-2 font-display text-lg italic leading-relaxed text-white">
+                    &ldquo;Jika kamu tak sanggup menahan lelahnya belajar, maka kamu harus sanggup menahan perihnya kebodohan.&rdquo;
+                </p>
+            </blockquote>
+
+            <!-- Fitur singkat -->
+            <ul class="mt-8 grid gap-3 sm:grid-cols-3 rise rise-4">
+                <li class="flex items-center gap-2 rounded-xl border border-purple-400/20 bg-white/5 px-3 py-2.5 text-xs font-medium text-purple-100/85">
+                    <svg class="h-4 w-4 text-royal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    Katalog Koleksi
+                </li>
+                <li class="flex items-center gap-2 rounded-xl border border-purple-400/20 bg-white/5 px-3 py-2.5 text-xs font-medium text-purple-100/85">
+                    <svg class="h-4 w-4 text-royal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10M4 18h7"/></svg>
+                    Rak &amp; Jenis Dinamis
+                </li>
+                <li class="flex items-center gap-2 rounded-xl border border-purple-400/20 bg-white/5 px-3 py-2.5 text-xs font-medium text-purple-100/85">
+                    <svg class="h-4 w-4 text-royal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    Statistik Kontribusi
+                </li>
+            </ul>
+        </div>
+
+        <p class="relative hidden text-xs text-purple-200/40 lg:block">
+            &copy; {% now "Y" %} Hirunaza&rsquo;s Library Information System
+        </p>
+    </section>
+
+    <!-- ═══════════ PANEL FORM LOGIN ═══════════ -->
+    <section class="relative flex items-center justify-center px-5 py-12 sm:px-8 lg:col-span-5 lg:py-0">
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink-800 via-ink-700 to-plum-900"></div>
+
+        <div class="relative w-full max-w-md rise rise-2">
+            <div class="glass float-slow rounded-3xl p-7 sm:p-9">
+                <!-- Ikon -->
+                <div class="mb-6 flex items-center gap-3">
+                    <div class="glow-ring flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-royal-500 to-plum-700">
+                        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="font-display text-xl font-bold text-white">Masuk ke Akun</h2>
+                        <p class="text-xs text-purple-200/60">Hirunaza&rsquo;s Library Information System</p>
+                    </div>
+                </div>
+
+                {% if form.non_field_errors %}
+                <div class="mb-5 flex items-start gap-3 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                    <svg class="mt-0.5 h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <div>{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+                </div>
+                {% endif %}
+
+                <form method="post" class="space-y-5" novalidate>
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ next }}">
+
+                    <!-- Username -->
+                    <div>
+                        <label for="{{ form.username.id_for_label }}" class="mb-2 block text-sm font-medium text-purple-100/85">{{ form.username.label }}</label>
+                        <div class="relative">
+                            <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-purple-300/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            {{ form.username }}
+                        </div>
+                        {% if form.username.errors %}<p class="mt-1.5 text-xs text-red-300">{{ form.username.errors.0 }}</p>{% endif %}
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label for="{{ form.password.id_for_label }}" class="mb-2 block text-sm font-medium text-purple-100/85">{{ form.password.label }}</label>
+                        <div class="relative">
+                            <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-purple-300/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                            {{ form.password }}
+                            <button type="button" id="toggle-password" tabindex="-1"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-purple-300/60 transition hover:bg-white/5 hover:text-purple-100"
+                                    aria-label="Tampilkan / sembunyikan kata sandi">
+                                <svg id="eye-open" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                <svg id="eye-closed" class="hidden h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+                            </button>
+                        </div>
+                        {% if form.password.errors %}<p class="mt-1.5 text-xs text-red-300">{{ form.password.errors.0 }}</p>{% endif %}
+                    </div>
+
+                    <button type="submit"
+                            class="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-royal-600 via-royal-500 to-plum-700 px-4 py-3.5 font-display text-sm font-bold uppercase tracking-wide text-white shadow-lg shadow-royal-900/40 transition-all duration-200 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:ring-offset-2 focus:ring-offset-ink-800">
+                        <span class="flex items-center justify-center gap-2">
+                            Masuk ke Sistem
+                            <svg class="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </span>
+                    </button>
+                </form>
+
+                <div class="mt-6 border-t border-purple-400/15 pt-5 text-center">
+                    <p class="text-xs text-purple-200/55">
+                        Belum punya akun? Hubungi administrator untuk dibuatkan akun.
+                    </p>
+                </div>
+            </div>
+
+            <p class="mt-6 text-center text-xs text-purple-200/40 lg:hidden">
+                &copy; {% now "Y" %} Hirunaza&rsquo;s Library Information System
+            </p>
+        </div>
+    </section>
+</div>
+
+<script>
+    // Toggle visibility kata sandi
+    const toggleBtn = document.getElementById('toggle-password');
+    const pwd = document.getElementById('id_password');
+    const eyeOpen = document.getElementById('eye-open');
+    const eyeClosed = document.getElementById('eye-closed');
+    if (toggleBtn && pwd) {
+        toggleBtn.addEventListener('click', () => {
+            const show = pwd.type === 'password';
+            pwd.type = show ? 'text' : 'password';
+            eyeOpen.classList.toggle('hidden', show);
+            eyeClosed.classList.toggle('hidden', !show);
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}{% if object %}Edit Genre{% else %}Tambah Genre{% endif %} — Hirunaza's Library{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-xl animate-in">
+    <div class="mb-6 flex items-center justify-between gap-4">
+        <div>
+            <h1 class="font-display text-3xl font-bold text-purple-800 dark:text-purple-200">
+                {% if object %}Edit Genre / Kategori{% else %}Tambah Genre / Kategori{% endif %}
+            </h1>
+            <p class="mt-1 text-purple-500 dark:text-purple-400">Data master dinamis — langsung muncul di form perekaman buku</p>
+        </div>
+        <a href="{% url 'settings' %}#genre-kategori" class="btn-secondary">
+            <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+
+                <div>
+                    {{ form.name.label_tag }}
+                    {{ form.name }}
+                    {% if form.name.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.name.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    {{ form.description.label_tag }}
+                    {{ form.description }}
+                    {% if form.description.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.description.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                        {{ form.color_code.label_tag }}
+                        {{ form.color_code }}
+                        {% if form.color_code.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.color_code.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        {{ form.icon.label_tag }}
+                        {{ form.icon }}
+                        <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.icon.help_text }}</p>
+                        {% if form.icon.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.icon.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    {{ form.is_active }}
+                    <label for="{{ form.is_active.id_for_label }}" class="text-sm font-medium text-purple-700 dark:text-purple-300">{{ form.is_active.label }}</label>
+                </div>
+
+                {% if object %}
+                <div class="rounded-lg border border-purple-100 bg-purple-50 p-3 text-sm text-purple-600 dark:border-purple-800 dark:bg-purple-950/50 dark:text-purple-300">
+                    Saat ini dipakai oleh <strong>{{ object.books.count }}</strong> buku &middot; slug: <span class="font-mono">{{ object.slug }}</span>
+                </div>
+                {% endif %}
+
+                <div class="flex flex-col gap-3 border-t border-purple-100 pt-5 dark:border-purple-800 sm:flex-row">
+                    <button type="submit" class="btn-primary">
+                        <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        {% if object %}Simpan Perubahan{% else %}Tambah Genre{% endif %}
+                    </button>
+                    <a href="{% url 'settings' %}#genre-kategori" class="btn-secondary text-center">Batal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

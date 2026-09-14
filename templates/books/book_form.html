@@ -1,0 +1,453 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if object %}Edit{% else %}Tambah{% endif %} Buku — Hirunaza's Library{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-3xl animate-in pb-28">
+
+    <!-- Header + tombol aksi (selalu terlihat tanpa scroll) -->
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="font-display text-3xl font-bold text-purple-800 dark:text-purple-200">
+                {% if object %}Edit Buku{% else %}Tambah Buku Baru{% endif %}
+            </h1>
+            <p class="mt-1 text-purple-500 dark:text-purple-400">
+                {% if object %}Perbarui informasi buku &ldquo;{{ object.title }}&rdquo;{% else %}Isi informasi utama, detail lain bisa dibuka bila diperlukan{% endif %}
+            </p>
+        </div>
+        <div class="flex gap-2">
+            <button type="submit" form="book-form" class="btn-primary w-full sm:w-auto">
+                <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                {% if object %}Simpan Perubahan{% else %}Simpan Buku{% endif %}
+            </button>
+            <a href="{% url 'book-list' %}" class="btn-secondary w-full text-center sm:w-auto">Batal</a>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card">
+        <div class="card-body pb-4">
+
+            {# ── Peringatan duplikat dari server (tidak memblokir) ── #}
+            {% if form.duplicate_warning %}
+            <div class="mb-6 flex items-start gap-3 rounded-r-lg border-l-4 border-amber-400 bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+                <svg class="mt-0.5 h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <div>
+                    <p class="font-semibold">Kemungkinan duplikat</p>
+                    <p class="mt-0.5">{{ form.duplicate_warning }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if form.errors %}
+            <div class="mb-6 flex items-start gap-3 rounded-r-lg border-l-4 border-red-400 bg-red-50 p-4 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
+                <svg class="mt-0.5 h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div>
+                    <p class="font-semibold">Ada {{ form.errors|length }} isian yang perlu diperbaiki</p>
+                    <p class="mt-0.5">Periksa kembali field bertanda merah di bawah.</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" class="space-y-6" id="book-form">
+                {% csrf_token %}
+
+                {# ══════════ INFORMASI UTAMA (selalu terlihat) ══════════ #}
+                <section>
+                    <h3 class="mb-4 flex items-center gap-2 font-display text-lg font-semibold text-purple-800 dark:text-purple-200">
+                        <svg class="h-5 w-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        Informasi Utama
+                    </h3>
+
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+                        <!-- Judul + AUTOCOMPLETE -->
+                        <div class="relative md:col-span-2">
+                            {{ form.title.label_tag }}
+                            <div class="relative">
+                                {{ form.title }}
+                                <span id="ac-spinner" class="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2">
+                                    <svg class="h-5 w-5 animate-spin text-purple-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/></svg>
+                                </span>
+                            </div>
+
+                            <!-- Dropdown saran judul mirip -->
+                            <div id="ac-panel"
+                                 class="absolute left-0 right-0 z-40 mt-1 hidden max-h-80 overflow-y-auto scrollbar-thin rounded-xl border border-purple-200 bg-white shadow-2xl dark:border-purple-800 dark:bg-purple-slate-900">
+                                <div id="ac-hint" class="border-b border-purple-100 px-4 py-2 text-xs text-purple-500 dark:border-purple-800 dark:text-purple-400"></div>
+                                <ul id="ac-list" class="divide-y divide-purple-100 dark:divide-purple-800" role="listbox"></ul>
+                            </div>
+
+                            <!-- Peringatan duplikat langsung di sisi klien -->
+                            <div id="ac-dup-warning"
+                                 class="mt-2 hidden items-start gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-700/50 dark:bg-amber-900/20 dark:text-amber-200">
+                                <svg class="mt-0.5 h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                <span id="ac-dup-text"></span>
+                            </div>
+
+                            {% if form.title.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.title.errors.0 }}</p>{% endif %}
+                            <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">
+                                Pencocokan judul mengabaikan huruf besar/kecil &amp; spasi ganda.
+                            </p>
+                        </div>
+
+                        <!-- Penulis -->
+                        <div class="md:col-span-2">
+                            {{ form.author.label_tag }}
+                            {{ form.author }}
+                            {% if form.author.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.author.errors.0 }}</p>{% endif %}
+                        </div>
+
+                        <!-- Jenis Buku (Fiksi / Non-Fiksi) -->
+                        <div>
+                            {{ form.book_type.label_tag }}
+                            {{ form.book_type }}
+                            <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.book_type.help_text }}</p>
+                            {% if form.book_type.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.book_type.errors.0 }}</p>{% endif %}
+                        </div>
+
+                        <!-- Status -->
+                        <div>
+                            {{ form.status.label_tag }}
+                            {{ form.status }}
+                            {% if form.status.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.status.errors.0 }}</p>{% endif %}
+                        </div>
+
+                        <!-- Genre / Kategori (dinamis) -->
+                        <div>
+                            <div class="mb-1.5 flex items-center justify-between">
+                                <label for="{{ form.genre.id_for_label }}" class="block text-sm font-medium text-purple-700 dark:text-purple-300">{{ form.genre.label }}</label>
+                                <a href="{% url 'settings' %}#genre-kategori" class="text-xs text-purple-500 hover:underline dark:text-purple-400">kelola</a>
+                            </div>
+                            {{ form.genre }}
+                            {% if form.genre.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.genre.errors.0 }}</p>{% endif %}
+                        </div>
+
+                        <!-- Lokasi Rak (dinamis) -->
+                        <div>
+                            <div class="mb-1.5 flex items-center justify-between">
+                                <label for="{{ form.shelf.id_for_label }}" class="block text-sm font-medium text-purple-700 dark:text-purple-300">{{ form.shelf.label }}</label>
+                                <a href="{% url 'settings' %}#rak-buku" class="text-xs text-purple-500 hover:underline dark:text-purple-400">kelola</a>
+                            </div>
+                            {{ form.shelf }}
+                            {% if form.shelf.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.shelf.errors.0 }}</p>{% endif %}
+                        </div>
+                    </div>
+                </section>
+
+                {# ══════════ DETAIL OPSIONAL (terlipat) ══════════ #}
+                <details class="group rounded-xl border border-purple-100 dark:border-purple-800" {% if detail_error %}open{% endif %}>
+                    <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-3.5 select-none">
+                        <span class="flex items-center gap-2 font-medium text-purple-800 dark:text-purple-200">
+                            <svg class="h-5 w-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                            Detail Buku
+                            <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal text-purple-600 dark:bg-purple-900 dark:text-purple-300">opsional</span>
+                        </span>
+                        <svg class="h-5 w-5 text-purple-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="border-t border-purple-100 p-4 dark:border-purple-800">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div>
+                                {{ form.isbn.label_tag }}
+                                {{ form.isbn }}
+                                {% if form.isbn.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.isbn.errors.0 }}</p>{% endif %}
+                            </div>
+                            <div>
+                                {{ form.publication_year.label_tag }}
+                                {{ form.publication_year }}
+                                {% if form.publication_year.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.publication_year.errors.0 }}</p>{% endif %}
+                            </div>
+                            <!-- Tahun Beli (baru) -->
+                            <div>
+                                {{ form.purchase_year.label_tag }}
+                                {{ form.purchase_year }}
+                                <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.purchase_year.help_text }}</p>
+                                {% if form.purchase_year.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.purchase_year.errors.0 }}</p>{% endif %}
+                            </div>
+                            <div>
+                                {{ form.publisher.label_tag }}
+                                {{ form.publisher }}
+                                {% if form.publisher.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.publisher.errors.0 }}</p>{% endif %}
+                            </div>
+                            <div>
+                                {{ form.pages.label_tag }}
+                                {{ form.pages }}
+                                {% if form.pages.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.pages.errors.0 }}</p>{% endif %}
+                            </div>
+                            <div class="md:col-span-2">
+                                {{ form.rating.label_tag }}
+                                {{ form.rating }}
+                                <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.rating.help_text }}</p>
+                                {% if form.rating.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.rating.errors.0 }}</p>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                {# ══════════ SAMPUL BUKU (terlipat) ══════════ #}
+                <details class="group rounded-xl border border-purple-100 dark:border-purple-800" {% if cover_error %}open{% endif %}>
+                    <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-3.5 select-none">
+                        <span class="flex items-center gap-2 font-medium text-purple-800 dark:text-purple-200">
+                            <svg class="h-5 w-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            Sampul Buku
+                            <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal text-purple-600 dark:bg-purple-900 dark:text-purple-300">opsional</span>
+                        </span>
+                        <svg class="h-5 w-5 text-purple-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="grid grid-cols-1 gap-4 border-t border-purple-100 p-4 dark:border-purple-800 md:grid-cols-2">
+                        <div>
+                            {{ form.cover_image.label_tag }}
+                            {{ form.cover_image }}
+                            {% if form.cover_image.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.cover_image.errors.0 }}</p>{% endif %}
+                            <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.cover_image.help_text }}</p>
+                            <div id="cover-preview" class="mt-3 hidden">
+                                <p class="mb-1 text-xs text-purple-500 dark:text-purple-400">Pratinjau:</p>
+                                <img id="cover-preview-img" src="" alt="Pratinjau sampul" class="h-44 w-32 rounded-lg border border-purple-200 object-cover shadow-sm dark:border-purple-700">
+                            </div>
+                        </div>
+                        <div>
+                            {{ form.cover_url.label_tag }}
+                            {{ form.cover_url }}
+                            {% if form.cover_url.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.cover_url.errors.0 }}</p>{% endif %}
+                            <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.cover_url.help_text }}</p>
+                            <div id="cover-url-preview" class="mt-3 hidden">
+                                <p class="mb-1 text-xs text-purple-500 dark:text-purple-400">Pratinjau:</p>
+                                <img id="cover-url-preview-img" src="" alt="Pratinjau sampul" class="h-44 w-32 rounded-lg border border-purple-200 object-cover shadow-sm dark:border-purple-700">
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                {# ══════════ SINOPSIS (terlipat) ══════════ #}
+                <details class="group rounded-xl border border-purple-100 dark:border-purple-800" {% if summary_error %}open{% endif %}>
+                    <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-3.5 select-none">
+                        <span class="flex items-center gap-2 font-medium text-purple-800 dark:text-purple-200">
+                            <svg class="h-5 w-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V5z"/></svg>
+                            Sinopsis / Catatan Pribadi
+                            <span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-normal text-purple-600 dark:bg-purple-900 dark:text-purple-300">opsional</span>
+                        </span>
+                        <svg class="h-5 w-5 text-purple-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="border-t border-purple-100 p-4 dark:border-purple-800">
+                        {{ form.summary }}
+                        {% if form.summary.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.summary.errors.0 }}</p>{% endif %}
+                    </div>
+                </details>
+
+                <p class="text-center text-xs text-purple-400 dark:text-purple-500">
+                    Field bertanda <span class="font-semibold text-purple-600 dark:text-purple-300">*</span> wajib diisi.
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+{# ══════════ AKSI MELAYANG: SELALU TERLIHAT TANPA SCROLL ══════════ #}
+<div class="fixed bottom-0 left-0 right-0 z-40 border-t border-purple-100 bg-white/95 backdrop-blur dark:border-purple-800 dark:bg-purple-slate-900/95">
+    <div class="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+        <p class="hidden text-xs text-purple-500 dark:text-purple-400 sm:block">
+            {% if object %}Ubah data lalu simpan{% else %}Simpan kapan saja — detail opsional boleh dikosongkan{% endif %}
+        </p>
+        <div class="flex w-full gap-2 sm:w-auto">
+            {% if ask_duplicate_confirmation %}
+            <button type="submit" form="book-form" name="_ignore_duplicate" value="1"
+                    class="btn-primary flex-1 bg-amber-600 hover:bg-amber-700 sm:flex-none">
+                <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                Tetap Simpan (Duplikat)
+            </button>
+            {% else %}
+            <button type="submit" form="book-form" class="btn-primary flex-1 sm:flex-none">
+                <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                {% if object %}Simpan Perubahan{% else %}Simpan Buku{% endif %}
+            </button>
+            {% endif %}
+            <a href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'book-list' %}{% endif %}"
+               class="btn-secondary flex-1 text-center sm:flex-none">Batal</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+    // ═══════════════ AUTOCOMPLETE JUDUL BUKU ═══════════════
+    const titleInput = document.getElementById('id_title');
+    const authorInput = document.getElementById('id_author');
+    const panel = document.getElementById('ac-panel');
+    const list = document.getElementById('ac-list');
+    const hint = document.getElementById('ac-hint');
+    const spinner = document.getElementById('ac-spinner');
+    const dupBox = document.getElementById('ac-dup-warning');
+    const dupText = document.getElementById('ac-dup-text');
+    const ENDPOINT = "{% url 'api-title-autocomplete' %}";
+
+    let timer = null, items = [], activeIdx = -1, lastQuery = '';
+
+    function hidePanel() { panel.classList.add('hidden'); activeIdx = -1; }
+    function showPanel() { panel.classList.remove('hidden'); }
+    function hideDup() { dupBox.classList.add('hidden'); dupBox.classList.remove('flex'); }
+
+    function esc(s) {
+        return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function render(data) {
+        items = data.results || [];
+        activeIdx = -1;
+
+        if (!items.length) {
+            hint.textContent = 'Tidak ada judul mirip di koleksi — aman untuk disimpan.';
+            list.innerHTML = '';
+            showPanel();
+            return;
+        }
+
+        hint.innerHTML = 'Ditemukan <strong>' + items.length + '</strong> judul mirip di koleksi:';
+        list.innerHTML = items.map((it, i) => {
+            const badge = it.exact
+                ? '<span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">SUDAH ADA</span>'
+                : '<span class="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-medium text-purple-600 dark:bg-purple-900 dark:text-purple-300">mirip ' + Math.round(it.similarity * 100) + '%</span>';
+            const meta = [];
+            if (it.count > 1) meta.push(it.count + '\u00d7 di koleksi');
+            if (it.shelf) meta.push('rak: ' + esc(it.shelf));
+            if (it.book_type) meta.push(esc(it.book_type));
+            return '<li role="option" data-idx="' + i + '"'
+                + ' class="ac-item cursor-pointer px-4 py-2.5 transition-colors hover:bg-purple-50 dark:hover:bg-purple-950/60">'
+                + '<div class="flex items-start justify-between gap-3">'
+                + '<div class="min-w-0">'
+                + '<p class="truncate text-sm font-medium text-purple-800 dark:text-purple-200">' + esc(it.title) + '</p>'
+                + '<p class="truncate text-xs text-purple-500 dark:text-purple-400">' + esc(it.author) + (meta.length ? ' \u00b7 ' + meta.join(' \u00b7 ') : '') + '</p>'
+                + '</div>' + badge + '</div></li>';
+        }).join('');
+        showPanel();
+    }
+
+    function selectItem(it) {
+        titleInput.value = it.title;
+        if (authorInput && !authorInput.value.trim()) {
+            authorInput.value = it.author;
+        }
+        hidePanel();
+        if (it.exact) {
+            dupText.innerHTML = 'Judul &amp; penulis ini <strong>sudah ada di koleksi</strong>'
+                + (it.shelf ? ' (rak: ' + esc(it.shelf) + ')' : '')
+                + '. Sistem akan meminta konfirmasi saat disimpan.';
+            dupBox.classList.remove('hidden');
+            dupBox.classList.add('flex');
+        } else {
+            hideDup();
+        }
+    }
+
+    function checkDuplicate() {
+        const exact = items.find(i => i.exact);
+        if (exact) {
+            dupText.innerHTML = 'Judul ini <strong>sudah ada di koleksi</strong>'
+                + (exact.shelf ? ' (rak: ' + esc(exact.shelf) + ')' : '')
+                + '. Sistem akan meminta konfirmasi saat disimpan.';
+            dupBox.classList.remove('hidden');
+            dupBox.classList.add('flex');
+        } else {
+            hideDup();
+        }
+    }
+
+    function fetchSuggestions() {
+        const q = (titleInput.value || '').trim();
+        if (q.length < 2) { hidePanel(); hideDup(); items = []; return; }
+        if (q === lastQuery) return;
+        lastQuery = q;
+
+        const url = ENDPOINT + '?q=' + encodeURIComponent(q)
+            + '&author=' + encodeURIComponent((authorInput && authorInput.value || '').trim());
+        spinner.classList.remove('hidden');
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(r => r.json())
+            .then(data => { render(data); checkDuplicate(); })
+            .catch(() => hidePanel())
+            .finally(() => spinner.classList.add('hidden'));
+    }
+
+    if (titleInput) {
+        titleInput.addEventListener('input', () => {
+            clearTimeout(timer);
+            timer = setTimeout(fetchSuggestions, 250);
+        });
+        titleInput.addEventListener('focus', () => { if (items.length) showPanel(); });
+        titleInput.addEventListener('blur', () => setTimeout(hidePanel, 180));
+
+        titleInput.addEventListener('keydown', (e) => {
+            const nodes = list.querySelectorAll('.ac-item');
+            if (panel.classList.contains('hidden') || !nodes.length) return;
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                activeIdx = Math.min(activeIdx + 1, nodes.length - 1);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                activeIdx = Math.max(activeIdx - 1, 0);
+            } else if (e.key === 'Enter' && activeIdx >= 0) {
+                e.preventDefault();
+                selectItem(items[activeIdx]);
+                return;
+            } else if (e.key === 'Escape') {
+                hidePanel(); return;
+            } else { return; }
+            nodes.forEach((n, i) => n.classList.toggle('bg-purple-50', i === activeIdx));
+        });
+
+        list.addEventListener('mousedown', (e) => {
+            const li = e.target.closest('.ac-item');
+            if (!li) return;
+            e.preventDefault();
+            selectItem(items[parseInt(li.dataset.idx, 10)]);
+        });
+    }
+    if (authorInput) authorInput.addEventListener('change', () => { lastQuery = ''; fetchSuggestions(); });
+
+    // ═══════════════ PRATINJAU SAMPUL ═══════════════
+    const coverImageInput = document.querySelector('input[name="cover_image"]');
+    const coverUrlInput = document.querySelector('input[name="cover_url"]');
+    const coverPreview = document.getElementById('cover-preview');
+    const coverPreviewImg = document.getElementById('cover-preview-img');
+    const coverUrlPreview = document.getElementById('cover-url-preview');
+    const coverUrlPreviewImg = document.getElementById('cover-url-preview-img');
+
+    if (coverImageInput) {
+        coverImageInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) { coverPreview.classList.add('hidden'); return; }
+            const reader = new FileReader();
+            reader.onload = ev => {
+                coverPreviewImg.src = ev.target.result;
+                coverPreview.classList.remove('hidden');
+                coverUrlPreview.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    if (coverUrlInput) {
+        coverUrlInput.addEventListener('input', function (e) {
+            const url = e.target.value.trim();
+            if (!url) { coverUrlPreview.classList.add('hidden'); return; }
+            coverUrlPreviewImg.onload = () => {
+                coverUrlPreview.classList.remove('hidden');
+                coverPreview.classList.add('hidden');
+            };
+            coverUrlPreviewImg.onerror = () => coverUrlPreview.classList.add('hidden');
+            coverUrlPreviewImg.src = url;
+        });
+    }
+
+    // Buka section & fokus field bila ada input tidak valid
+    document.getElementById('book-form').addEventListener('submit', function () {
+        const firstInvalid = this.querySelector('input:invalid, select:invalid, textarea:invalid');
+        if (firstInvalid) {
+            const det = firstInvalid.closest('details');
+            if (det) det.open = true;
+        }
+    });
+})();
+</script>
+{% endblock %}

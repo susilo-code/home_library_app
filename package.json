@@ -1,0 +1,14 @@
+{
+  "name": "home-library-app",
+  "version": "1.0.0",
+  "description": "Home Library Management App with Django + Tailwind CSS",
+  "scripts": {
+    "dev": "npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch",
+    "build": "npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --minify"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.6.0",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^3.4.19"
+  }
+}

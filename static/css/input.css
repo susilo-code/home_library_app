@@ -1,0 +1,243 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    --color-bg-primary: #f7f5fa;
+    --color-bg-secondary: #ffffff;
+    --color-bg-tertiary: #efe9f4;
+    --color-text-primary: #2e1a47;
+    --color-text-secondary: #5e436c;
+    --color-text-muted: #8b6b9e;
+    --color-border: #d6c6ff;
+    --color-accent: #8A4FFF;
+    --color-accent-hover: #742eff;
+  }
+
+  .dark {
+    --color-bg-primary: #120B1C;
+    --color-bg-secondary: #1A1126;
+    --color-bg-tertiary: #2E1A47;
+    --color-text-primary: #f5f0ff;
+    --color-text-secondary: #d6c6ff;
+    --color-text-muted: #b899ff;
+    --color-border: #4c18b8;
+    --color-accent: #9a6eff;
+    --color-accent-hover: #b899ff;
+  }
+
+  * {
+    @apply border-purple-200 dark:border-purple-800;
+  }
+
+  body {
+    @apply bg-purple-slate-50 dark:bg-purple-slate-950 text-purple-slate-900 dark:text-purple-slate-50 font-sans antialiased transition-colors duration-300;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  ::selection {
+    @apply bg-purple-200 dark:bg-purple-800 text-purple-900 dark:text-purple-50;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500 dark:bg-purple-500 dark:hover:bg-purple-600 dark:focus:ring-purple-400;
+  }
+
+  .btn-secondary {
+    @apply btn bg-purple-100 text-purple-800 hover:bg-purple-200 focus:ring-purple-400 dark:bg-purple-900 dark:text-purple-200 dark:hover:bg-purple-800 dark:focus:ring-purple-600;
+  }
+
+  .btn-outline {
+    @apply btn border-2 border-purple-600 text-purple-700 hover:bg-purple-50 focus:ring-purple-500 dark:border-purple-400 dark:text-purple-300 dark:hover:bg-purple-950 dark:focus:ring-purple-400;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+  }
+
+  .btn-ghost {
+    @apply btn text-purple-600 hover:bg-purple-50 focus:ring-purple-400 dark:text-purple-400 dark:hover:bg-purple-950;
+  }
+
+  .input {
+    @apply w-full px-4 py-2.5 text-sm bg-white dark:bg-purple-950 border border-purple-200 dark:border-purple-700 rounded-lg text-purple-900 dark:text-purple-50 placeholder-purple-400 dark:placeholder-purple-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-purple-700 dark:text-purple-300 mb-1.5;
+  }
+
+  .card {
+    @apply bg-white dark:bg-purple-slate-900 rounded-xl shadow-sm border border-purple-100 dark:border-purple-800 overflow-hidden transition-shadow duration-200 hover:shadow-md;
+  }
+
+  .card-header {
+    @apply px-6 py-4 border-b border-purple-100 dark:border-purple-800 bg-purple-50 dark:bg-purple-950;
+  }
+
+  .card-body {
+    @apply p-6;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-purple {
+    @apply badge bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200;
+  }
+
+  .badge-green {
+    @apply badge bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
+  }
+
+  .badge-yellow {
+    @apply badge bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200;
+  }
+
+  .badge-red {
+    @apply badge bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+  }
+
+  .badge-blue {
+    @apply badge bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200;
+  }
+
+  .stat-card {
+    @apply card p-6;
+  }
+
+  .stat-value {
+    @apply text-3xl font-bold text-purple-700 dark:text-purple-300;
+  }
+
+  .stat-label {
+    @apply text-sm text-purple-500 dark:text-purple-400 mt-1;
+  }
+
+  .table-container {
+    @apply overflow-x-auto rounded-xl border border-purple-100 dark:border-purple-800 bg-white dark:bg-purple-slate-900;
+  }
+
+  .table {
+    @apply w-full text-sm;
+  }
+
+  .table th {
+    @apply px-4 py-3 text-left text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider bg-purple-50 dark:bg-purple-950 border-b border-purple-100 dark:border-purple-800;
+  }
+
+  .table td {
+    @apply px-4 py-3 border-b border-purple-100 dark:border-purple-800 text-purple-800 dark:text-purple-200;
+  }
+
+  .table tbody tr {
+    @apply transition-colors duration-150 hover:bg-purple-50 dark:hover:bg-purple-950/50;
+  }
+
+  .table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-950 hover:text-purple-800 dark:hover:text-purple-200;
+  }
+
+  .sidebar-link.active {
+    @apply bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 font-semibold;
+  }
+
+  .dropdown-menu {
+    @apply absolute right-0 mt-2 w-48 bg-white dark:bg-purple-slate-900 rounded-lg shadow-lg border border-purple-100 dark:border-purple-800 py-1 z-50 opacity-0 invisible transform translate-y-2 transition-all duration-200;
+  }
+
+  .dropdown-menu.show {
+    @apply opacity-100 visible translate-y-0;
+  }
+
+  .dropdown-item {
+    @apply block px-4 py-2 text-sm text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950 transition-colors;
+  }
+
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-40 opacity-0 invisible transition-all duration-300;
+  }
+
+  .modal-overlay.show {
+    @apply opacity-100 visible;
+  }
+
+  .modal {
+    @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-purple-slate-900 rounded-xl shadow-xl z-50 w-full max-w-lg mx-4 transform scale-95 opacity-0 transition-all duration-300;
+  }
+
+  .modal.show {
+    @apply scale-100 opacity-100;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.purple.300') transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: theme('colors.purple.300');
+    border-radius: 3px;
+  }
+
+  .dark .scrollbar-thin {
+    scrollbar-color: theme('colors.purple.700') transparent;
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: theme('colors.purple.700');
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-in {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .skeleton {
+    @apply animate-pulse bg-purple-200 dark:bg-purple-800 rounded;
+    background: linear-gradient(90deg, theme('colors.purple.200') 25%, theme('colors.purple.300') 50%, theme('colors.purple.200') 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  .dark .skeleton {
+    background: linear-gradient(90deg, theme('colors.purple.800') 25%, theme('colors.purple.700') 50%, theme('colors.purple.800') 75%);
+    background-size: 200% 100%;
+  }
+}
