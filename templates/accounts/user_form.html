@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Ubah Pengguna {{ pengguna.username }} — Hirunaza's Library{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-2xl animate-in">
+    <div class="mb-6 flex items-center justify-between gap-4">
+        <div>
+            <h1 class="font-display text-3xl font-bold text-purple-800 dark:text-purple-200">Ubah Pengguna</h1>
+            <p class="mt-1 text-purple-500 dark:text-purple-400">
+                Akun <strong>{{ pengguna.username }}</strong> &middot; {{ jumlah_buku }} buku dicatat
+            </p>
+        </div>
+        <a href="{% url 'user-list' %}" class="btn-secondary">
+            <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+
+                <div class="flex items-center gap-4 rounded-xl border border-purple-100 bg-purple-50 p-4 dark:border-purple-800 dark:bg-purple-950/50">
+                    <img src="{{ pengguna.profile.avatar_url }}" alt="{{ pengguna.username }}" class="h-14 w-14 rounded-full border-2 border-purple-200 dark:border-purple-700">
+                    <div>
+                        <p class="font-medium text-purple-800 dark:text-purple-200">{{ pengguna.username }}</p>
+                        <p class="text-xs text-purple-500 dark:text-purple-400">
+                            Bergabung {{ pengguna.date_joined|date:"d F Y" }}
+                            {% if pengguna.last_login %} &middot; login terakhir {{ pengguna.last_login|date:"d M Y H:i" }}{% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                        {{ form.first_name.label_tag }}
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.first_name.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        {{ form.last_name.label_tag }}
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.last_name.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="sm:col-span-2">
+                        {{ form.email.label_tag }}
+                        {{ form.email }}
+                        {% if form.email.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.email.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div class="border-t border-purple-100 pt-5 dark:border-purple-800">
+                    {{ form.password_baru.label_tag }}
+                    {{ form.password_baru }}
+                    <p class="mt-1 text-xs text-purple-400 dark:text-purple-500">{{ form.password_baru.help_text }}</p>
+                    {% if form.password_baru.errors %}<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.password_baru.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="space-y-3 border-t border-purple-100 pt-5 dark:border-purple-800">
+                    <label class="flex items-start gap-3">
+                        {{ form.is_active }}
+                        <span class="text-sm text-purple-700 dark:text-purple-300">
+                            {{ form.is_active.label }}
+                            <span class="block text-xs text-purple-400 dark:text-purple-500">Hilangkan centang untuk menonaktifkan tanpa menghapus datanya.</span>
+                        </span>
+                    </label>
+                    <label class="flex items-start gap-3">
+                        {{ form.is_staff }}
+                        <span class="text-sm text-purple-700 dark:text-purple-300">
+                            {{ form.is_staff.label }}
+                            <span class="block text-xs text-purple-400 dark:text-purple-500">Staff dapat mengelola pengguna, genre, dan rak.</span>
+                        </span>
+                    </label>
+                    {% if diri_sendiri %}
+                    <p class="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-700 dark:border-amber-700/40 dark:bg-amber-900/20 dark:text-amber-300">
+                        Ini akun Anda sendiri — status aktif &amp; akses staff tidak bisa dicabut dari sini.
+                    </p>
+                    {% endif %}
+                </div>
+
+                <div class="flex flex-col gap-3 border-t border-purple-100 pt-5 dark:border-purple-800 sm:flex-row">
+                    <button type="submit" class="btn-primary">
+                        <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Simpan Perubahan
+                    </button>
+                    <a href="{% url 'user-list' %}" class="btn-secondary text-center">Batal</a>
+                    {% if not diri_sendiri %}
+                    <a href="{% url 'user-delete' pengguna.pk %}" class="btn-danger text-center sm:ml-auto">
+                        <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        Hapus Pengguna
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

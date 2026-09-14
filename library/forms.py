@@ -467,6 +467,131 @@ class StyledAuthenticationForm(AuthenticationForm):
     }
 
 
+# ─── Manajemen pengguna (khusus admin/staff) ──────────────────────────────────
+
+class StaffUserCreateForm(forms.ModelForm):
+    """Tambah pengguna baru dari dalam aplikasi (tanpa perlu panel admin Django)."""
+
+    password1 = forms.CharField(
+        label="Kata Sandi",
+        strip=False,
+        widget=forms.PasswordInput(attrs={'class': INPUT_CLASS, 'autocomplete': 'new-password',
+                                          'placeholder': 'Minimal 8 karakter'}),
+        help_text="Minimal 8 karakter, jangan terlalu umum, dan tidak mirip nama pengguna.",
+    )
+    password2 = forms.CharField(
+        label="Ulangi Kata Sandi",
+        strip=False,
+        widget=forms.PasswordInput(attrs={'class': INPUT_CLASS, 'autocomplete': 'new-password',
+                                          'placeholder': 'Ulangi kata sandi'}),
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': INPUT_CLASS, 'placeholder': 'Contoh: hirunaza',
+                                               'autocomplete': 'off'}),
+            'first_name': forms.TextInput(attrs={'class': INPUT_CLASS, 'placeholder': 'Nama depan'}),
+            'last_name': forms.TextInput(attrs={'class': INPUT_CLASS, 'placeholder': 'Nama belakang'}),
+            'email': forms.EmailInput(attrs={'class': INPUT_CLASS, 'placeholder': 'nama@email.com'}),
+            'is_staff': forms.CheckboxInput(attrs={'class': 'h-5 w-5 rounded border-purple-300 text-purple-600 focus:ring-purple-500'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'h-5 w-5 rounded border-purple-300 text-purple-600 focus:ring-purple-500'}),
+        }
+        labels = {
+            'username': 'Nama Pengguna (untuk login)',
+            'first_name': 'Nama Depan',
+            'last_name': 'Nama Belakang',
+            'email': 'Email',
+            'is_staff': 'Beri akses panel admin (staff)',
+            'is_active': 'Akun aktif (bisa login)',
+        }
+        help_texts = {
+            'username': 'Hanya huruf, angka, dan @ . + - _',
+            'is_staff': 'Staff dapat mengelola pengguna, genre, dan rak.',
+            'is_active': 'Hilangkan centang untuk menonaktifkan tanpa menghapus.',
+        }
+
+    def clean_username(self):
+        username = (self.cleaned_data.get('username') or '').strip()
+        if len(username) < 3:
+            raise forms.ValidationError('Nama pengguna minimal 3 karakter.')
+        if User.objects.filter(username__iexact=username).exists():
+            raise forms.ValidationError('Nama pengguna ini sudah dipakai.')
+        return username
+
+    def clean_email(self):
+        email = (self.cleaned_data.get('email') or '').strip()
+        if email and User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError('Email ini sudah dipakai akun lain.')
+        return email
+
+    def clean(self):
+        cleaned = super().clean()
+        p1, p2 = cleaned.get('password1'), cleaned.get('password2')
+        if p1 and p2 and p1 != p2:
+            self.add_error('password2', 'Kata sandi dan ulangannya tidak sama.')
+        if p1:
+            from django.contrib.auth.password_validation import validate_password
+            from django.core.exceptions import ValidationError as DjangoValidationError
+            try:
+                validate_password(p1, self.instance)
+            except DjangoValidationError as e:
+                self.add_error('password1', e)
+        return cleaned
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password1'])
+        if commit:
+            user.save()
+        return user
+
+
+class StaffUserUpdateForm(forms.ModelForm):
+    """Ubah data pengguna; kata sandi boleh dikosongkan (tidak diubah)."""
+
+    password_baru = forms.CharField(
+        label="Kata Sandi Baru (opsional)",
+        required=False,
+        strip=False,
+        widget=forms.PasswordInput(attrs={'class': INPUT_CLASS, 'autocomplete': 'new-password',
+                                          'placeholder': 'Kosongkan bila tidak diubah'}),
+        help_text="Isi hanya bila ingin mengganti kata sandi pengguna ini.",
+    )
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'is_staff', 'is_active']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': INPUT_CLASS}),
+            'last_name': forms.TextInput(attrs={'class': INPUT_CLASS}),
+            'email': forms.EmailInput(attrs={'class': INPUT_CLASS}),
+            'is_staff': forms.CheckboxInput(attrs={'class': 'h-5 w-5 rounded border-purple-300 text-purple-600 focus:ring-purple-500'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'h-5 w-5 rounded border-purple-300 text-purple-600 focus:ring-purple-500'}),
+        }
+
+    def clean_password_baru(self):
+        sandi = self.cleaned_data.get('password_baru')
+        if sandi:
+            from django.contrib.auth.password_validation import validate_password
+            from django.core.exceptions import ValidationError as DjangoValidationError
+            try:
+                validate_password(sandi, self.instance)
+            except DjangoValidationError as e:
+                raise forms.ValidationError(e)
+        return sandi
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        sandi = self.cleaned_data.get('password_baru')
+        if sandi:
+            user.set_password(sandi)
+        if commit:
+            user.save()
+        return user
+
+
 # ─── Master data dinamis: Genre / Kategori ────────────────────────────────────
 
 class GenreForm(forms.ModelForm):

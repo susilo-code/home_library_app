@@ -16,11 +16,15 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
+from django.contrib.auth.models import User  # noqa: E402
 from django.test import Client  # noqa: E402
 
 os.makedirs("preview", exist_ok=True)
 c = Client()
-c.login(username="user1", password="password123")
+_pengguna = User.objects.filter(is_superuser=True).first() or User.objects.first()
+if _pengguna:
+    c.force_login(_pengguna)
+    print(f"Render sebagai: {_pengguna.username} (superuser={_pengguna.is_superuser})")
 
 PAGES = {
     "form-buku": "/buku/tambah/",
@@ -28,6 +32,7 @@ PAGES = {
     "katalog": "/buku/",
     "dashboard": "/",
     "login": "/login/",
+    "kelola-pengguna": "/pengguna/",
 }
 
 for nama, url in PAGES.items():

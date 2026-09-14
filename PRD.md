@@ -121,3 +121,19 @@
 - Tombol **Simpan** kini selalu terlihat tanpa scroll: bar aksi melayang (`fixed bottom-0`) + tombol di header form.
 - Halaman login: kalimat sambutan diganti kutipan **Imam Syafi'i Rahimahullah** tentang menahan lelahnya belajar.
 - Migrasi: `0004` (jenis buku tetap + tahun beli + genre dinamis, mapping data dari genre) dan `0005` (backfill `Genre.created_at`).
+
+### Revisi 3 (v1.3.0)
+- **Manajemen Pengguna di dalam aplikasi** (`/pengguna/`, khusus staff/superuser): daftar akun
+  (peran, status, jumlah buku), tambah pengguna, ubah data, atur ulang kata sandi,
+  aktif/nonaktifkan, dan hapus akun.
+- Command CLI **`manage.py create_user`** (`--list`, `--set-password`, `--staff`,
+  `--superuser`, `--activate`, `--deactivate`).
+- Pengaman: akun sendiri tidak bisa dinonaktifkan/dihapus, superuser terakhir tidak bisa
+  dihapus, kata sandi divalidasi & ter-hash, aksi tercatat di ActivityLog
+  (`TAMBAH_USER` / `UPDATE_USER` / `HAPUS_USER`).
+- Infrastruktur rilis: `.env` + `.env.example`, `.gitignore`, `.gitattributes`,
+  `requirements.txt` ter-pin, `MANUAL.md`, `setup.bat`, `start.bat`, `stop.bat`,
+  `push_github.bat`, serta skrip verifikasi di `scripts/dev/`.
+- Perbaikan: endpoint FastAPI diubah ke fungsi sinkron (Django ORM tidak boleh di
+  konteks async), penghapusan genre/rak kini tercatat, dan seeder tidak lagi
+  menimpa klasifikasi jenis buku secara manual.

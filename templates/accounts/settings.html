@@ -266,6 +266,29 @@
         </div>
     </section>
 
+    <!-- ══════════ KELOLA PENGGUNA (khusus staff) ══════════ -->
+    {% if user.is_staff or user.is_superuser %}
+    <section id="pengguna" class="card mb-6 scroll-mt-24">
+        <div class="card-header">
+            <h2 class="flex items-center gap-2 font-display text-lg font-semibold text-purple-800 dark:text-purple-200">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                Kelola Pengguna
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="flex flex-col gap-4 rounded-lg border border-purple-100 bg-purple-50 p-4 dark:border-purple-800 dark:bg-purple-950/50 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <p class="font-medium text-purple-800 dark:text-purple-200">Tambah / ubah pengguna</p>
+                    <p class="text-sm text-purple-500 dark:text-purple-400">
+                        Buat akun untuk anggota keluarga lain, atur ulang kata sandi, atau nonaktifkan akun.
+                    </p>
+                </div>
+                <a href="{% url 'user-list' %}" class="btn-primary w-full sm:w-auto">Buka Kelola Pengguna</a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
     <!-- Info -->
     <section class="card border-purple-200 bg-purple-50 dark:border-purple-800 dark:bg-purple-950/50">
         <div class="card-body">

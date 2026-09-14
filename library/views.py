@@ -6,7 +6,7 @@ from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView,
     TemplateView, FormView
 )
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.models import Count, Max, Q
@@ -17,7 +17,7 @@ from django.utils import timezone
 from django.core.paginator import Paginator
 
 from .models import ActivityLog, Book, Genre, Shelf, UserProfile, normalize_text
-from .forms import BookForm, GenreForm, ProfileForm, ShelfForm, UserSettingsForm
+from .forms import BookForm, GenreForm, ProfileForm, ShelfForm, StaffUserCreateForm, StaffUserUpdateForm, UserSettingsForm
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
@@ -411,6 +411,132 @@ class ShelfDeleteView(LoginRequiredMixin, DeleteView):
         ActivityLog.objects.create(
             user=self.request.user, action="HAPUS_RAK",
             detail=f"Menghapus lokasi rak: {nama} ({jumlah_buku} buku jadi tanpa rak)",
+        )
+        return super().form_valid(form)
+
+
+# ─── Manajemen pengguna (khusus admin/staff) ──────────────────────────────────
+
+class StaffRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Batasi akses hanya untuk staff/superuser."""
+
+    def test_func(self):
+        u = self.request.user
+        return bool(u.is_authenticated and (u.is_staff or u.is_superuser))
+
+    def handle_no_permission(self):
+        # Sudah login tapi bukan staff -> kembalikan ke dashboard dengan pesan jelas
+        if self.request.user.is_authenticated:
+            messages.error(self.request, 'Halaman ini khusus administrator (staff).')
+            return redirect('dashboard')
+        return super().handle_no_permission()
+
+
+class UserManagementView(StaffRequiredMixin, FormView):
+    """
+    Kelola pengguna aplikasi: daftar akun + form cepat menambah pengguna baru.
+
+    GET  /pengguna/            -> daftar akun
+    POST /pengguna/            -> tambah akun (form cepat)
+    """
+    template_name = "accounts/user_management.html"
+    form_class = StaffUserCreateForm
+    success_url = reverse_lazy("user-list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['users'] = User.objects.annotate(
+            jumlah_buku=Count('recorded_books')
+        ).order_by('-is_superuser', '-is_staff', 'username')
+        context['total_aktif'] = User.objects.filter(is_active=True).count()
+        context['total_nonaktif'] = User.objects.filter(is_active=False).count()
+        context['total_staff'] = User.objects.filter(is_staff=True).count()
+        return context
+
+    def form_valid(self, form):
+        pengguna = form.save()
+        messages.success(
+            self.request,
+            f'Pengguna "{pengguna.username}" berhasil dibuat. '
+            f'Minta yang bersangkutan login lalu ganti kata sandinya.'
+        )
+        ActivityLog.objects.create(
+            user=self.request.user, action="TAMBAH_USER",
+            detail=f"Membuat akun pengguna: {pengguna.username}",
+        )
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        for field, errs in form.errors.items():
+            label = form.fields[field].label if field in form.fields else field
+            messages.error(self.request, f'{label}: {errs[0]}')
+        return super().form_invalid(form)
+
+
+class UserUpdateView(StaffRequiredMixin, UpdateView):
+    """Ubah data pengguna, aktif/nonaktifkan, atau atur ulang kata sandinya."""
+    model = User
+    form_class = StaffUserUpdateForm
+    template_name = "accounts/user_form.html"
+    context_object_name = "pengguna"
+    success_url = reverse_lazy("user-list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['jumlah_buku'] = self.object.recorded_books.count()
+        context['diri_sendiri'] = self.object.pk == self.request.user.pk
+        return context
+
+    def form_valid(self, form):
+        pengguna = form.instance
+        # Pengaman: jangan sampai admin menutup aksesnya sendiri
+        if pengguna.pk == self.request.user.pk:
+            if not form.cleaned_data.get('is_active'):
+                messages.error(self.request, 'Anda tidak bisa menonaktifkan akun Anda sendiri.')
+                return self.form_invalid(form)
+            if not form.cleaned_data.get('is_staff') and not pengguna.is_superuser:
+                messages.error(self.request, 'Anda tidak bisa mencabut akses staff milik sendiri.')
+                return self.form_invalid(form)
+
+        messages.success(self.request, f'Data pengguna "{pengguna.username}" berhasil diperbarui.')
+        ActivityLog.objects.create(
+            user=self.request.user, action="UPDATE_USER",
+            detail=f"Memperbarui akun: {pengguna.username}",
+        )
+        return super().form_valid(form)
+
+
+class UserDeleteView(StaffRequiredMixin, DeleteView):
+    """Hapus pengguna. Buku yang pernah ia catat ikut terhapus (relasi CASCADE)."""
+    model = User
+    template_name = "settings/confirm_delete.html"
+    success_url = reverse_lazy("user-list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        jumlah = self.object.recorded_books.count()
+        context['jenis'] = 'Pengguna'
+        context['kembali_url'] = reverse('user-list')
+        context['dampak'] = (
+            f'{jumlah} buku yang dicatat pengguna ini akan IKUT TERHAPUS. '
+            'Bila hanya ingin menonaktifkan, gunakan tombol Ubah lalu hilangkan centang "Akun aktif".'
+        )
+        return context
+
+    def form_valid(self, form):
+        target = self.object
+        if target.pk == self.request.user.pk:
+            messages.error(self.request, 'Anda tidak bisa menghapus akun Anda sendiri.')
+            return redirect('user-list')
+        if target.is_superuser and User.objects.filter(is_superuser=True).count() <= 1:
+            messages.error(self.request, 'Ini satu-satunya akun superuser — tidak boleh dihapus.')
+            return redirect('user-list')
+
+        username = target.username
+        messages.success(self.request, f'Pengguna "{username}" berhasil dihapus.')
+        ActivityLog.objects.create(
+            user=self.request.user, action="HAPUS_USER",
+            detail=f"Menghapus akun: {username}",
         )
         return super().form_valid(form)
 

@@ -28,6 +28,11 @@ urlpatterns = [
     path("profil/edit/", views.ProfileUpdateView.as_view(), name="profile-update"),
     path("pengaturan/", views.SettingsView.as_view(), name="settings"),
 
+    # Pengaturan → Kelola Pengguna (khusus staff/admin)
+    path("pengguna/", views.UserManagementView.as_view(), name="user-list"),
+    path("pengguna/<int:pk>/edit/", views.UserUpdateView.as_view(), name="user-update"),
+    path("pengguna/<int:pk>/hapus/", views.UserDeleteView.as_view(), name="user-delete"),
+
     # Pengaturan → master data DINAMIS: Genre / Kategori
     path("pengaturan/genre/tambah/", views.GenreCreateView.as_view(), name="genre-create"),
     path("pengaturan/genre/<int:pk>/edit/", views.GenreUpdateView.as_view(), name="genre-update"),

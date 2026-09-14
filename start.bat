@@ -130,7 +130,8 @@ if "%OPEN_BROWSER%"=="1" (
 :finish
 echo.
 echo ======================================================================
-echo   Selesai. Login contoh: user1 / password123
+echo   Akun terdaftar di database:
+"%VENV_PY%" "%~dp0scripts\list_accounts.py"
 echo ======================================================================
 if "%OPEN_BROWSER%"=="0" (
     echo Tekan tombol apa saja untuk menutup jendela launcher ini.

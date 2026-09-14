@@ -163,6 +163,11 @@ stop.bat               :: matikan semua service
 
 **Login contoh** (setelah `seed_data`): `user1` / `password123`
 
+> Username bisa diganti dari panel admin, jadi pastikan akun yang benar dengan:
+> `.venv\Scripts\python.exe scripts\list_accounts.py`
+> (perintah `start.bat` juga menampilkan daftar akun ini secara otomatis)
+> Lupa sandi? `.venv\Scripts\python.exe manage.py changepassword <username>`
+
 ---
 
 ## 6. Struktur Folder
@@ -226,10 +231,73 @@ Genre & Lokasi Rak dikelola dari menu **Pengaturan** (dinamis, tersimpan di data
 > menjadi kosong (`SET NULL`), dan setiap penghapusan **tercatat di ActivityLog**
 > (aksi `HAPUS_GENRE` / `HAPUS_RAK`) sehingga bisa ditelusuri.
 
+---
+
+## 7b. Menambah / Mengelola Pengguna
+
+Tersedia **tiga cara**. Aplikasi ini multi-user: semua anggota melihat koleksi yang sama.
+
+### Cara 1 — Dari dalam aplikasi (paling mudah, khusus admin/staff)
+
+1. Login sebagai akun yang berstatus **superuser/staff**.
+2. Buka menu **Pengguna** di navbar (atau *Pengaturan → Kelola Pengguna*).
+3. Isi form **Tambah Pengguna Baru** → **Buat Akun Pengguna**.
+4. Sampaikan username & kata sandi ke orang tersebut; minta ia menggantinya di
+   *Pengaturan → Ubah Kata Sandi*.
+
+Di halaman yang sama admin juga bisa: mengubah data, **mengatur ulang kata sandi**,
+**menonaktifkan** akun (tanpa menghapus), atau menghapus akun.
+
+> Menu **Pengguna** hanya muncul untuk akun staff/superuser. Pengguna biasa yang mencoba
+> membuka `/pengguna/` akan dialihkan ke dashboard dengan pesan "khusus administrator".
+
+### Cara 2 — Lewat terminal (butuh satu akun admin dahulu)
+
+```bat
+:: lihat siapa saja yang punya akun
+.venv\Scripts\python.exe manage.py create_user --list
+
+:: tambah anggota biasa (kata sandi ditanyakan bila tidak ditulis)
+.venv\Scripts\python.exe manage.py create_user --username budi --password Rahasia123 --email budi@mail.com
+
+:: tambah sekaligus sebagai admin
+.venv\Scripts\python.exe manage.py create_user --username ayah --password Rahasia123 --staff
+
+:: ubah kata sandi / nonaktifkan / aktifkan akun yang sudah ada
+.venv\Scripts\python.exe manage.py create_user --username budi --set-password
+.venv\Scripts\python.exe manage.py create_user --username budi --deactivate
+.venv\Scripts\python.exe manage.py create_user --username budi --activate
+
+:: jadikan akun yang sudah ada sebagai superuser (mis. akun Anda sendiri)
+.venv\Scripts\python.exe manage.py create_user --username hirunaza --superuser
+```
+
+### Cara 3 — Panel admin Django
+
+Login ke `http://127.0.0.1:8000/admin/` → menu **Users → Add user**.
+
+> **Penting untuk pemasangan baru:** hasil `seed_data` hanya membuat akun *anggota*
+> (`user1`…`user5`). Supaya bisa mengelola pengguna, naikkan salah satu akun menjadi admin:
+> ```bat
+> .venv\Scripts\python.exe manage.py create_user --username user1 --superuser
+> ```
+
+### Perilaku & pengaman
+
+| Aksi | Perilaku |
+| :--- | :--- |
+| Hapus pengguna | Buku yang ia catat **ikut terhapus** (relasi CASCADE) — konfirmasi menampilkan jumlahnya. Untuk sekadar memutus akses, pakai **nonaktifkan** |
+| Nonaktifkan akun | Tidak bisa login, tetapi seluruh datanya tetap ada |
+| Akun sendiri | Tidak bisa dinonaktifkan/dihapus, dan akses staff sendiri tidak bisa dicabut dari UI |
+| Superuser terakhir | Tidak boleh dihapus (mencegah terkunci dari sistem) |
+| Kata sandi | Divalidasi (min. 8 karakter, tidak terlalu umum), disimpan ter-hash, dan tidak ditampilkan di log |
+| Jejak audit | Aksi `TAMBAH_USER`, `UPDATE_USER`, `HAPUS_USER` tercatat di ActivityLog |
+
 ### Skrip pengujian bawaan (opsional, untuk memastikan aplikasi sehat)
 
 ```bat
 .venv\Scripts\python.exe scripts\dev\verify_features_v2.py    :: 72 pemeriksaan fitur & halaman
+.venv\Scripts\python.exe scripts\dev\verify_user_management.py :: 30 pemeriksaan kelola pengguna
 .venv\Scripts\python.exe scripts\dev\test_start_bat.py        :: uji start.bat + kedua service
 .venv\Scripts\python.exe scripts\dev\verify_fresh_clone.py    :: uji skenario "clone di PC baru" dari nol
 .venv\Scripts\python.exe scripts\dev\render_preview.py        :: render halaman ke folder preview/
