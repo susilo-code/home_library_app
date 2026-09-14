@@ -17,7 +17,9 @@ Uji daur hidup start.bat -> stop.bat:
 Jalankan: .venv\\Scripts\\python.exe scripts\\dev\\verify_start_stop_cycle.py
 """
 import json
+import os
 import subprocess
+import sys
 import time
 import urllib.error
 import urllib.request
@@ -36,6 +38,18 @@ def cek(nama, kondisi, detail=""):
 def listening(port):
     out = subprocess.run(['netstat', '-ano'], capture_output=True, text=True).stdout
     return any(f':{port} ' in l and 'LISTENING' in l for l in out.splitlines())
+
+
+# ── Pengaman: script ini menguji start.bat + stop.bat, jadi JANGAN sampai
+#    mematikan service yang sedang dipakai pengguna. ────────────────────────
+_terpakai = [p for p in (8000, 8001) if listening(p)]
+if _terpakai and '--force' not in sys.argv:
+    print("=" * 70)
+    print(f"  DIBATALKAN: port {', '.join(str(p) for p in _terpakai)} sedang dipakai.")
+    print("  Aplikasi sepertinya sedang berjalan (mungkin sedang Anda pakai).")
+    print("  Hentikan dulu lewat stop.bat, atau jalankan: --force")
+    print("=" * 70)
+    sys.exit(2)
 
 
 def launcher_windows():

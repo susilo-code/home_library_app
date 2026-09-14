@@ -12,6 +12,7 @@ Uji start.bat: jalankan, pantau kesiapan Django (8000) & FastAPI (8001), lalu be
 Jalankan: .venv\\Scripts\\python.exe test_start_bat.py
 """
 import subprocess
+import sys
 import time
 import urllib.error
 import urllib.request
@@ -24,6 +25,19 @@ LOG = ROOT / '_start_bat_test.log'
 def listening(port: int) -> bool:
     out = subprocess.run(['netstat', '-ano'], capture_output=True, text=True).stdout
     return any(f':{port} ' in line and 'LISTENING' in line for line in out.splitlines())
+
+
+# ── Pengaman: script ini menjalankan stop.bat di akhir, jadi JANGAN sampai
+#    mematikan service yang sedang dipakai pengguna. ────────────────────────
+_terpakai = [p for p in (8000, 8001) if listening(p)]
+if _terpakai and '--force' not in sys.argv:
+    print("=" * 70)
+    print(f"  DIBATALKAN: port {', '.join(str(p) for p in _terpakai)} sedang dipakai.")
+    print("  Aplikasi sepertinya sedang berjalan (mungkin sedang Anda pakai).")
+    print("  Script ini menguji start.bat + stop.bat, artinya service akan dimatikan.")
+    print("  Hentikan dulu lewat stop.bat, atau jalankan: --force")
+    print("=" * 70)
+    sys.exit(2)
 
 
 def kill_ports(*ports: int) -> int:
