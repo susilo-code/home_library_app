@@ -71,6 +71,12 @@
                         </span>
                         Cetak Label
                     </a>
+                    <button type="button" id="buka-tentang" class="group flex items-center gap-1.5 text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 transition-colors">
+                        <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-100 text-purple-600 transition-colors group-hover:bg-purple-200 dark:bg-purple-900 dark:text-purple-300 dark:group-hover:bg-purple-800">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </span>
+                        Tentang Aplikasi
+                    </button>
                 </div>
 
                 <!-- User Menu & Theme Toggle -->
@@ -140,6 +146,10 @@
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5a1.99 1.99 0 011.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.99 1.99 0 013 12V7a4 4 0 014-4z"/></svg>
             Cetak Label
         </a>
+        <button type="button" id="buka-tentang-mobile" class="flex w-full items-center gap-2 px-3 py-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-lg">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Tentang Aplikasi
+        </button>
         {% if user.is_authenticated %}
         <hr class="border-purple-100 dark:border-purple-800">
         <a href="{% url 'profile' %}" class="flex items-center gap-2 px-3 py-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-lg">
@@ -172,6 +182,128 @@
 
         {% block content %}{% endblock %}
     </main>
+
+    <!-- ══════════ MODAL: TENTANG APLIKASI ══════════ -->
+    <div id="modal-tentang" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="judul-tentang">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-tutup-tentang></div>
+        <div class="relative z-10 flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-purple-200 bg-white shadow-2xl dark:border-purple-800 dark:bg-purple-slate-900">
+
+            <div class="flex items-start justify-between gap-4 border-b border-purple-100 px-5 py-4 dark:border-purple-800">
+                <div class="flex items-center gap-3">
+                    <div class="glow-ring flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-royal-500 to-plum-700">
+                        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    </div>
+                    <div>
+                        <h2 id="judul-tentang" class="font-display text-lg font-bold text-purple-800 dark:text-purple-200">Tentang Aplikasi</h2>
+                        <p class="text-xs text-purple-500 dark:text-purple-400">
+                            {{ app_config.app_name|default:"Perpustakaan" }} · versi 1.4.3
+                        </p>
+                    </div>
+                </div>
+                <button type="button" data-tutup-tentang aria-label="Tutup"
+                        class="rounded-lg p-2 text-purple-400 transition hover:bg-purple-100 dark:hover:bg-purple-900">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="flex-1 space-y-5 overflow-y-auto p-5 text-sm">
+                <!-- Pengembang & lisensi -->
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <div class="rounded-xl border border-purple-100 p-3 dark:border-purple-800">
+                        <p class="text-xs uppercase tracking-wide text-purple-400">Pengembang</p>
+                        <p class="font-semibold text-purple-800 dark:text-purple-200">
+                            {{ app_config.developer_name|default:"susilo" }}
+                        </p>
+                    </div>
+                    <div class="rounded-xl border border-purple-100 p-3 dark:border-purple-800">
+                        <p class="text-xs uppercase tracking-wide text-purple-400">Lisensi</p>
+                        <p class="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Open Source
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Repositori -->
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-purple-400">Repositori (GitHub)</p>
+                    <a href="{{ app_config.repo_url|default:'https://github.com/susilo-code/home_library_app' }}"
+                       target="_blank" rel="noopener"
+                       class="mt-1 inline-flex items-start gap-2 break-all font-medium text-deep-purple-600 hover:underline dark:text-purple-300">
+                        <svg class="mt-0.5 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                        <span>{{ app_config.repo_url|default:"https://github.com/susilo-code/home_library_app" }}</span>
+                    </a>
+                </div>
+
+                <!-- Fungsi aplikasi -->
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-purple-400">Fungsi Aplikasi</p>
+                    <ul class="mt-2 grid gap-1.5 sm:grid-cols-2">
+                        <li class="flex items-start gap-2 text-purple-700 dark:text-purple-300">
+                            <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-royal-500"></span>
+                            Katalog koleksi buku keluarga (tambah, ubah, hapus, cari, filter)
+                        </li>
+                        <li class="flex items-start gap-2 text-purple-700 dark:text-purple-300">
+                            <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-royal-500"></span>
+                            Pencegahan data ganda: peringatan duplikat &amp; saran judul mirip
+                        </li>
+                        <li class="flex items-start gap-2 text-purple-700 dark:text-purple-300">
+                            <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-royal-500"></span>
+                            Pengaturan dinamis: lokasi rak, genre/kategori, jenis buku
+                        </li>
+                        <li class="flex items-start gap-2 text-purple-700 dark:text-purple-300">
+                            <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-royal-500"></span>
+                            Dashboard statistik: komposisi jenis, sebaran genre (persentase), Top 5 genre
+                        </li>
+                        <li class="flex items-start gap-2 text-purple-700 dark:text-purple-300">
+                            <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-royal-500"></span>
+                            Cetak label buku 2 × 3 cm berisi lokasi rak (untuk ditempel di buku)
+                        </li>
+                        <li class="flex items-start gap-2 text-purple-700 dark:text-purple-300">
+                            <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-royal-500"></span>
+                            Multi-pengguna: profil, kelola akun, tema gelap/terang, jejak aktivitas
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Teknologi -->
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-purple-400">Teknologi yang Dipakai</p>
+                    <div class="mt-2 flex flex-wrap gap-2">
+                        <span class="rounded-full bg-purple-100 px-2.5 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-200">Python 3.11</span>
+                        <span class="rounded-full bg-purple-100 px-2.5 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-200">Django 5.2</span>
+                        <span class="rounded-full bg-purple-100 px-2.5 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-200">FastAPI</span>
+                        <span class="rounded-full bg-purple-100 px-2.5 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-200">Uvicorn</span>
+                        <span class="rounded-full bg-purple-100 px-2.5 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-200">Tailwind CSS</span>
+                        <span class="rounded-full bg-purple-100 px-2.5 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-200">Chart.js</span>
+                        <span class="rounded-full bg-purple-100 px-2.5 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-200">SQLite / MySQL / PostgreSQL</span>
+                        <span class="rounded-full bg-purple-100 px-2.5 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-200">Pillow</span>
+                    </div>
+                </div>
+
+                <!-- Syarat pemakaian -->
+                <div class="rounded-xl border border-amber-300 bg-amber-50 p-3 dark:border-amber-700 dark:bg-amber-950/30">
+                    <p class="flex items-center gap-1.5 font-semibold text-amber-700 dark:text-amber-300">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                        Syarat Pemakaian
+                    </p>
+                    <p class="mt-1 text-amber-700/90 dark:text-amber-200/90">
+                        Pemakaian aplikasi ini <strong>harus atas izin pengembang</strong>. Aplikasi ini bersifat
+                        <strong>open source</strong> dan boleh dipelajari serta dikembangkan, namun dilarang
+                        memperjualbelikan atau mengklaim sebagai karya sendiri tanpa izin
+                        {{ app_config.developer_name|default:"susilo" }}.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-3 border-t border-purple-100 bg-purple-50/70 px-5 py-3 dark:border-purple-800 dark:bg-purple-950/40">
+                <span class="text-xs text-purple-500 dark:text-purple-400">
+                    &copy; {% now "Y" %} {{ app_config.developer_name|default:"susilo" }} · {{ app_config.app_name|default:"Perpustakaan" }}
+                </span>
+                <button type="button" data-tutup-tentang class="btn-primary">Tutup</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-white dark:bg-purple-slate-900 border-t border-purple-100 dark:border-purple-800 py-6 mt-auto">
@@ -212,6 +344,35 @@
             localStorage.setItem('theme', newTheme);
             applyTheme(newTheme);
         });
+
+        // Modal "Tentang Aplikasi"
+        (function () {
+            const modalTentang = document.getElementById('modal-tentang');
+            if (!modalTentang) return;
+            const buka = [document.getElementById('buka-tentang'),
+                          document.getElementById('buka-tentang-mobile')].filter(Boolean);
+
+            function tampilkan() {
+                modalTentang.classList.remove('hidden');
+                modalTentang.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            }
+            function sembunyikan() {
+                modalTentang.classList.add('hidden');
+                modalTentang.classList.remove('flex');
+                document.body.style.overflow = '';
+            }
+            buka.forEach((b) => b.addEventListener('click', tampilkan));
+            modalTentang.querySelectorAll('[data-tutup-tentang]').forEach((t) =>
+                t.addEventListener('click', sembunyikan));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !modalTentang.classList.contains('hidden')) sembunyikan();
+            });
+            // Deep-link: /?tentang=1 (atau /?tentang) langsung membuka modal ini —
+            // berguna untuk berbagi tautan & untuk mengambil tangkapan layar.
+            const q = new URLSearchParams(window.location.search);
+            if (q.has('tentang') && q.get('tentang') !== '0') tampilkan();
+        })();
 
         // User Dropdown
         const userMenuBtn = document.getElementById('user-menu-btn');

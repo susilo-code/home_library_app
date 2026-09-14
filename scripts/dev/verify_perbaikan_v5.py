@@ -63,8 +63,14 @@ cek('Ikon Dashboard = ikon rumah', 'M3 12l2-2m0 0l7-7 7 7' in nav)
 cek('Ikon Katalog Buku = ikon buku', 'M12 6.253v13' in nav)
 cek('Ikon Cetak Label = ikon label/tag', 'M7 7h.01M7 3h5a1.99' in nav)
 cek('Ikon diletakkan dalam bulatan berwarna',
-    nav.count('flex h-7 w-7 items-center justify-center rounded-lg bg-purple-100') == 3)
-cek('Ada efek hover pada ikon', nav.count('group-hover:bg-purple-200') == 3)
+    nav.count('flex h-7 w-7 items-center justify-center rounded-lg bg-purple-100') == 4,
+    f"{nav.count('flex h-7 w-7 items-center justify-center rounded-lg bg-purple-100')} bulatan")
+cek('Ada efek hover pada ikon', nav.count('group-hover:bg-purple-200') == 4,
+    f"{nav.count('group-hover:bg-purple-200')} efek hover")
+# v1.6: menu ke-4 "Tentang Aplikasi" (pemicu modal) wajib berikon sama rapi
+cek('Tombol "Tentang Aplikasi" ada di nav', 'id="buka-tentang"' in nav)
+cek('Ikon "Tentang Aplikasi" = ikon info',
+    'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' in nav)
 
 print()
 print('2. IKON DI MENU MOBILE')

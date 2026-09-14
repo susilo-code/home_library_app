@@ -16,7 +16,7 @@ Versi aplikasi: **1.2.0** · Django 5.2.17 · Python 3.11 · SQLite (default)
 | **Koneksi internet** | — | ✅ Wajib saat setup | Untuk mengunduh Python/dependency. Setelah terpasang, aplikasi jalan offline |
 | **Git** | 2.30+ | ✅ Wajib (untuk clone) | https://git-scm.com/downloads — alternatif: unduh ZIP repo dari GitHub |
 | **Google Chrome** | versi terbaru | Disarankan | Dibuka otomatis oleh `start.bat`; browser lain tetap jalan |
-| **Node.js** | 18 / 20 / 22 | ⬜ Opsional | Hanya untuk *rebuild* Tailwind CSS. Tanpa Node pun tampilan tetap benar |
+| **Node.js** | 18 / 20 / 22 | ⬜ Opsional | Hanya untuk *rebuild* Tailwind CSS. **Tanpa Node pun tampilan tetap benar** — `static/css/output.css` sudah di-commit dan sudah diaudit (545/545 kelas template tersedia) |
 | **uv** | terbaru | ⬜ Opsional | Mempercepat pembuatan venv & bisa mengunduh Python sendiri |
 | **MySQL/PostgreSQL** | — | ⬜ Opsional | Hanya jika tidak memakai SQLite (lihat bagian 8) |
 
@@ -182,6 +182,49 @@ stop.bat               :: matikan semua service
 > `.venv\Scripts\python.exe scripts\list_accounts.py`
 > (perintah `start.bat` juga menampilkan daftar akun ini secara otomatis)
 > Lupa sandi? `.venv\Scripts\python.exe manage.py changepassword <username>`
+
+---
+
+## 5b. Panel Kendali — “satu pintu” untuk pengguna awam
+
+Bila tidak ingin menyentuh berkas `.bat` sama sekali, gunakan **Panel Kendali**:
+`HirunazaLibraryLauncher.exe` (jendela tkinter, dibangun dari `launcher.py`).
+
+| Tombol | Fungsinya |
+| :--- | :--- |
+| **1. Siapkan (setup)** | Menjalankan `setup.bat`: venv, dependensi, `.env`, migrasi. Ada kotak centang untuk sekalian mengisi **data contoh**. Cukup sekali. |
+| **2. Jalankan** | Menyalakan **Django** (web) + **FastAPI** (API) sekaligus, lalu membuka Chrome otomatis. |
+| **3. Hentikan** | Mematikan kedua layanan, termasuk sisa proses yang masih menahan port 8000/8001. |
+| **Buka Aplikasi** | Membuka `http://127.0.0.1:8000` di browser. |
+| **Buat Akun Admin** | Membuat akun admin (username + sandi) tanpa perlu terminal. |
+
+Panel menampilkan **status langsung** — folder aplikasi, `.venv`, `.env`, port Django/FastAPI,
+dan Node.js — serta **catatan aktivitas** dari setiap perintah yang dijalankan.
+
+**Cara pakai:** letakkan `HirunazaLibraryLauncher.exe` **di folder aplikasi** (satu folder
+dengan `manage.py`), lalu klik dua kali. Bila `.exe` disimpan di folder lain, tekan
+**Pilih Folder …** dan arahkan ke folder aplikasi.
+
+### Mode teks (untuk memeriksa bila jendela bermasalah)
+
+```bat
+HirunazaLibraryLauncher.exe --selftest    :: uji mandiri, hasil ditulis ke selftest_launcher.txt
+HirunazaLibraryLauncher.exe --statuscli   :: status sistem & kedua layanan
+HirunazaLibraryLauncher.exe --startcli    :: jalankan layanan (log: logs\django.log, logs\fastapi.log)
+HirunazaLibraryLauncher.exe --stopcli     :: hentikan layanan
+```
+
+### Membangun ulang `.exe` (untuk pengembang)
+
+```bat
+build_launcher.bat
+```
+
+> **Catatan penting.** PyInstaller **gagal** bila jalur folder mengandung **spasi**
+> — gejalanya `[Errno 22] Invalid argument` dan berkas `.exe` tidak terbentuk, padahal
+> folder tujuan normal bila diuji manual. Karena itu `build_launcher.bat` membangun di
+> `%LOCALAPPDATA%\Temp\hirunaza_launcher_build` (tanpa spasi) lalu menyalin hasilnya ke
+> folder aplikasi. Ini juga sebabnya folder seperti `D:\IT Projects\…` tetap aman.
 
 ---
 
@@ -461,7 +504,7 @@ Pastikan `.env`, `.venv/`, `db.sqlite3`, `media/`, `node_modules/` berstatus **i
 | `Port 8000 is already in use` | Server lama masih hidup | `stop.bat` lalu `start.bat`. Kalau perlu: `netstat -ano \| findstr :8000` → `taskkill /F /PID <PID>` |
 | Halaman tampil kode lama walau file sudah diubah | Proses server lama memegang port | `stop.bat`, cek `netstat -ano \| findstr :8000` harus kosong, lalu `start.bat` |
 | `TemplateSyntaxError: Unclosed tag on line N: 'block'` | `{% block %}` tidak ditutup `{% endblock %}` | Pastikan setiap blok di template punya penutup; jumlah `{% block %}` = jumlah `{% endblock %}` |
-| CSS/tampilan polos | `output.css` belum ada | `npm install && npm run build`, atau pastikan CDN Tailwind tidak diblokir |
+| CSS/tampilan polos | `output.css` belum ada | `npm install && npm run build`, atau periksa audit: `.venv\Scripts\python.exe scripts\dev\cek_css_lokal.py` (harus 0 kelas hilang) |
 | `Invalid HTTP_HOST header` | Host tidak diizinkan | Tambahkan host ke `ALLOWED_HOSTS` di `.env` |
 | `database is locked` (SQLite) | Ada proses lain memakai DB | Tutup server lain / aplikasi DB viewer, lalu ulangi |
 | `no such table: library_book` | Belum migrasi | `python manage.py migrate` |

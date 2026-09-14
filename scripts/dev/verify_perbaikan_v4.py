@@ -97,8 +97,10 @@ for nama, html in halaman_lain.items():
     cek(f'Footer di halaman {nama} juga memuat kredit pengembang', 'Developed by susilo' in html)
 
 html_login = c.get(reverse('login')).content.decode()
-cek('Halaman login mencantumkan "This app is developed by susilo"',
-    'This app is developed by susilo' in html_login)
+# v1.6: kredit di halaman login DIHAPUS atas permintaan pemilik aplikasi
+# (cukup di footer halaman dalam aplikasi). Jadi pemeriksaannya dibalik.
+cek('Halaman login TIDAK lagi mencantumkan "This app is developed by susilo"',
+    'This app is developed by susilo' not in html_login)
 
 print()
 print('═' * 78)

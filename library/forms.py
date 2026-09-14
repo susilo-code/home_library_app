@@ -677,7 +677,7 @@ class SiteConfigForm(forms.ModelForm):
 
     class Meta:
         model = SiteConfig
-        fields = ['app_name', 'app_short_name', 'tagline', 'label_owner']
+        fields = ['app_name', 'app_short_name', 'tagline', 'label_owner', 'developer_name', 'repo_url']
         widgets = {
             'app_name': forms.TextInput(attrs={
                 'class': INPUT_CLASS, 'maxlength': 150,
@@ -691,12 +691,20 @@ class SiteConfigForm(forms.ModelForm):
             'label_owner': forms.TextInput(attrs={
                 'class': INPUT_CLASS, 'maxlength': 80,
                 'placeholder': 'Contoh: Keluarga Hirunaza (boleh dikosongkan)'}),
+            'developer_name': forms.TextInput(attrs={
+                'class': INPUT_CLASS, 'maxlength': 80,
+                'placeholder': 'Contoh: susilo'}),
+            'repo_url': forms.URLInput(attrs={
+                'class': INPUT_CLASS, 'maxlength': 300,
+                'placeholder': 'https://github.com/susilo-code/home_library_app'}),
         }
         labels = {
             'app_name': 'Judul Aplikasi',
             'app_short_name': 'Nama Singkat (navbar)',
             'tagline': 'Tagline',
             'label_owner': 'Nama Pemilik (pada label cetak)',
+            'developer_name': 'Nama Pengembang',
+            'repo_url': 'URL Repositori (GitHub)',
         }
         error_messages = {
             'app_name': {'required': 'Judul aplikasi wajib diisi.'},

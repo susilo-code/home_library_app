@@ -65,6 +65,17 @@ package-lock.json
 preview/
 preview*.png
 verify_*.log
+_r_*.log
+_v6.log
+_build_exe.log
+selftest_launcher.txt
+
+# ─── Log layanan (dibuat oleh Panel Kendali / launcher saat dijalankan) ──
+logs/
+
+# ─── Artefak sementara (mis. sandbox antivirus saat build .exe) ──────────
+asw-*
+*.tmp
 
 # ─── Editor & OS ──────────────────────────────────────────────────────
 .vscode/

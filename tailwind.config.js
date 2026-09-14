@@ -34,6 +34,32 @@ export default {
           900: '#40304a',
           950: '#1A1126',
         },
+        // Palet berikut dipakai halaman login & modal. Sebelumnya hanya
+        // didefinisikan di config Tailwind CDN (inline), sehingga kelasnya
+        // TIDAK ikut tergenerate ke output.css — tampilan bisa rusak di PC
+        // yang memakai CSS lokal (tanpa Node/CDN). Kini didefinisikan di sini.
+        'ink': {
+          600: '#1E0B2E',
+          700: '#1A0F2B',
+          800: '#12081F',
+          900: '#0D0517',
+        },
+        'royal': {
+          400: '#A97BFF',
+          500: '#8A4FFF',
+          600: '#742EFF',
+          700: '#5F1CE6',
+          800: '#4B14B8',
+          900: '#3B1E54',
+        },
+        'plum': {
+          400: '#8B6AA0',
+          500: '#735384',
+          600: '#63446F',
+          700: '#522B5B',
+          800: '#40214A',
+          900: '#2E1A47',
+        },
       },
       fontFamily: {
         'sans': ['Inter', 'system-ui', 'sans-serif'],

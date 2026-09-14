@@ -27,6 +27,8 @@ Dibangun dengan **Django 5.2** (antarmuka) + **FastAPI** (layanan data) + **Tail
 | **Profil** | Foto profil, bio, statistik pribadi |
 | **Tampilan** | Nuansa ungu tua, mode **gelap/terang**, responsif, animasi halus |
 | **Jejak Audit** | ActivityLog mencatat tambah/ubah/hapus buku, genre, rak, dan pengguna |
+| **Tentang Aplikasi** | Modal di top bar: identitas pengembang, lisensi **open source**, **tech stack**, fungsi aplikasi, tautan repo, dan syarat pemakaian (bisa dibuka langsung via `/?tentang=1`) |
+| **Panel Kendali** | `HirunazaLibraryLauncher.exe` — aplikasi jendela untuk pengguna awam: **Siapkan / Jalankan / Hentikan** tanpa menyentuh berkas `.bat` |
 
 Tangkapan layar lain tersedia di [`docs/screenshots/`](docs/screenshots).
 
@@ -40,6 +42,11 @@ cd <REPO>
 setup.bat          :: sekali saja: siapkan Python (bila perlu), venv, dependency, .env, migrasi
 start.bat          :: jalankan Django + FastAPI, Chrome terbuka otomatis
 ```
+
+**Tidak mau menyentuh `.bat`?** Klik dua kali **`HirunazaLibraryLauncher.exe`** — panel
+kendali (tkinter) satu pintu untuk pengguna awam: **Siapkan → Jalankan → Hentikan**,
+plus tombol buat akun admin dan status layanan langsung. Rincian di
+[MANUAL.md bagian 5b](MANUAL.md).
 
 > **PC baru tidak perlu punya Python lebih dulu.** `setup.bat` memakai Python yang sudah ada,
 > atau mengunduh Python 3.11 sendiri lewat `uv` (dan memasang `uv` otomatis bila belum ada).
@@ -109,6 +116,8 @@ home_library_app/
 ├── manage.py
 ├── requirements.txt         # dependency Python (versi di-pin)
 ├── setup.bat / start.bat / stop.bat / push_github.bat
+├── launcher.py / build_launcher.bat      # Panel Kendali (GUI tkinter) + skrip pembangun .exe
+├── HirunazaLibraryLauncher.exe           # Panel Kendali siap pakai (pengguna awam)
 ├── MANUAL.md                # panduan pemasangan & pemecahan masalah
 └── PRD.md                   # kebutuhan produk & catatan revisi
 ```
@@ -123,6 +132,8 @@ Skrip verifikasi mandiri (semuanya tanpa perlu server berjalan, kecuali yang dib
 .venv\Scripts\python.exe scripts\dev\verify_features_v2.py      :: 72 pemeriksaan fitur & halaman
 .venv\Scripts\python.exe scripts\dev\verify_user_management.py  :: 30 pemeriksaan kelola pengguna
 .venv\Scripts\python.exe scripts\dev\verify_start_stop_cycle.py :: 9 pemeriksaan start.bat/stop.bat (Windows)
+.venv\Scripts\python.exe scripts\dev\verify_perbaikan_v6.py   :: 58 pemeriksaan Tentang Aplikasi, Panel Kendali, kesiapan tanpa Node
+.venv\Scripts\python.exe scripts\dev\cek_css_lokal.py         :: audit cakupan CSS lokal (harus 0 kelas hilang)
 .venv\Scripts\python.exe scripts\dev\verify_fresh_clone.py      :: uji skenario "clone di PC baru"
 .venv\Scripts\python.exe scripts\dev\render_preview.py          :: render halaman ke preview/
 ```

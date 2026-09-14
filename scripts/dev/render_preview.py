@@ -65,3 +65,15 @@ html_modal = html_form.replace(
 with open("preview/form-buku-modal.html", "w", encoding="utf-8") as f:
     f.write(html_modal)
 print("modal dipaksa terbuka -> preview/form-buku-modal.html")
+
+# ── Versi khusus: modal "Tentang Aplikasi" dibuka paksa (untuk pratinjau) ──
+html_dash = open("preview/dashboard.html", encoding="utf-8").read()
+html_tentang = html_dash.replace(
+    'id="modal-tentang" class="fixed inset-0 z-50 hidden items-center justify-center p-4"',
+    'id="modal-tentang" class="fixed inset-0 z-50 flex items-center justify-center p-4"'
+)
+if html_tentang == html_dash:
+    print("[!] PERINGATAN: modal-tentang tidak ditemukan di dashboard.html")
+with open("preview/tentang-aplikasi.html", "w", encoding="utf-8") as f:
+    f.write(html_tentang)
+print("modal Tentang Aplikasi dipaksa terbuka -> preview/tentang-aplikasi.html")

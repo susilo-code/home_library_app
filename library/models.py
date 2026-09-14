@@ -215,6 +215,14 @@ class SiteConfig(models.Model):
         max_length=80, blank=True, default='',
         verbose_name="Nama Pemilik (pada label cetak)",
         help_text="Ikut tercetak pada label buku 2×3 cm. Boleh dikosongkan.")
+    developer_name = models.CharField(
+        max_length=80, default='susilo',
+        verbose_name="Nama Pengembang",
+        help_text="Tampil pada menu 'Tentang Aplikasi'.")
+    repo_url = models.URLField(
+        max_length=300, blank=True, default='https://github.com/susilo-code/home_library_app',
+        verbose_name="URL Repositori (GitHub)",
+        help_text="Tautan kode sumber, ditampilkan pada menu 'Tentang Aplikasi'.")
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

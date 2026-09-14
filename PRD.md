@@ -168,7 +168,33 @@ Delapan permintaan perbaikan sekaligus:
    untuk stiker yang sebagian sudah terpakai, serta `@page A4 margin 8 mm` saat dicetak.
    Menu **Cetak Label** ditambahkan di navbar (desktop & mobile).
 
+### Revisi 6 (v1.6.0)
+
+1. **Menu “Tentang Aplikasi” + modal** — item keempat di top bar (ikon *info* dalam kotak
+   ungu, konsisten dengan tiga menu lain) dan pada menu mobile. Diklik → **modal** berisi:
+   identitas **pengembang**, pernyataan **open source**, **tech stack**, **fungsi aplikasi**,
+   tautan **repositori GitHub**, dan **syarat pemakaian (“pemakaian harus atas izin pengembang”**).
+   Dua data baru ditambahkan pada `SiteConfig` — `developer_name` dan `repo_url` (migrasi
+   `0007`) — sehingga modal mengikuti identitas aplikasi dan dapat disunting dari
+   **Pengaturan → Identitas Aplikasi**. Bonus: *deep-link* `?tentang=1` langsung membuka modal.
+2. **Kredit di halaman login dihapus** — frasa “This app is developed by susilo” tidak lagi
+   tampil di `/login/`. Footer `Developed by susilo` tetap ada di halaman dalam aplikasi.
+3. **Panel Kendali satu pintu (`launcher.py` → `HirunazaLibraryLauncher.exe`)** — aplikasi
+   jendela **tkinter** untuk pengguna awam: tombol **Siapkan / Jalankan / Hentikan / Buka
+   Aplikasi / Buat Akun Admin**, status langsung (folder, `.venv`, `.env`, port, Node.js), dan
+   catatan aktivitas. Logika start/stop dipakai bersama GUI dan mode CLI
+   (`--selftest`, `--statuscli`, `--startcli`, `--stopcli`). Log layanan terpisah:
+   `logs/django.log` dan `logs/fastapi.log`. Skrip pembangun: `build_launcher.bat`.
+4. **Kesiapan PC tanpa Node.js/JS/npm** — `setup.bat` sudah melewati (bukan gagal) langkah
+   build Tailwind bila `npm` tidak ada; ditambah **audit cakupan CSS** baru
+   (`scripts/dev/cek_css_lokal.py`, dijalankan otomatis di verifikasi v6) yang membuktikan
+   **545/545 kelas** template tersedia di `static/css/output.css`. Ditemukan & diperbaiki:
+   palet `royal`/`plum`/`ink` sebelumnya hanya ada di *config* Tailwind CDN sehingga
+   **21 kelas** (termasuk di halaman login) tidak tergenerate ke CSS lokal — kini palet
+   tersebut sudah resmi ada di `tailwind.config.js`.
+
 ### Revisi 5 (v1.4.1)
+
 1. **Top bar dibersihkan** — menu **Pengguna**, tombol **+ Tambah Buku**, dan **jam digital**
    dihapus dari navbar (desktop maupun menu mobile) agar tidak berdesakan.
    Top bar kini hanya: **Dashboard · Katalog Buku · Cetak Label** + pemilih tema + menu user.
