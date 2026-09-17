@@ -1,6 +1,7 @@
 import difflib
 import json
 
+from django.conf import settings
 from django.views import View
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView,
@@ -906,6 +907,33 @@ class ShelfLabelPrintView(LoginRequiredMixin, TemplateView):
             for kunci, daftar in params.lists() for nilai in daftar
         ]
         return context
+
+
+# ─── Penjaga sesi (idle timeout) ─────────────────────────────────────────────
+
+class SesiPingView(LoginRequiredMixin, View):
+    """
+    GET /api/sesi/ping/ — memastikan sesi tetap hidup selama pengguna BERAKTIVITAS.
+
+    Kenapa perlu: masa berlaku sesi hanya diperbarui ketika ada permintaan HTTP
+    (SESSION_SAVE_EVERY_REQUEST). Tanpa ping, pengguna yang mengetik lama di satu
+    formulir (tanpa pindah halaman) akan dianggap "tidak aktif" dan ter-logout di
+    tengah pekerjaan. Skrip di base.html memanggil endpoint ini paling sering
+    sekali per menit saat ada aktivitas.
+
+    Balasan JSON: sisa detik sesi + batas idle, dipakai untuk menyinkronkan
+    pengingat di browser dengan keadaan sebenarnya di server.
+    """
+    def get(self, request, *args, **kwargs):
+        try:
+            sisa = int(request.session.get_expiry_age())
+        except Exception:
+            sisa = 0
+        return JsonResponse({
+            'ok': True,
+            'sisa_detik': sisa,
+            'menit_idle': getattr(settings, 'SESSION_IDLE_MINUTES', 10),
+        })
 
 
 # ─── API ──────────────────────────────────────────────────────────────────────

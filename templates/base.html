@@ -392,6 +392,95 @@
             setTimeout(() => toast.remove(), 5000);
         });
     </script>
+    {% if user.is_authenticated %}
+    <script>
+        /* ── Keluar otomatis setelah {{ menit_idle }} menit TANPA aktivitas ────────
+           Server tetap penjaga utama: SESSION_COOKIE_AGE + SESSION_SAVE_EVERY_REQUEST
+           (lihat config/settings.py). Skrip ini bertugas:
+             1. mengirim /api/sesi/ping/ saat ada aktivitas (maks 1x per menit) supaya
+                sesi TIDAK mati hanya karena pengguna lama mengetik di satu formulir;
+             2. memberi peringatan 60 detik sebelum batas — pengguna tidak kaget;
+             3. mengalihkan ke halaman login dengan pesan "sesi berakhir" supaya
+                sebabnya jelas. */
+        (function () {
+            const MENIT = {{ menit_idle }};
+            const BATAS = MENIT * 60 * 1000;
+            const PERINGATAN = 60 * 1000;          // tampilkan pengingat di 60 detik terakhir
+            const URL_PING = "{% url 'sesi-ping' %}";
+            const URL_LOGIN = "{% url 'login' %}?timeout=1";
+
+            let terakhirAktif = Date.now();
+            let pingTerakhir = 0;
+            let banner = null;
+
+            function keLogin() { window.location.replace(URL_LOGIN); }
+
+            function kirimPing() {
+                const sekarang = Date.now();
+                if (sekarang - pingTerakhir < 60000) return;   // cukup sekali per menit
+                pingTerakhir = sekarang;
+                fetch(URL_PING, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then((r) => {
+                        // Sesi sudah habis di server (LoginRequiredMixin mengalihkan ke login)
+                        if (r.redirected) keLogin();
+                    })
+                    .catch(() => { /* jaringan mati: biarkan server yang memutuskan */ });
+            }
+
+            function tampilkanBanner(sisaDetik) {
+                if (!banner) {
+                    banner = document.createElement('div');
+                    banner.id = 'pengingat-sesi';
+                    banner.setAttribute('role', 'status');
+                    banner.style.cssText = [
+                        'position:fixed', 'right:16px', 'bottom:16px', 'z-index:60',
+                        'max-width:340px', 'padding:12px 14px', 'border-radius:12px',
+                        'box-shadow:0 10px 30px -10px rgba(0,0,0,.5)',
+                        'display:flex', 'align-items:center', 'gap:10px',
+                        'font-size:13px', 'line-height:1.35',
+                        'background:var(--color-bg-secondary)',
+                        'color:var(--color-text-primary)',
+                        'border:1px solid var(--color-border)',
+                    ].join(';');
+                    banner.innerHTML =
+                        '<span>Sesi berakhir karena tidak ada aktivitas. ' +
+                        'Sisa <b id="sisa-sesi">—</b> detik.</span>' +
+                        '<button type="button" id="tetap-masuk" style="flex:none;padding:6px 10px;' +
+                        'border-radius:8px;border:0;cursor:pointer;font-weight:600;' +
+                        'background:var(--color-accent);color:var(--color-text-on-accent)">Tetap masuk</button>';
+                    document.body.appendChild(banner);
+                    banner.querySelector('#tetap-masuk').addEventListener('click', () => {
+                        terakhirAktif = Date.now();
+                        pingTerakhir = 0;
+                        kirimPing();
+                        sembunyikanBanner();
+                    });
+                }
+                const angka = document.getElementById('sisa-sesi');
+                if (angka) angka.textContent = Math.max(0, Math.ceil(sisaDetik));
+            }
+
+            function sembunyikanBanner() {
+                if (banner) { banner.remove(); banner = null; }
+            }
+
+            function adaAktivitas() {
+                terakhirAktif = Date.now();
+                sembunyikanBanner();
+                kirimPing();
+            }
+
+            ['mousemove', 'mousedown', 'keydown', 'scroll', 'wheel', 'touchstart', 'focus']
+                .forEach((nama) => window.addEventListener(nama, adaAktivitas, { passive: true }));
+
+            setInterval(() => {
+                const sisa = BATAS - (Date.now() - terakhirAktif);
+                if (sisa <= 0) { keLogin(); return; }
+                if (sisa <= PERINGATAN) tampilkanBanner(sisa / 1000);
+            }, 5000);
+        })();
+    </script>
+    {% endif %}
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

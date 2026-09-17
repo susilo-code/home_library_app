@@ -29,6 +29,7 @@ Dibangun dengan **Django 5.2** (antarmuka) + **FastAPI** (layanan data) + **Tail
 | **Tampilan** | Nuansa ungu tua, mode **gelap/terang**, responsif, animasi halus |
 | **Jejak Audit** | ActivityLog mencatat tambah/ubah/hapus buku, genre, rak, dan pengguna |
 | **Tentang Aplikasi** | Modal di top bar: identitas pengembang, lisensi **open source**, **tech stack**, fungsi aplikasi, tautan repo, dan syarat pemakaian (bisa dibuka langsung via `/?tentang=1`) |
+| **Keamanan Sesi** | Aplikasi selalu dibuka di halaman **login**; sesi **berakhir otomatis setelah 10 menit tanpa aktivitas** (dapat diubah lewat `.env`), ada pengingat 60 detik + tombol “Tetap masuk”, dan menutup browser langsung mengakhiri sesi |
 | **Panel Kendali** | `home_library.exe` — aplikasi jendela untuk pengguna awam: **Siapkan / Jalankan / Hentikan** tanpa menyentuh berkas `.bat` |
 
 Tangkapan layar lain tersedia di [`docs/screenshots/`](docs/screenshots).

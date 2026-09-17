@@ -37,7 +37,6 @@ def static_version(request):
     Dengan `?v=<mtime>`, URL ikut berubah setiap kali CSS/JS dibangun ulang,
     sehingga browser pasti mengambil berkas baru (tanpa perlu hard-refresh).
     """
-    global _versi_terakhir
     dasar = Path(settings.BASE_DIR)
     berkas = [dasar / 'static' / 'css' / 'output.css']
     berkas += sorted((dasar / 'static' / 'js').glob('*.js'))
@@ -46,3 +45,18 @@ def static_version(request):
     except Exception:
         versi = ''
     return {'static_version': versi}
+
+
+def sesi_info(request):
+    """
+    Info sesi untuk template:
+      • menit_idle     — batas tidak-aktivitas sebelum otomatis logout (dipakai
+                         base.html untuk pengingat + pengalihan ke halaman login)
+      • sesi_berakhir  — True bila pengguna baru saja diarahkan karena sesinya
+                         habis (/login/?timeout=1), supaya halaman login bisa
+                         memberi tahu sebabnya (bukan tiba-tiba terlempar).
+    """
+    return {
+        'menit_idle': getattr(settings, 'SESSION_IDLE_MINUTES', 10),
+        'sesi_berakhir': request.GET.get('timeout') == '1',
+    }

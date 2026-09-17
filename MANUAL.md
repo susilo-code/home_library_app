@@ -364,6 +364,42 @@ Daftar ukuran tersedia di `library/views.py` → `ShelfLabelPrintView.UKURAN_LAB
 
 ---
 
+## 7e. Sesi, Keluar Otomatis, dan Halaman Login
+
+**Setiap kali aplikasi dibuka, yang muncul lebih dulu adalah halaman login.**
+Selama belum masuk, semua halaman (dashboard, katalog, label, pengaturan) otomatis
+mengalihkan ke `/login/`; setelah berhasil masuk barulah dashboard ditampilkan.
+
+| Aturan | Nilai bawaan | Diubah di |
+| :--- | :--- | :--- |
+| Keluar otomatis bila **tidak ada aktivitas** | **10 menit** | `.env` → `SESSION_IDLE_MINUTES=10` |
+| Menutup browser | sesi langsung berakhir → harus login lagi | `config/settings.py` → `SESSION_EXPIRE_AT_BROWSER_CLOSE` |
+| Perpanjangan sesi | **otomatis setiap ada aktivitas** (jendela bergeser) | `config/settings.py` → `SESSION_SAVE_EVERY_REQUEST` |
+
+Catatan penting soal "10 menit":
+
+- Yang dihitung adalah **10 menit tanpa aktivitas**, bukan 10 menit sejak login —
+  jadi pengguna yang sedang bekerja tidak akan tiba-tiba terlempar.
+- Aktivitas = membuka halaman, mengklik, menggulir, atau mengetik. Saat pengguna
+  mengetik lama di satu formulir (tanpa pindah halaman), halaman mengirim
+  `/api/sesi/ping/` paling banyak **sekali per menit** agar sesinya tetap hidup.
+- **60 detik sebelum berakhir** muncul pengingat kecil di kanan bawah
+  ("Sesi berakhir karena tidak ada aktivitas…") lengkap dengan tombol
+  **Tetap masuk** — pengguna jadi tidak kaget dan tidak kehilangan isian.
+- Bila sesi benar-benar habis, halaman dialihkan ke `/login/?timeout=1` yang
+  menampilkan pesan *"Sesi Anda berakhir karena tidak ada aktivitas selama 10 menit"*.
+
+Mengubah lama sesi (mis. jadi 30 menit):
+
+```ini
+# .env
+SESSION_IDLE_MINUTES=30
+```
+
+lalu hentikan-jalankan ulang layanan (`stop.bat` → `start.bat`).
+
+---
+
 ## 7b. Menambah / Mengelola Pengguna
 
 Tersedia **tiga cara**. Aplikasi ini multi-user: semua anggota melihat koleksi yang sama.
@@ -593,6 +629,8 @@ Pastikan `.env`, `.venv/`, `db.sqlite3`, `media/`, `node_modules/` berstatus **i
 | `TemplateSyntaxError: Unclosed tag on line N: 'block'` | `{% block %}` tidak ditutup `{% endblock %}` | Pastikan setiap blok di template punya penutup; jumlah `{% block %}` = jumlah `{% endblock %}` |
 | CSS/tampilan polos | `output.css` belum ada | `npm install && npm run build`, atau periksa audit: `.venv\Scripts\python.exe scripts\dev\cek_css_lokal.py` (harus 0 kelas hilang) |
 | Tampilan sudah diperbaiki tapi **browser masih menampilkan yang lama** (mis. ikon login masih tertimpa teks) | Browser memakai `output.css` dari cache-nya sendiri: nama berkas tidak pernah berubah dan server pengembangan tidak mengirim `Cache-Control` | **Ctrl+Shift+R** (hard reload) sekali. Sejak v1.9.1 tautan CSS memakai `?v=<mtime>` sehingga reload biasa sudah cukup — kalau masih lama, pastikan server di-restart (`stop.bat` → `start.bat`) dan periksa `href` CSS di View Source sudah ada `?v=` |
+| Sering ter-logout sendiri / sesi terlalu cepat habis | Batas tidak-aktivitas terlalu pendek untuk kebiasaan pemakaian | Perbesar di `.env`: `SESSION_IDLE_MINUTES=30`, lalu `stop.bat` → `start.bat`. Ingat: hitungannya **tanpa aktivitas**, jadi selama halaman dipakai sesi otomatis diperpanjang |
+| Ter-logout padahal sedang mengisi formulir lama | Sesi lama habis karena tidak ada permintaan HTTP dari halaman itu | Sudah ditangani `/api/sesi/ping/` (skrip di `base.html`); pastikan JavaScript browser aktif. Bila terpaksa nonaktif, perbesar `SESSION_IDLE_MINUTES` |
 | `Invalid HTTP_HOST header` | Host tidak diizinkan | Tambahkan host ke `ALLOWED_HOSTS` di `.env` |
 | `database is locked` (SQLite) | Ada proses lain memakai DB | Tutup server lain / aplikasi DB viewer, lalu ulangi |
 | `no such table: library_book` | Belum migrasi | `python manage.py migrate` |

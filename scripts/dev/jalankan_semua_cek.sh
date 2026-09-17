@@ -20,8 +20,10 @@ SUITES=(
   verify_features_v2
   verify_user_management
   verify_label_rak
+  verify_sesi
   verify_login_ikon
   verify_live_v3
+  verify_live_v4
   cek_css_lokal
 )
 gagal_suite=()

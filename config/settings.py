@@ -30,6 +30,14 @@ def env_list(name: str, default: str = '') -> list[str]:
     return [item.strip() for item in raw.split(',') if item.strip()]
 
 
+def env_int(name: str, default: int) -> int:
+    """Bilangan bulat dari .env; nilai tidak valid/absen -> default."""
+    try:
+        return int(str(os.getenv(name, default)).strip())
+    except (TypeError, ValueError):
+        return int(default)
+
+
 # ── Keamanan dasar ────────────────────────────────────────────────────────────
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-ganti-key-ini-di-file-env')
 DEBUG = env_bool('DEBUG', True)
@@ -83,6 +91,8 @@ TEMPLATES = [
                 "library.context_processors.identitas_aplikasi",
                 # Versi aset statik -> ?v= pada CSS/JS (anti cache lama)
                 "library.context_processors.static_version",
+                # Info sesi (batas idle + penanda sesi berakhir)
+                "library.context_processors.sesi_info",
             ],
         },
     },
@@ -163,3 +173,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "login"
+
+
+# ── Sesi: keluar otomatis setelah TIDAK ADA AKTIVITAS (default 10 menit) ──────
+# SESSION_IDLE_MINUTES dapat diubah dari .env tanpa menyentuh kode.
+#   • SESSION_COOKIE_AGE     = batas usia cookie sesi.
+#   • SESSION_SAVE_EVERY_REQUEST = setiap permintaan memperbarui masa berlaku
+#     -> hitungannya "10 menit sejak aktivitas terakhir" (jendela bergeser),
+#     BUKAN "10 menit sejak login". Tanpa ini semua orang ter-logout 10 menit
+#     setelah masuk walaupun sedang aktif memakai aplikasi.
+#   • SESSION_EXPIRE_AT_BROWSER_CLOSE = menutup browser mengakhiri sesi, sehingga
+#     membuka aplikasi lagi selalu mulai dari halaman LOGIN.
+SESSION_IDLE_MINUTES = max(1, env_int('SESSION_IDLE_MINUTES', 10))
+SESSION_COOKIE_AGE = SESSION_IDLE_MINUTES * 60
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

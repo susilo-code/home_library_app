@@ -127,6 +127,16 @@
                     </div>
                 </div>
 
+                {% if sesi_berakhir %}
+                <div class="mb-5 flex items-start gap-3 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
+                    <svg class="mt-0.5 h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div>
+                        Sesi Anda berakhir karena tidak ada aktivitas selama {{ menit_idle }} menit.
+                        Silakan masuk kembali.
+                    </div>
+                </div>
+                {% endif %}
+
                 {% if form.non_field_errors %}
                 <div class="mb-5 flex items-start gap-3 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
                     <svg class="mt-0.5 h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
@@ -180,6 +190,9 @@
                 <div class="mt-6 border-t border-purple-400/15 pt-5 text-center">
                     <p class="text-xs text-purple-200/55">
                         Belum punya akun? Hubungi administrator untuk dibuatkan akun.
+                    </p>
+                    <p class="mt-2 text-[11px] text-purple-200/45">
+                        Demi keamanan, sesi otomatis berakhir setelah {{ menit_idle }} menit tanpa aktivitas.
                     </p>
                 </div>
             </div>

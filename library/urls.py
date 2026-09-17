@@ -62,4 +62,7 @@ urlpatterns = [
     path("api/stats/", views.StatsAPIView.as_view(), name="api-stats"),
     path("api/books/", views.BookListAPIView.as_view(), name="api-book-list"),
     path("api/titles/", views.TitleAutocompleteAPIView.as_view(), name="api-title-autocomplete"),
+
+    # Penjaga sesi (dipanggil skrip di base.html saat pengguna beraktivitas)
+    path("api/sesi/ping/", views.SesiPingView.as_view(), name="sesi-ping"),
 ]
