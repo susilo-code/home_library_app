@@ -61,6 +61,11 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# Pengembangan: jangan biarkan browser meng-cache apa pun, supaya perubahan
+# template/CSS langsung terlihat tanpa hard-refresh (lihat config/middleware.py).
+if DEBUG:
+    MIDDLEWARE.append("config.middleware.TanpaCacheDevMiddleware")
+
 ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
