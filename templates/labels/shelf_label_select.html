@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Cetak Label Rak — {{ app_config.app_name|default:"Perpustakaan" }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-6xl animate-in">
+
+    <!-- Header -->
+    <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+            <h1 class="flex items-center gap-2 font-display text-2xl font-bold teks-utama">
+                <svg class="h-6 w-6 teks-kedua" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+                Cetak Label Rak
+            </h1>
+            <p class="mt-1 text-sm teks-kedua">
+                Label ukuran <strong>3 × 4 cm</strong> atau <strong>4 × 6 cm</strong> (bisa mendatar/tegak)
+                berisi kode &amp; nama rak — untuk ditempel pada raknya.
+            </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+            <a href="{% url 'shelf-create' %}" class="btn-primary flex items-center gap-1.5">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Tambah Rak
+            </a>
+            <a href="{% url 'label-select' %}" class="btn-secondary">Cetak Label Buku</a>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="card mb-5">
+        <div class="card-body">
+            <form method="get" class="grid grid-cols-1 gap-3 sm:grid-cols-12">
+                <div class="sm:col-span-5">
+                    <input type="text" name="q" value="{{ filter.q|default:'' }}"
+                           placeholder="Cari nama / kode / keterangan rak…" class="input">
+                </div>
+                <div class="sm:col-span-3">
+                    <select name="status" class="input">
+                        <option value="">Semua status</option>
+                        <option value="aktif" {% if filter.status == 'aktif' %}selected{% endif %}>Hanya rak aktif</option>
+                        <option value="nonaktif" {% if filter.status == 'nonaktif' %}selected{% endif %}>Hanya rak nonaktif</option>
+                    </select>
+                </div>
+                <div class="sm:col-span-2 flex gap-2">
+                    <button type="submit" class="btn-primary flex-1">Terapkan</button>
+                    <a href="{% url 'shelf-label-select' %}" class="btn-secondary" title="Reset">↺</a>
+                </div>
+                <div class="sm:col-span-12 -mt-1 flex flex-wrap items-center gap-4 text-xs teks-kedua">
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" name="kosong" value="1" {% if filter.kosong == '1' %}checked{% endif %}
+                               class="h-4 w-4 rounded border-purple-300 teks-kedua">
+                        Hanya rak yang belum berisi buku
+                    </label>
+                    <span>Ditemukan <strong class="teks-utama">{{ total_hasil }}</strong> rak dari {{ total_rak }} rak</span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pilih rak -->
+    <form method="get" action="{% url 'shelf-label-print' %}" id="form-label-rak">
+        <input type="hidden" name="ids" id="ids-terpilih">
+        {# Filter yang sedang aktif harus IKUT terkirim, kalau tidak tombol
+           "Cetak semua hasil filter" akan mencetak seluruh rak (bukan hasil filter) #}
+        <input type="hidden" name="q" value="{{ filter.q|default:'' }}">
+        <input type="hidden" name="status" value="{{ filter.status|default:'' }}">
+        {% if filter.kosong == '1' %}<input type="hidden" name="kosong" value="1">{% endif %}
+        <div class="card">
+            <div class="card-header flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" id="pilih-semua" class="h-5 w-5 rounded border-purple-300 teks-kedua"
+                           title="Pilih semua di halaman ini">
+                    <label for="pilih-semua" class="text-sm font-semibold teks-utama">Pilih semua di halaman ini</label>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs teks-kedua"><b id="jumlah-terpilih">0</b> dipilih</span>
+                    <select name="ukuran" title="Ukuran label rak yang dicetak"
+                            class="rounded-lg border border-purple-200 bg-white px-3 py-2 text-xs dark:border-purple-800 dark:bg-purple-950">
+                        <option value="3x4">Label 3 × 4 cm</option>
+                        <option value="4x6">Label 4 × 6 cm</option>
+                    </select>
+                    <select name="orientasi" title="Arah label: mendatar diputar 90°"
+                            class="rounded-lg border border-purple-200 bg-white px-3 py-2 text-xs dark:border-purple-800 dark:bg-purple-950">
+                        <option value="mendatar">Mendatar (diputar)</option>
+                        <option value="tegak">Tegak</option>
+                    </select>
+                    <input type="number" name="mulai" min="0" placeholder="Lompati N"
+                           title="Lewati N label pertama (untuk stiker yang sebagian sudah terpakai)"
+                           class="w-24 rounded-lg border border-purple-200 bg-white px-3 py-2 text-xs dark:border-purple-800 dark:bg-purple-950">
+                    <button type="submit" class="btn-primary">Cetak label terpilih</button>
+                    <button type="submit" name="semua" value="1" class="btn-secondary"
+                            title="Cetak label untuk SEMUA rak hasil filter">Cetak semua hasil filter</button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {% for s in shelves %}
+                    <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-purple-100 p-3 transition hover:border-purple-300 hover:bg-purple-50/60 dark:border-purple-800 dark:hover:bg-purple-950/40">
+                        <input type="checkbox" class="pilih-rak mt-1 h-4 w-4 rounded border-purple-300 teks-kedua" value="{{ s.pk }}">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                {% if s.code %}
+                                <span class="badge-genre text-[10px]" style="--warna-genre: {{ s.color_code }}">
+                                    {{ s.code }}
+                                </span>
+                                {% endif %}
+                                <p class="truncate text-sm font-semibold teks-utama">{{ s.name }}</p>
+                            </div>
+                            {% if s.description %}
+                            <p class="mt-1 truncate text-xs teks-kedua">{{ s.description }}</p>
+                            {% endif %}
+                            <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
+                                <span class="text-[11px] teks-kedua"><strong class="teks-utama">{{ s.book_count }}</strong> buku</span>
+                                {% if not s.code %}
+                                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold teks-bahaya dark:bg-amber-900/40">kode belum diisi</span>
+                                {% endif %}
+                                {% if not s.is_active %}
+                                <span class="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold teks-bahaya dark:bg-red-900/40">nonaktif</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </label>
+                    {% empty %}
+                    <p class="col-span-full py-10 text-center teks-kedua">
+                        Tidak ada rak yang cocok dengan filter ini.
+                    </p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% if is_paginated %}
+            <div class="flex items-center justify-between border-t border-purple-100 px-4 py-3 dark:border-purple-800">
+                <span class="text-xs teks-kedua">Halaman {{ page_obj.number }} dari {{ paginator.num_pages }}</span>
+                <div class="flex gap-2">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if query_tanpa_page %}&{{ query_tanpa_page }}{% endif %}" class="btn-secondary">← Sebelumnya</a>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if query_tanpa_page %}&{{ query_tanpa_page }}{% endif %}" class="btn-secondary">Berikutnya →</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </form>
+
+    <p class="mt-4 text-xs teks-samar">
+        Tips: cetak di kertas stiker A4, potong mengikuti garis putus-putus, lalu tempel di depan / pinggir rak.
+        Label berisi <strong>kode dan nama rak</strong> sehingga setiap rak mudah dikenali.
+    </p>
+</div>
+
+<script>
+(function () {
+    const semua = document.getElementById('pilih-semua');
+    const kotak = () => Array.from(document.querySelectorAll('.pilih-rak'));
+    const info = document.getElementById('jumlah-terpilih');
+    const inputIds = document.getElementById('ids-terpilih');
+
+    function perbarui() {
+        const dipilih = kotak().filter(k => k.checked).map(k => k.value);
+        info.textContent = dipilih.length;
+        inputIds.value = dipilih.join(',');
+    }
+
+    if (semua) {
+        semua.addEventListener('change', () => {
+            kotak().forEach(k => { k.checked = semua.checked; });
+            perbarui();
+        });
+    }
+    kotak().forEach(k => k.addEventListener('change', () => {
+        if (semua) semua.checked = kotak().every(x => x.checked);
+        perbarui();
+    }));
+
+    document.getElementById('form-label-rak').addEventListener('submit', (e) => {
+        const adaDipilih = inputIds.value.trim().length > 0;
+        const tombolSemua = e.submitter && e.submitter.name === 'semua';
+        if (!adaDipilih && !tombolSemua) {
+            e.preventDefault();
+            alert('Pilih minimal satu rak, atau klik "Cetak semua hasil filter".');
+        }
+    });
+
+    perbarui();
+})();
+</script>
+{% endblock %}

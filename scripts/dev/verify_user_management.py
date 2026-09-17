@@ -91,12 +91,16 @@ r = mg('create_user', '--username', 'UJI_CLI_USER', '--password', 'apapun12345')
 cek("Nama pengguna duplikat (beda kapitalisasi) ditolak",
     r.returncode != 0 and 'sudah ada' in (r.stdout + r.stderr))
 
-# Sandi lemah lewat CLI non-interaktif divalidasi di form; di CLI pakai validate_password
+# Sandi TIDAK lagi divalidasi kerumitannya (permintaan pemilik aplikasi:
+# "password untuk user dibebaskan, tidak perlu validasi rumit") — jadi CLI
+# justru HARUS menerima sandi pendek. Dulu suite ini menuntut sebaliknya.
 r = mg('create_user', '--username', 'uji_lemah', '--password', '123')
-cek("CLI menolak kata sandi terlalu lemah",
-    r.returncode != 0 or not User.objects.filter(username='uji_lemah').exists(),
+cek("CLI menerima kata sandi bebas (tanpa aturan kerumitan)",
+    r.returncode == 0 and User.objects.filter(username='uji_lemah').exists(),
     (r.stdout + r.stderr).strip().splitlines()[-1][:80] if (r.stdout + r.stderr).strip() else '')
 if User.objects.filter(username='uji_lemah').exists():
+    cek("Sandi pendek '123' benar-benar bisa dipakai login",
+        Client().login(username='uji_lemah', password='123'))
     DIBERSIHKAN.append('uji_lemah')
 
 print()

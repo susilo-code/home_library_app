@@ -44,6 +44,10 @@ urlpatterns = [
     path("label/", views.LabelSelectView.as_view(), name="label-select"),
     path("label/cetak/", views.LabelPrintView.as_view(), name="label-print"),
 
+    # Cetak label rak 3 × 4 cm / 4 × 6 cm
+    path("label-rak/", views.ShelfLabelSelectView.as_view(), name="shelf-label-select"),
+    path("label-rak/cetak/", views.ShelfLabelPrintView.as_view(), name="shelf-label-print"),
+
     # Pengaturan → master data DINAMIS: Genre / Kategori
     path("pengaturan/genre/tambah/", views.GenreCreateView.as_view(), name="genre-create"),
     path("pengaturan/genre/<int:pk>/edit/", views.GenreUpdateView.as_view(), name="genre-update"),

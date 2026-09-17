@@ -85,8 +85,9 @@ cek("tombol 'Tentang Aplikasi' memakai ikon SVG", "<svg" in nav_ketat)
 cek("ikon dibungkus kotak berwarna (rounded + tinted)",
     "rounded-lg" in nav_ketat and ("bg-purple-100" in nav_ketat or "bg-purple-900" in nav_ketat))
 jumlah_ikon = nav_ketat.count("h-7 w-7 items-center justify-center")
-cek("jumlah mata menu utama tetap 4 (Dashboard/Katalog/Label/Tentang)",
-    jumlah_ikon == 4, f"ditemukan {jumlah_ikon} kotak ikon")
+# v1.8: menu berikon sekarang 5 — Dashboard / Katalog / Cetak Label / Label Rak / Tentang.
+cek("jumlah mata menu berikon tetap 5 (Dashboard/Katalog/Cetak Label/Label Rak/Tentang)",
+    jumlah_ikon == 5, f"ditemukan {jumlah_ikon} kotak ikon")
 
 # ── 2. MODAL "TENTANG APLIKASI" ──────────────────────────────────────────────
 bagian("2. Isi modal 'Tentang Aplikasi'")
@@ -154,7 +155,7 @@ cek("migrasi 0007 sudah diterapkan", (ROOT / "library/migrations/0007_siteconfig
 bagian("5. Panel kendali tkinter + .exe")
 
 launcher = ROOT / "launcher.py"
-exe = ROOT / "HirunazaLibraryLauncher.exe"
+exe = ROOT / "home_library.exe"
 build_bat = ROOT / "build_launcher.bat"
 
 cek("launcher.py ada", launcher.exists())
@@ -170,13 +171,13 @@ if launcher.exists():
     cek("logika start/stop dipakai bersama GUI & CLI",
         "def jalankan_servis" in isi and "def hentikan_servis" in isi)
 
-cek("HirunazaLibraryLauncher.exe ada", exe.exists(),
+cek("home_library.exe ada", exe.exists(),
     f"{exe.stat().st_size // 1024 // 1024} MB" if exe.exists() else "belum dibangun")
 cek("build_launcher.bat ada", build_bat.exists())
 if build_bat.exists():
     bb = build_bat.read_text(encoding="utf-8", errors="replace")
     cek("build_launcher.bat menyiasati jalur berspasi (build di folder tanpa spasi)",
-        "hirunaza_launcher_build" in bb and "PyInstaller" in bb)
+        "home_library_build" in bb and "PyInstaller" in bb)
 
 if exe.exists():
     r = subprocess.run([str(exe), "--selftest"], capture_output=True, text=True, timeout=180)

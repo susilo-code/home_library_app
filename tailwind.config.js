@@ -3,6 +3,13 @@ export default {
   content: [
     "./templates/**/*.html",
     "./library/templates/**/*.html",
+    // PENTING: kelas Tailwind juga dipakai dari kode Python (widget attrs di
+    // library/forms.py & co). Tanpa baris ini kelas seperti `pl-11` pada input
+    // login TIDAK pernah tergenerate ke output.css — ikon dan teks saling
+    // bertimpa di PC yang memakai CSS lokal (tanpa Node/CDN). Diaudit oleh
+    // scripts/dev/cek_css_lokal.py.
+    "./library/**/*.py",
+    "./config/**/*.py",
   ],
   darkMode: 'class',
   theme: {

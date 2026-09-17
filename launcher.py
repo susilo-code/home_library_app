@@ -29,8 +29,8 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 from tkinter.scrolledtext import ScrolledText
 
-NAMA_APP = "Hirunaza's Library Information System"
-VERSI = "1.4.3"
+NAMA_APP_BAWAAN = "Panel Kendali Perpustakaan"
+VERSI = "1.5.0"
 DEFAULT_PORTS = {"django": "8000", "fastapi": "8001"}
 
 # Jangan memunculkan jendela hitam untuk proses anak
@@ -48,14 +48,47 @@ def folder_dasar() -> Path:
     return Path(__file__).resolve().parent
 
 
-FILE_KONFIG = Path(os.environ.get("LOCALAPPDATA", Path.home())) / "HirunazaLauncher" / "config.json"
+FILE_KONFIG = Path(os.environ.get("LOCALAPPDATA", Path.home())) / "HomeLibraryLauncher" / "config.json"
+# Folder konfigurasi lama (nama .exe sebelumnya). Dibaca sebagai cadangan supaya
+# pengguna yang sudah pernah memilih folder aplikasi tidak perlu memilih ulang.
+FILE_KONFIG_LAMA = Path(os.environ.get("LOCALAPPDATA", Path.home())) / "HirunazaLauncher" / "config.json"
+
+
+def nama_app(folder: Path | None = None) -> str:
+    """
+    Nama aplikasi untuk judul jendela: dibaca dari pengaturan aplikasi
+    (SiteConfig di DB SQLite) supaya panel kendali tidak memakai nama yang
+    sudah usang. Bila tidak terbaca, pakai APP_NAME di .env, lalu nama bawaan.
+    """
+    if folder is not None:
+        try:
+            import sqlite3
+            db = folder / "db.sqlite3"
+            if db.exists():
+                with sqlite3.connect(f"file:{db}?mode=ro", uri=True, timeout=1) as koneksi:
+                    baris = koneksi.execute(
+                        "SELECT app_name FROM library_siteconfig LIMIT 1").fetchone()
+                if baris and (baris[0] or "").strip():
+                    return baris[0].strip()
+        except Exception:
+            pass
+        try:
+            from_env = (baca_env(folder).get("APP_NAME") or "").strip()
+            if from_env:
+                return from_env
+        except Exception:
+            pass
+    return NAMA_APP_BAWAAN
 
 
 def baca_konfig() -> dict:
-    try:
-        return json.loads(FILE_KONFIG.read_text(encoding="utf-8"))
-    except Exception:
-        return {}
+    """Baca konfigurasi; kalau belum ada, coba folder konfigurasi versi lama."""
+    for berkas in (FILE_KONFIG, FILE_KONFIG_LAMA):
+        try:
+            return json.loads(berkas.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+    return {}
 
 
 def simpan_konfig(data: dict) -> None:
@@ -161,7 +194,7 @@ def _popen(folder: Path, perintah: list, tulis, judul: str,
                   kena BrokenPipe saat induk menutup pipe).
     """
     tulis(f">>> {judul}: {' '.join(str(p) for p in perintah)}")
-    ling = dict(os.environ, PYTHONUTF8="1", PYTHONIOENCODING="utf-8")
+    ling = dict(os.environ, PYTHONUTF8="1", PYTHONIOENCODING="utf-8", NO_INPUT="1")
 
     berkas = None
     if log_ke is not None:
@@ -207,7 +240,11 @@ def _popen(folder: Path, perintah: list, tulis, judul: str,
             except Exception:
                 pass
             finally:
-                tulis(f"<<< {judul} selesai (kode {p.poll()})")
+                try:
+                    kode = p.wait(timeout=5)
+                except Exception:
+                    kode = p.poll()
+                tulis(f"<<< {judul} selesai (kode {kode})")
 
         threading.Thread(target=baca, daemon=True).start()
     return p
@@ -323,11 +360,14 @@ def ringkas_status(folder: Path | None) -> dict:
 class PanelKendali(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
-        self.title(f"Panel Kendali — {NAMA_APP} v{VERSI}")
+        self.folder: Path | None = cari_folder_aplikasi()
+        # Nama aplikasi mengikuti pengaturan di aplikasi (SiteConfig), bukan
+        # ditulis tetap di kode — judul tidak boleh memakai nama lama.
+        self.nama_app = nama_app(self.folder)
+        self.title(f"Panel Kendali — {self.nama_app} v{VERSI}")
         self.geometry("820x640")
         self.minsize(760, 560)
 
-        self.folder: Path | None = cari_folder_aplikasi()
         self.proses: list[subprocess.Popen] = []
         self.antrean_log: list[str] = []
         self.sedang_sibuk = False
@@ -351,8 +391,9 @@ class PanelKendali(tk.Tk):
         # Header
         kepala = ttk.Frame(self)
         kepala.pack(fill="x", **pad)
-        ttk.Label(kepala, text=NAMA_APP,
-                  font=("Segoe UI", 13, "bold")).pack(anchor="w")
+        self.lbl_nama = ttk.Label(kepala, text=self.nama_app,
+                                  font=("Segoe UI", 13, "bold"))
+        self.lbl_nama.pack(anchor="w")
         ttk.Label(kepala, text="Panel kendali: siapkan, jalankan, dan hentikan aplikasi.",
                   foreground="#555").pack(anchor="w")
 
@@ -485,6 +526,10 @@ class PanelKendali(tk.Tk):
         konfig = baca_konfig()
         konfig["folder"] = str(self.folder)
         simpan_konfig(konfig)
+        # Nama aplikasi bisa berubah begitu folder benar-benar diketahui
+        self.nama_app = nama_app(self.folder)
+        self.title(f"Panel Kendali — {self.nama_app} v{VERSI}")
+        self.lbl_nama.configure(text=self.nama_app)
         self.tulis(f"Folder aplikasi diset ke: {self.folder}")
 
     # ── Menjalankan perintah & menampilkan keluarannya ───────────────────
@@ -567,10 +612,15 @@ class PanelKendali(tk.Tk):
             messagebox.showwarning("Belum disiapkan",
                                    "Jalankan dulu '1. Siapkan (setup)'.")
             return
-        self.jalankan_perintah(
-            [str(py), "manage.py", "create_user", "--username", user,
-             "--password", sandi, "--superuser"],
-            f"Buat akun admin '{user}'")
+        # PENTING: pakai `ensure_superuser`, BUKAN `create_user`.
+        #  • ensure_superuser tidak pernah bertanya (create_user dulu memanggil
+        #    input() untuk email/nama depan - di .exe --windowed itu langsung
+        #    EOFError sehingga akun tidak pernah terbuat).
+        #  • idempotent: nama yang sudah ada tetap berhasil (peran & sandi
+        #    disesuaikan), tidak berhenti dengan "akun sudah ada".
+        self.tulis(f"Membuat/memperbarui akun admin '{user}' …")
+        self.jalankan_perintah(perintah_admin(self.folder, user, sandi),
+                               f"Buat akun admin '{user}'")
         self.var_admin_pass.set("")
 
     def _saat_ditutup(self) -> None:
@@ -601,7 +651,16 @@ def selftest() -> int:
         hasil.append((".venv Scripts python.exe ada", python_venv(folder) is not None,
                       str(python_venv(folder))))
         hasil.append(("launcher.py memakai pustaka bawaan saja", True,
-                      "tkinter, subprocess, socket, urllib, webbrowser"))
+                      "tkinter, subprocess, socket, urllib, webbrowser, sqlite3"))
+        hasil.append(("Command ensure_superuser tersedia (tombol 'Buat akun admin')",
+                      (folder / "library/management/commands/ensure_superuser.py").exists(),
+                      str(folder / "library/management/commands/ensure_superuser.py")))
+        perintah = perintah_admin(folder, "admin", "123")
+        hasil.append(("Perintah buat admin TIDAK memakai create_user (tidak ada tanya-jawab)",
+                      "ensure_superuser" in perintah and "create_user" not in perintah,
+                      " ".join(perintah[-6:])))
+        hasil.append(("Nama aplikasi terbaca untuk judul jendela", bool(nama_app(folder)),
+                      nama_app(folder)))
         st = ringkas_status(folder)
         hasil.append(("ringkas_status() berjalan tanpa error", isinstance(st, dict), str(st)))
     hasil.append(("port_dipakai() dapat dipanggil", port_dipakai(9) in (True, False), ""))
@@ -672,6 +731,80 @@ def cli_stop() -> int:
     return 1
 
 
+def perintah_admin(folder: Path, user: str, sandi: str) -> list:
+    """
+    Perintah pembuatan akun superuser — SATU sumber untuk tombol GUI dan mode
+    --admincli, supaya keduanya tidak bisa berbeda.
+
+    Memakai `ensure_superuser` (idempotent, tidak pernah bertanya), bukan
+    `create_user`: perintah lama masih memanggil input() untuk email/nama depan
+    sehingga di .exe --windowed langsung gagal EOFError dan akun tidak terbuat.
+    """
+    py = python_venv(folder)
+    return [str(py), "manage.py", "ensure_superuser",
+            "--username", user, "--password", sandi]
+
+
+def buat_admin(folder: Path, user: str, sandi: str, tulis=print) -> int:
+    """Buat/perbarui akun admin dan TUNGGU hasilnya (dipakai mode --admincli)."""
+    if python_venv(folder) is None:
+        tulis("[GAGAL] .venv belum ada - jalankan '1. Siapkan (setup)' dulu.")
+        return 1
+    p = _popen(folder, perintah_admin(folder, user, sandi), tulis,
+               f"Buat akun admin '{user}'")
+    if p is None:
+        return 1
+    p.wait()
+    tulis(f"  kode keluar manage.py: {p.returncode}")
+    return 0 if p.returncode == 0 else 1
+
+
+def cli_buat_admin(argv: list | None = None) -> int:
+    """
+    Mode uji kepala (tanpa jendela): buat akun admin seperti tombol di GUI.
+
+    Pemakaian:
+        home_library.exe --admincli --user admin --pass 123
+
+    Hasil juga ditulis ke berkas `admincli_launcher.txt` di folder .exe, karena
+    .exe --windowed tidak punya stdout (dipakai untuk pemeriksaan otomatis).
+    """
+    argv = list(argv if argv is not None else sys.argv)
+    user = _ambil_arg(argv, "--user", "--username") or "admin"
+    sandi = _ambil_arg(argv, "--pass", "--password")
+    folder = cari_folder_aplikasi()
+    baris = ["=== BUAT AKUN ADMIN (mode CLI) ===",
+             f"folder : {folder}",
+             f"akun   : {user}"]
+    print("\n".join(baris))
+    if folder is None:
+        kode, pesan = 1, "[GAGAL] folder aplikasi tidak ditemukan (manage.py)"
+    elif not sandi:
+        kode, pesan = 1, "[GAGAL] kata sandi wajib: --pass <sandi>"
+    else:
+        kode = buat_admin(folder, user, sandi, print)
+        pesan = f"hasil  : {'BERHASIL' if kode == 0 else 'GAGAL'}"
+    print(pesan)
+    baris.append(pesan)
+    try:
+        (folder_dasar() / "admincli_launcher.txt").write_text(
+            "\n".join(baris) + f"\nkode keluar: {kode}\n", encoding="utf-8")
+    except Exception:
+        pass
+    return kode
+
+
+def _ambil_arg(argv: list, *nama) -> str:
+    """Ambil nilai argumen CLI (--user x / --user=x)."""
+    for i, a in enumerate(argv):
+        for n in nama:
+            if a == n and i + 1 < len(argv):
+                return argv[i + 1]
+            if a.startswith(n + "="):
+                return a.split("=", 1)[1]
+    return ""
+
+
 def main() -> int:
     if "--selftest" in sys.argv:
         return selftest()
@@ -681,6 +814,8 @@ def main() -> int:
         return cli_start()
     if "--stopcli" in sys.argv:
         return cli_stop()
+    if "--admincli" in sys.argv:
+        return cli_buat_admin()
     app = PanelKendali()
     app.mainloop()
     return 0

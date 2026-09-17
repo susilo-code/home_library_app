@@ -22,13 +22,14 @@ Dibangun dengan **Django 5.2** (antarmuka) + **FastAPI** (layanan data) + **Tail
 | **Data Buku** | Tahun terbit, **tahun beli**, penerbit, halaman, rating, sinopsis, sampul (upload/URL) |
 | **Pengguna** | Multi-user kolaboratif; halaman **Kelola Pengguna** untuk admin (tambah, atur ulang sandi, nonaktifkan, hapus) |
 | **Identitas Aplikasi** | Judul aplikasi, nama singkat navbar, tagline, dan nama pemilik **bisa disetting** dari Pengaturan (tanpa ubah kode) |
-| **Cetak Label** | Label buku **2 × 3 cm** (mendatar/tegak) berisi **lokasi rak** + judul & penulis, siap dicetak di kertas stiker A4 |
+| **Cetak Label Buku** | Label buku **2 × 3 / 3 × 4 / 4 × 5 cm** (mendatar/tegak, ukuran huruf ikut menyesuaikan) berisi **lokasi rak** + judul & penulis, siap dicetak di kertas stiker A4 |
+| **Cetak Label Rak** | Label untuk **raknya sendiri**: **3 × 4 cm** atau **4 × 6 cm** (mendatar/tegak) berisi kode + nama rak, keterangan, dan jumlah buku; ada filter “rak yang belum berisi buku”, tombol **lompati N stiker** yang sudah terpakai, dan cetak semua hasil filter |
 | **Modal Form** | Detail buku dibuka lewat modal “Isi Detail Buku”; **genre & rak bisa ditambah** langsung dari form buku |
 | **Profil** | Foto profil, bio, statistik pribadi |
 | **Tampilan** | Nuansa ungu tua, mode **gelap/terang**, responsif, animasi halus |
 | **Jejak Audit** | ActivityLog mencatat tambah/ubah/hapus buku, genre, rak, dan pengguna |
 | **Tentang Aplikasi** | Modal di top bar: identitas pengembang, lisensi **open source**, **tech stack**, fungsi aplikasi, tautan repo, dan syarat pemakaian (bisa dibuka langsung via `/?tentang=1`) |
-| **Panel Kendali** | `HirunazaLibraryLauncher.exe` — aplikasi jendela untuk pengguna awam: **Siapkan / Jalankan / Hentikan** tanpa menyentuh berkas `.bat` |
+| **Panel Kendali** | `home_library.exe` — aplikasi jendela untuk pengguna awam: **Siapkan / Jalankan / Hentikan** tanpa menyentuh berkas `.bat` |
 
 Tangkapan layar lain tersedia di [`docs/screenshots/`](docs/screenshots).
 
@@ -43,7 +44,7 @@ setup.bat          :: sekali saja: siapkan Python (bila perlu), venv, dependency
 start.bat          :: jalankan Django + FastAPI, Chrome terbuka otomatis
 ```
 
-**Tidak mau menyentuh `.bat`?** Klik dua kali **`HirunazaLibraryLauncher.exe`** — panel
+**Tidak mau menyentuh `.bat`?** Klik dua kali **`home_library.exe`** — panel
 kendali (tkinter) satu pintu untuk pengguna awam: **Siapkan → Jalankan → Hentikan**,
 plus tombol buat akun admin dan status layanan langsung. Rincian di
 [MANUAL.md bagian 5b](MANUAL.md).
@@ -117,7 +118,7 @@ home_library_app/
 ├── requirements.txt         # dependency Python (versi di-pin)
 ├── setup.bat / start.bat / stop.bat / push_github.bat
 ├── launcher.py / build_launcher.bat      # Panel Kendali (GUI tkinter) + skrip pembangun .exe
-├── HirunazaLibraryLauncher.exe           # Panel Kendali siap pakai (pengguna awam)
+├── home_library.exe                      # Panel Kendali siap pakai (pengguna awam)
 ├── MANUAL.md                # panduan pemasangan & pemecahan masalah
 └── PRD.md                   # kebutuhan produk & catatan revisi
 ```

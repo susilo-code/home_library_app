@@ -188,7 +188,7 @@ stop.bat               :: matikan semua service
 ## 5b. Panel Kendali — “satu pintu” untuk pengguna awam
 
 Bila tidak ingin menyentuh berkas `.bat` sama sekali, gunakan **Panel Kendali**:
-`HirunazaLibraryLauncher.exe` (jendela tkinter, dibangun dari `launcher.py`).
+`home_library.exe` (jendela tkinter, dibangun dari `launcher.py`).
 
 | Tombol | Fungsinya |
 | :--- | :--- |
@@ -201,17 +201,19 @@ Bila tidak ingin menyentuh berkas `.bat` sama sekali, gunakan **Panel Kendali**:
 Panel menampilkan **status langsung** — folder aplikasi, `.venv`, `.env`, port Django/FastAPI,
 dan Node.js — serta **catatan aktivitas** dari setiap perintah yang dijalankan.
 
-**Cara pakai:** letakkan `HirunazaLibraryLauncher.exe` **di folder aplikasi** (satu folder
+**Cara pakai:** letakkan `home_library.exe` **di folder aplikasi** (satu folder
 dengan `manage.py`), lalu klik dua kali. Bila `.exe` disimpan di folder lain, tekan
 **Pilih Folder …** dan arahkan ke folder aplikasi.
 
 ### Mode teks (untuk memeriksa bila jendela bermasalah)
 
 ```bat
-HirunazaLibraryLauncher.exe --selftest    :: uji mandiri, hasil ditulis ke selftest_launcher.txt
-HirunazaLibraryLauncher.exe --statuscli   :: status sistem & kedua layanan
-HirunazaLibraryLauncher.exe --startcli    :: jalankan layanan (log: logs\django.log, logs\fastapi.log)
-HirunazaLibraryLauncher.exe --stopcli     :: hentikan layanan
+home_library.exe --selftest                            :: uji mandiri, hasil ditulis ke selftest_launcher.txt
+home_library.exe --statuscli                           :: status sistem & kedua layanan
+home_library.exe --startcli                            :: jalankan layanan (log: logs\django.log, logs\fastapi.log)
+home_library.exe --stopcli                             :: hentikan layanan
+home_library.exe --admincli --user admin --pass 123    :: buat akun admin tanpa membuka jendela
+                                                       :: (hasil ditulis ke admincli_launcher.txt)
 ```
 
 ### Membangun ulang `.exe` (untuk pengembang)
@@ -223,7 +225,7 @@ build_launcher.bat
 > **Catatan penting.** PyInstaller **gagal** bila jalur folder mengandung **spasi**
 > — gejalanya `[Errno 22] Invalid argument` dan berkas `.exe` tidak terbentuk, padahal
 > folder tujuan normal bila diuji manual. Karena itu `build_launcher.bat` membangun di
-> `%LOCALAPPDATA%\Temp\hirunaza_launcher_build` (tanpa spasi) lalu menyalin hasilnya ke
+> `%LOCALAPPDATA%\Temp\home_library_build` (tanpa spasi) lalu menyalin hasilnya ke
 > folder aplikasi. Ini juga sebabnya folder seperti `D:\IT Projects\…` tetap aman.
 
 ---
@@ -328,6 +330,37 @@ Nilai `ukuran` yang tidak dikenal akan otomatis kembali ke **2 × 3 cm**.
 > Cara mengubah ukuran: pilih opsi di halaman **Cetak Label** (sebelum mencetak)
 > atau di bilah atas halaman lembar label. Daftar ukuran tersedia di
 > `library/views.py` → `LabelPrintView.UKURAN_LABEL` bila ingin menambah ukuran lain.
+
+---
+
+## 7d. Cetak Label Rak (3 × 4 / 4 × 6 cm)
+
+Menu **Label Rak** di navbar (atau buka `/label-rak/`). Label ini ditempel **di raknya**,
+bukan di buku — isinya kode rak (menonjol), nama rak, keterangan, dan jumlah buku pada rak itu.
+
+1. Pilih rak: cari nama/kode/keterangan, filter **aktif/nonaktif**, atau centang
+   **“Hanya rak yang belum berisi buku”** (berguna saat rak baru selesai dibuat).
+2. Centang rak yang ingin dilabeli — atau klik **Cetak semua hasil filter**
+   (filter yang sedang aktif ikut terbawa).
+3. Tentukan **ukuran**, **orientasi**, dan (opsional) **lompati N stiker** yang sudah terpakai.
+4. Klik **Cetak label terpilih** → halaman lembar label → **Cetak / Simpan PDF** (Ctrl+P).
+
+| Pengaturan | Nilai |
+| :--- | :--- |
+| Ukuran label | **3 × 4 cm** (default) atau **4 × 6 cm** |
+| Orientasi | **Mendatar** (diputar 90°, lebar–tinggi bertukar) atau **Tegak** |
+| Skala huruf | Ikut membesar mengikuti ukuran label (3×4 → 1×, 4×6 → 1,3×) |
+| Isi label | Kode rak (menonjol) + nama rak + keterangan + jumlah buku + nama pemilik |
+| Kertas | A4, margin cetak 8 mm (`@page`) |
+
+Penanda khusus: rak **tanpa kode** diberi bingkai merah + tulisan “kode belum diisi”,
+rak **nonaktif** diberi bingkai oranye + tulisan “nonaktif” supaya tidak tertukar.
+
+Tautan langsung juga bisa dipakai, contoh:
+`/label-rak/cetak/?ids=1,2,3&ukuran=4x6&orientasi=mendatar`.
+Nilai `ukuran` yang tidak dikenal otomatis kembali ke **3 × 4 cm**; membuka halaman
+cetak **tanpa memilih rak** tidak akan mencetak semua rak — muncul pesan untuk memilih dulu.
+Daftar ukuran tersedia di `library/views.py` → `ShelfLabelPrintView.UKURAN_LABEL`.
 
 ---
 

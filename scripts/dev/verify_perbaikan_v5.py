@@ -52,7 +52,9 @@ cek('Blok navigasi ditemukan', len(nav) > 100, f'{len(nav)} karakter')
 
 # tiap tautan nav harus memuat <svg> (ikon)
 tautan_nav = re.findall(r'<a href="[^"]+"[^>]*>(.*?)</a>', nav, re.S)
-cek('Nav berisi tepat 3 tautan', len(tautan_nav) == 3, f'{len(tautan_nav)} tautan')
+# v1.8: nav desktop kini 4 tautan — Dashboard / Katalog Buku / Cetak Label / Label Rak
+# ("Tentang Aplikasi" adalah <button>, bukan <a>, jadi tidak dihitung di sini).
+cek('Nav berisi tepat 4 tautan', len(tautan_nav) == 4, f'{len(tautan_nav)} tautan')
 for i, isi in enumerate(tautan_nav, 1):
     punya_svg = '<svg' in isi
     teks = re.sub(r'<[^>]+>', ' ', isi)
@@ -63,10 +65,15 @@ cek('Ikon Dashboard = ikon rumah', 'M3 12l2-2m0 0l7-7 7 7' in nav)
 cek('Ikon Katalog Buku = ikon buku', 'M12 6.253v13' in nav)
 cek('Ikon Cetak Label = ikon label/tag', 'M7 7h.01M7 3h5a1.99' in nav)
 cek('Ikon diletakkan dalam bulatan berwarna',
-    nav.count('flex h-7 w-7 items-center justify-center rounded-lg bg-purple-100') == 4,
+    nav.count('flex h-7 w-7 items-center justify-center rounded-lg bg-purple-100') == 5,
     f"{nav.count('flex h-7 w-7 items-center justify-center rounded-lg bg-purple-100')} bulatan")
-cek('Ada efek hover pada ikon', nav.count('group-hover:bg-purple-200') == 4,
+cek('Ada efek hover pada ikon', nav.count('group-hover:bg-purple-200') == 5,
     f"{nav.count('group-hover:bg-purple-200')} efek hover")
+# v1.8: menu "Label Rak" ditambahkan -> jumlah menu berikon menjadi 5.
+# (Angka 4 di sini adalah sisa dari sebelum fitur label rak ada.)
+cek('Menu "Label Rak" ada di nav dan berikon sama rapi',
+    'Label Rak' in nav and nav.count('/label-rak/') == 1,
+    f"jumlah tautan label-rak={nav.count('/label-rak/')}")
 # v1.6: menu ke-4 "Tentang Aplikasi" (pemicu modal) wajib berikon sama rapi
 cek('Tombol "Tentang Aplikasi" ada di nav', 'id="buka-tentang"' in nav)
 cek('Ikon "Tentang Aplikasi" = ikon info',

@@ -69,6 +69,8 @@ _r_*.log
 _v6.log
 _build_exe.log
 selftest_launcher.txt
+admincli_launcher.txt
+_siteconfig_cadangan.json
 
 # ─── Log layanan (dibuat oleh Panel Kendali / launcher saat dijalankan) ──
 logs/

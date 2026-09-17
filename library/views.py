@@ -756,6 +756,158 @@ class LabelPrintView(LoginRequiredMixin, TemplateView):
         return context
 
 
+# ─── Cetak label rak (3 × 4 cm / 4 × 6 cm) ───────────────────────────────────
+
+class ShelfLabelSelectView(LoginRequiredMixin, ListView):
+    """
+    Pilih rak yang akan dicetak labelnya (dengan filter & pencarian).
+
+    Label rak ditempel di depan/pinggir rak, bukan di buku — isinya kode rak,
+    nama rak, keterangan, dan jumlah buku pada rak tersebut.
+    """
+    template_name = 'labels/shelf_label_select.html'
+    context_object_name = 'shelves'
+    paginate_by = 24
+
+    def get_queryset(self):
+        qs = (Shelf.objects
+              .annotate(book_count=Count('books'))
+              .order_by('name'))
+        p = self.request.GET
+        kata = (p.get('q') or '').strip()
+        if kata:
+            qs = qs.filter(Q(name__icontains=kata) | Q(code__icontains=kata)
+                           | Q(description__icontains=kata))
+        if p.get('status') == 'aktif':
+            qs = qs.filter(is_active=True)
+        elif p.get('status') == 'nonaktif':
+            qs = qs.filter(is_active=False)
+        if p.get('kosong') == '1':
+            # HAVING COUNT(...) = 0 → rak yang belum dipakai buku
+            qs = qs.filter(book_count=0)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter'] = self.request.GET
+        context['total_hasil'] = self.get_queryset().count()
+        context['total_rak'] = Shelf.objects.count()
+        # Query string tanpa 'page' untuk tautan paginasi
+        params = self.request.GET.copy()
+        params.pop('page', None)
+        context['query_tanpa_page'] = params.urlencode()
+        return context
+
+
+class ShelfLabelPrintView(LoginRequiredMixin, TemplateView):
+    """
+    Lembar label rak siap cetak.
+
+    Ukuran label bisa dipilih (lebar × tinggi): **3 × 4 cm** (default) atau
+    **4 × 6 cm**; masing-masing bisa **mendatar** (diputar 90° sehingga
+    lebar/tinggi bertukar) atau **tegak**. Ukuran huruf ikut membesar
+    mengikuti ukuran label (`skala`) supaya label besar tetap terbaca.
+
+    Isi label: kode rak (menonjol), nama rak, keterangan, jumlah buku, dan
+    nama pemilik (opsional).
+
+    Parameter:
+      ?ids=1,2,3                                   → cetak rak terpilih
+      ?semua=1&<filter yang sama dengan ShelfLabelSelectView>  → cetak hasil filter
+    Tanpa ids DAN tanpa permintaan eksplisit apa pun, halaman menampilkan pesan
+    "Tidak ada rak yang dipilih" — bukan mencetak seluruh rak tanpa diminta.
+    """
+    template_name = 'labels/shelf_label_print.html'
+
+    # kode: (sisi pendek cm, sisi panjang cm, skala huruf)
+    UKURAN_LABEL = {
+        '3x4': (3, 4, 1.0),
+        '4x6': (4, 6, 1.3),
+    }
+    UKURAN_DEFAULT = '3x4'
+
+    def get_queryset(self):
+        p = self.request.GET
+        ids = [int(x) for x in p.get('ids', '').split(',') if x.strip().isdigit()]
+        qs = (Shelf.objects
+              .annotate(book_count=Count('books'))
+              .order_by('name'))
+        if ids:
+            return qs.filter(pk__in=ids)
+        kata = (p.get('q') or '').strip()
+        status = p.get('status') or ''
+        kosong = p.get('kosong') == '1'
+        # Tanpa pilihan ids dan tanpa permintaan eksplisit (?semua=1 / filter),
+        # halaman ini tidak boleh diam-diam mencetak SEMUA rak: tampilkan pesan
+        # kosong supaya pengguna memilih dulu.
+        if p.get('semua') != '1' and not (kata or status or kosong):
+            return qs.none()
+        if kata:
+            qs = qs.filter(Q(name__icontains=kata) | Q(code__icontains=kata)
+                           | Q(description__icontains=kata))
+        if status == 'aktif':
+            qs = qs.filter(is_active=True)
+        elif status == 'nonaktif':
+            qs = qs.filter(is_active=False)
+        if kosong:
+            qs = qs.filter(book_count=0)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shelves = list(self.get_queryset())
+        context['shelves'] = shelves
+        context['total_buku'] = sum(s.book_count for s in shelves)
+        p = self.request.GET
+
+        # ── Ukuran label: pilihan 3×4 / 4×6 cm (kode tak dikenal -> default) ──
+        kode = p.get('ukuran', self.UKURAN_DEFAULT)
+        if kode not in self.UKURAN_LABEL:
+            kode = self.UKURAN_DEFAULT
+        sisi_pendek, sisi_panjang, skala = self.UKURAN_LABEL[kode]
+
+        # ── Orientasi: mendatar = lebar/tinggi bertukar (diputar 90°) ──
+        orientasi = 'tegak' if p.get('orientasi') == 'tegak' else 'mendatar'
+        lebar, tinggi = sisi_pendek, sisi_panjang
+        if orientasi == 'mendatar':
+            lebar, tinggi = tinggi, lebar
+
+        # ── Lompati N label pertama (stiker yang sebagian sudah terpakai) ──
+        try:
+            mulai = max(0, int(p.get('mulai', '') or 0))
+        except (TypeError, ValueError):
+            mulai = 0
+
+        context.update({
+            'ukuran': kode,
+            'orientasi': orientasi,
+            'lebar_cm': lebar,
+            'tinggi_cm': tinggi,
+            # PENTING: skala dikirim sebagai teks netral-locale (titik desimal).
+            # Bila dibiarkan sebagai float, LANGUAGE_CODE='id' membuat Django
+            # mencetak "1,3" sehingga CSS `calc(18pt * 1,3)` jadi tidak valid
+            # dan skala huruf diam-diam tidak diterapkan.
+            'skala': f"{skala:g}",
+            'label_ukuran': f"{lebar} × {tinggi} cm ({orientasi})",
+            'opsi_ukuran': [
+                {'kode': k, 'label': f"{min(a, b)} × {max(a, b)} cm"}
+                for k, (a, b, _) in self.UKURAN_LABEL.items()
+            ],
+            'mulai_dari': mulai,
+            'slot_kosong': range(mulai),
+        })
+
+        # Parameter selain ukuran/orientasi -> dipakai ulang oleh pemilih di toolbar
+        params = p.copy()
+        for kunci in ('ukuran', 'orientasi'):
+            params.pop(kunci, None)
+        context['param_lain'] = [
+            {'nama': kunci, 'nilai': nilai}
+            for kunci, daftar in params.lists() for nilai in daftar
+        ]
+        return context
+
+
 # ─── API ──────────────────────────────────────────────────────────────────────
 
 class TitleAutocompleteAPIView(LoginRequiredMixin, View):

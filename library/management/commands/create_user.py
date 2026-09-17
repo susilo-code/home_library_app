@@ -5,11 +5,22 @@ Contoh pemakaian:
     python manage.py create_user                          # interaktif
     python manage.py create_user --username budi --password rahasia123
     python manage.py create_user --username ayah --password rahasia123 --staff --email ayah@mail.com
+    python manage.py create_user --username admin --password 123 --superuser --no-input
     python manage.py create_user --list                   # tampilkan akun terdaftar
     python manage.py create_user --username budi --set-password   # atur ulang sandi
     python manage.py create_user --username budi --deactivate     # nonaktifkan
+
+Catatan (penting untuk launcher/.exe):
+    Opsi yang TIDAK diberikan kini dibiarkan kosong bila stdin bukan terminal —
+    dulu command ini selalu memanggil input() untuk email/nama depan/nama
+    belakang, sehingga dijalankan dari .exe --windowed (tanpa stdin) langsung
+    gagal "EOFError: EOF when reading a line" dan akun tidak pernah terbuat.
+    Pakai --no-input untuk memastikan tidak ada tanya-jawab sama sekali;
+    lingkungan NO_INPUT=1 memberi efek yang sama.
 """
 import getpass
+import os
+import sys
 
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
@@ -20,14 +31,22 @@ class Command(BaseCommand):
     help = 'Tambah pengguna baru, atur ulang kata sandi, aktif/nonaktifkan akun'
 
     def add_arguments(self, parser):
+        # PENTING: nilai bawaan None (bukan '') supaya command tahu bedanya
+        # "tidak diberikan" vs "diberikan tetapi kosong". Tanpa ini command
+        # SELALU memanggil input() untuk email/nama depan/nama belakang —
+        # di .exe --windowed (tanpa stdin) itu langsung EOFError dan akun
+        # tidak pernah terbuat. Lihat juga --no-input.
         parser.add_argument('--username', help='Nama pengguna untuk login')
         parser.add_argument('--password', help='Kata sandi (bila kosong akan diminta/di-generate)')
-        parser.add_argument('--email', default='', help='Email pengguna')
-        parser.add_argument('--first-name', default='', help='Nama depan')
-        parser.add_argument('--last-name', default='', help='Nama belakang')
+        parser.add_argument('--email', default=None, help='Email pengguna')
+        parser.add_argument('--first-name', default=None, help='Nama depan')
+        parser.add_argument('--last-name', default=None, help='Nama belakang')
         parser.add_argument('--staff', action='store_true', help='Beri akses panel admin (staff)')
         parser.add_argument('--superuser', action='store_true', help='Jadikan superuser')
         parser.add_argument('--inactive', action='store_true', help='Buat akun dalam keadaan nonaktif')
+        parser.add_argument('--no-input', dest='no_input', action='store_true',
+                            help='Jangan bertanya sama sekali (untuk launcher/.exe & otomatisasi). '
+                                 'Semua data wajib dikirim lewat argumen.')
         # Aksi lain terhadap akun yang sudah ada
         parser.add_argument('--list', action='store_true', help='Tampilkan daftar akun lalu keluar')
         parser.add_argument('--set-password', action='store_true', help='Atur ulang kata sandi akun')
@@ -61,6 +80,37 @@ class Command(BaseCommand):
                 continue
             return p1
 
+    # ── tanya-jawab: HANYA bila stdin benar-benar interaktif ──────────────────
+    @staticmethod
+    def _stdin_interaktif() -> bool:
+        """
+        False bila tidak ada terminal (mis. dijalankan dari launcher .exe
+        --windowed, dari GUI, atau lewat CI). Lingkungan boleh memaksa
+        non-interaktif dengan NO_INPUT=1.
+        """
+        if (os.getenv('NO_INPUT') or '').strip().lower() in ('1', 'true', 'yes'):
+            return False
+        try:
+            if sys.stdin is None:      # .exe --windowed: sys.stdin bisa None
+                return False
+            return sys.stdin.isatty()
+        except Exception:
+            return False
+
+    @staticmethod
+    def _nilai(pertanyaan: str, nilai_argumen, boleh_tanya: bool) -> str:
+        """Dari argumen kalau ada; kalau tidak dan boleh, tanya; sisanya kosong."""
+        if nilai_argumen is not None:
+            return (nilai_argumen or '').strip()
+        if not boleh_tanya:
+            return ''
+        try:
+            return input(pertanyaan).strip()
+        except Exception:
+            # EOFError / OSError / RuntimeError("lost sys.stdin") — semua berarti
+            # tidak ada yang bisa ditanya: pakai nilai kosong, jangan gagal.
+            return ''
+
     # ── eksekusi ──────────────────────────────────────────────────────────────
     def handle(self, *args, **options):
         if options['list']:
@@ -68,6 +118,7 @@ class Command(BaseCommand):
             return
 
         username = (options['username'] or '').strip()
+        boleh_tanya = (not options['no_input']) and self._stdin_interaktif()
         ada_aksi = any([options['set_password'], options['activate'], options['deactivate'],
                         options['staff'], options['superuser'], options['inactive']])
 
@@ -83,7 +134,15 @@ class Command(BaseCommand):
                     )
                 perubahan = []
                 if options['set_password']:
-                    sandi = options['password'] or self.minta_sandi_baru(user)
+                    if options['password']:
+                        sandi = options['password']
+                    elif boleh_tanya:
+                        sandi = self.minta_sandi_baru(user)
+                    else:
+                        raise CommandError(
+                            '--set-password memerlukan --password bila dijalankan tanpa '
+                            'terminal (mis. dari launcher/.exe).'
+                        )
                     user.set_password(sandi)
                     perubahan.append('kata sandi diperbarui')
                 if options['staff'] and not user.is_staff:
@@ -113,15 +172,28 @@ class Command(BaseCommand):
 
         # 2) Tambah pengguna baru
         if not username:
+            if not boleh_tanya:
+                raise CommandError(
+                    'Nama pengguna wajib diberikan lewat --username (tidak ada '
+                    'terminal untuk bertanya).'
+                )
             username = input('Nama pengguna untuk login: ').strip()
         if not username:
             raise CommandError('Nama pengguna wajib diisi.')
 
-        email = options['email'] or input('Email (boleh kosong): ').strip()
-        first = options['first_name'] or input('Nama depan (boleh kosong): ').strip()
-        last = options['last_name'] or input('Nama belakang (boleh kosong): ').strip()
+        email = self._nilai('Email (boleh kosong): ', options['email'], boleh_tanya)
+        first = self._nilai('Nama depan (boleh kosong): ', options['first_name'], boleh_tanya)
+        last = self._nilai('Nama belakang (boleh kosong): ', options['last_name'], boleh_tanya)
 
-        sandi = options['password'] or self.minta_sandi_baru()
+        if options['password']:
+            sandi = options['password']
+        elif boleh_tanya:
+            sandi = self.minta_sandi_baru()
+        else:
+            raise CommandError(
+                'Kata sandi wajib diberikan lewat --password (tidak ada terminal '
+                'untuk bertanya).'
+            )
 
         user = User.objects.create_user(
             username=username,

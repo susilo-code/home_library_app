@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cetak Label Rak — {{ app_config.app_name|default:"Perpustakaan" }}</title>
+    <style>
+        /* ══════════════════════════════════════════════════════════════════
+           Label RAK (lokasi rak) — UKURAN DAPAT DIPILIH
+             3 × 4 cm  (default)   ·   4 × 6 cm
+           Orientasi: mendatar (diputar 90°) atau tegak.
+           Ukuran huruf ikut membesar mengikuti ukuran label (--skala),
+           sehingga label besar tetap terbaca dan label kecil tetap rapi.
+           Cetak: A4, margin 8 mm.
+           ══════════════════════════════════════════════════════════════════ */
+        :root {
+            --lebar-label: {{ lebar_cm }}cm;
+            --tinggi-label: {{ tinggi_cm }}cm;
+            --skala: {{ skala }};
+            --jarak: 2mm;
+            --garis: #9aa0ae;
+            --tinta: #111827;
+            --tinta-lembut: #4b5563;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 12px;
+            background: #eef0f5;
+            font-family: Arial, Helvetica, "Segoe UI", sans-serif;
+            color: var(--tinta);
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* ── Bilah alat (tidak ikut tercetak) ── */
+        .toolbar {
+            max-width: 210mm; margin: 0 auto 12px; padding: 10px 14px;
+            background: #fff; border-radius: 10px; display: flex; flex-wrap: wrap;
+            gap: 10px; align-items: center; justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12); font-size: 13px;
+        }
+        .toolbar a, .toolbar button, .toolbar select, .toolbar input {
+            font: inherit; text-decoration: none; cursor: pointer;
+            padding: 7px 12px; border-radius: 7px; border: 1px solid #d1d5db;
+            background: #fff; color: #374151;
+        }
+        .toolbar input[type="number"] { width: 88px; }
+        .toolbar label { display: flex; align-items: center; gap: 6px; color: #4b5563; }
+        .toolbar button.utama { background: #6d28d9; border-color: #6d28d9; color: #fff; font-weight: 600; }
+        .toolbar .info { color: #4b5563; }
+        .toolbar .info b { color: #111827; }
+
+        /* ── Lembar label ── */
+        .lembar {
+            width: 194mm; margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, var(--lebar-label));
+            gap: var(--jarak);
+            align-content: start;
+            background: #fff;
+            padding: 4mm;
+            box-shadow: 0 1px 6px rgba(0,0,0,.15);
+        }
+
+        .label {
+            position: relative;
+            width: var(--lebar-label);
+            height: var(--tinggi-label);
+            border: 1px dashed var(--garis);
+            padding: calc(1.6mm * var(--skala)) calc(1.8mm * var(--skala));
+            padding-left: calc(3.6mm * var(--skala));
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            break-inside: avoid;
+            page-break-inside: avoid;
+            background: #fff;
+        }
+
+        /* pita warna rak di sisi kiri (warna diambil dari master data rak) */
+        .label .aksen {
+            position: absolute; left: 0; top: 0; bottom: 0;
+            width: calc(2.2mm * var(--skala));
+            background: var(--warna-rak, #8A4FFF);
+        }
+
+        .label .kode {
+            font-size: calc(17pt * var(--skala)); font-weight: 700; line-height: 1;
+            letter-spacing: .3px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .label .nama {
+            font-size: calc(7.4pt * var(--skala)); font-weight: 600; line-height: 1.15;
+            margin-top: calc(.5mm * var(--skala));
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .label .ket {
+            font-size: calc(5.8pt * var(--skala)); color: var(--tinta-lembut); line-height: 1.15;
+            margin-top: calc(.3mm * var(--skala));
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .label .kaki {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            font-size: calc(5.4pt * var(--skala)); color: #6b7280; gap: 1mm;
+        }
+        .label .jumlah { font-weight: 700; white-space: nowrap; }
+        .label .pemilik { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
+        .label .tanda {
+            font-size: calc(4.8pt * var(--skala)); font-weight: 700; text-transform: uppercase;
+            letter-spacing: .3px; white-space: nowrap;
+        }
+
+        /* rak yang kode-nya belum diisi: nama rak jadi teks utama + penanda merah */
+        .label.tanpa-kode { border-color: #dc2626; }
+        .label.tanpa-kode .tanda { color: #b91c1c; }
+
+        /* rak nonaktif: tetap bisa dicetak, ditandai supaya tidak tertukar */
+        .label.nonaktif { border-color: #d97706; }
+        .label.nonaktif .tanda { color: #b45309; }
+
+        /* slot kosong untuk "lompati N label" (stiker yang sebagian terpakai) */
+        .label.slot-kosong { border-style: dotted; border-color: #e5e7eb; }
+        .label.slot-kosong .aksen { background: transparent; }
+
+        .kosong {
+            max-width: 210mm; margin: 0 auto; padding: 24px; background: #fff;
+            border-radius: 10px; text-align: center; color: #6b7280;
+        }
+
+        @page { size: A4; margin: 8mm; }
+
+        @media print {
+            body { background: #fff; padding: 0; }
+            .toolbar { display: none !important; }
+            .lembar {
+                width: auto; margin: 0; padding: 0;
+                box-shadow: none; gap: var(--jarak);
+            }
+            .label { border-color: #cbd5e1; }
+            .label.slot-kosong { border-color: #fff; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="toolbar">
+    <div class="info">
+        <b>{{ shelves|length }}</b> label rak siap dicetak ·
+        ukuran <b>{{ label_ukuran }}</b> ·
+        total <b>{{ total_buku }}</b> buku
+        {% if mulai_dari %} · lewati <b>{{ mulai_dari }}</b> stiker pertama{% endif %}
+    </div>
+    <form method="get" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        {# bawa serta filter/pilihan rak yang sedang aktif #}
+        {% for p in param_lain %}
+        <input type="hidden" name="{{ p.nama }}" value="{{ p.nilai }}">
+        {% endfor %}
+        <label style="display:flex; align-items:center; gap:6px;">
+            Ukuran
+            <select name="ukuran" onchange="this.form.submit()">
+                {% for o in opsi_ukuran %}
+                <option value="{{ o.kode }}"{% if o.kode == ukuran %} selected{% endif %}>{{ o.label }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label style="display:flex; align-items:center; gap:6px;">
+            Orientasi
+            <select name="orientasi" onchange="this.form.submit()">
+                <option value="mendatar"{% if orientasi == 'mendatar' %} selected{% endif %}>Mendatar (diputar)</option>
+                <option value="tegak"{% if orientasi == 'tegak' %} selected{% endif %}>Tegak</option>
+            </select>
+        </label>
+        <a href="{% url 'shelf-label-select' %}">← Pilih rak lain</a>
+        <button class="utama" type="button" onclick="window.print()">Cetak / Simpan PDF</button>
+    </form>
+</div>
+
+{% if shelves %}
+<div class="lembar">
+    {% for _ in slot_kosong %}<div class="label slot-kosong" aria-hidden="true"></div>{% endfor %}
+    {% for s in shelves %}
+    <div class="label{% if not s.code %} tanpa-kode{% endif %}{% if not s.is_active %} nonaktif{% endif %}"
+         style="--warna-rak: {{ s.color_code|default:'#8A4FFF' }}">
+        <span class="aksen"></span>
+        <div>
+            <div class="kode">{{ s.code|default:s.name }}</div>
+            {% if s.code %}<div class="nama">{{ s.name }}</div>{% endif %}
+            {% if s.description %}<div class="ket">{{ s.description }}</div>{% endif %}
+        </div>
+        <div class="kaki">
+            <span class="jumlah">{{ s.book_count }} buku</span>
+            {% if not s.code %}
+            <span class="tanda">kode belum diisi</span>
+            {% elif not s.is_active %}
+            <span class="tanda">nonaktif</span>
+            {% else %}
+            <span class="pemilik">{% if app_config.label_owner %}{{ app_config.label_owner }}{% else %}{{ app_config.app_short_name|default:"Perpustakaan" }}{% endif %}</span>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="kosong">
+    <p><strong>Tidak ada rak yang dipilih.</strong></p>
+    <p><a href="{% url 'shelf-label-select' %}">Pilih rak untuk dicetak labelnya</a></p>
+</div>
+{% endif %}
+
+</body>
+</html>
