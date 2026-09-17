@@ -592,6 +592,7 @@ Pastikan `.env`, `.venv/`, `db.sqlite3`, `media/`, `node_modules/` berstatus **i
 | Halaman tampil kode lama walau file sudah diubah | Proses server lama memegang port | `stop.bat`, cek `netstat -ano \| findstr :8000` harus kosong, lalu `start.bat` |
 | `TemplateSyntaxError: Unclosed tag on line N: 'block'` | `{% block %}` tidak ditutup `{% endblock %}` | Pastikan setiap blok di template punya penutup; jumlah `{% block %}` = jumlah `{% endblock %}` |
 | CSS/tampilan polos | `output.css` belum ada | `npm install && npm run build`, atau periksa audit: `.venv\Scripts\python.exe scripts\dev\cek_css_lokal.py` (harus 0 kelas hilang) |
+| Tampilan sudah diperbaiki tapi **browser masih menampilkan yang lama** (mis. ikon login masih tertimpa teks) | Browser memakai `output.css` dari cache-nya sendiri: nama berkas tidak pernah berubah dan server pengembangan tidak mengirim `Cache-Control` | **Ctrl+Shift+R** (hard reload) sekali. Sejak v1.9.1 tautan CSS memakai `?v=<mtime>` sehingga reload biasa sudah cukup — kalau masih lama, pastikan server di-restart (`stop.bat` → `start.bat`) dan periksa `href` CSS di View Source sudah ada `?v=` |
 | `Invalid HTTP_HOST header` | Host tidak diizinkan | Tambahkan host ke `ALLOWED_HOSTS` di `.env` |
 | `database is locked` (SQLite) | Ada proses lain memakai DB | Tutup server lain / aplikasi DB viewer, lalu ulangi |
 | `no such table: library_book` | Belum migrasi | `python manage.py migrate` |

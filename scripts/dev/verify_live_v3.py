@@ -20,6 +20,7 @@ Menguji tiga perbaikan pada BUILD yang sedang berjalan:
 Jalankan: .venv\\Scripts\\python.exe scripts\\dev\\verify_live_v3.py
 """
 import json
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -65,11 +66,21 @@ st, html = ambil(f"{DJA}/login/")
 cek("GET /login/ → 200", st == 200, f"status={st}")
 cek("input login memuat kelas pl-11 (ruang untuk ikon)",
     "pl-11" in html and 'id="id_username"' in html and 'id="id_password"' in html)
+# Tautan CSS WAJIB berversi (?v=...): tanpa itu browser bisa memakai output.css
+# lama dari cache-nya sendiri dan perbaikan tampilan tidak terlihat pengguna.
+m = re.search(r'href="(/static/css/output\.css\?v=(\d+))"', html)
+cek("tautan CSS memakai parameter versi ?v=<mtime>",
+    m is not None, m.group(1) if m else "tidak ditemukan ?v=")
 cek("halaman memuat static/css/output.css",
     "/static/css/output.css" in html)
 
 st, css = ambil(f"{DJA}/static/css/output.css")
 cek("GET /static/css/output.css → 200", st == 200, f"status={st}")
+if m:
+    st_v, css_v = ambil(f"{DJA}{m.group(1)}")
+    cek("URL CSS berversi → 200 dan berisi aturan .pl-11",
+        st_v == 200 and "pl-11" in css_v and "padding-left:2.75rem" in css_v,
+        f"status={st_v}")
 cek("CSS menyediakan aturan .pl-11 (padding-left:2.75rem)",
     "pl-11" in css and "padding-left:2.75rem" in css,
     f"panjang css={len(css)}")

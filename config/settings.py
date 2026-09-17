@@ -76,6 +76,8 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 # Identitas aplikasi (judul dinamis) untuk semua template
                 "library.context_processors.identitas_aplikasi",
+                # Versi aset statik -> ?v= pada CSS/JS (anti cache lama)
+                "library.context_processors.static_version",
             ],
         },
     },
