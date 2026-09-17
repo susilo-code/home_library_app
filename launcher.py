@@ -1,6 +1,6 @@
 """
-Hirunaza's Library — Panel Kendali (Launcher GUI)
-=================================================
+Application Controller — jendela pengendali aplikasi (Launcher GUI)
+==================================================================
 
 Satu pintu untuk pengguna awam: Siapkan (setup) → Jalankan → Hentikan.
 
@@ -29,8 +29,8 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 from tkinter.scrolledtext import ScrolledText
 
-NAMA_APP_BAWAAN = "Panel Kendali Perpustakaan"
-VERSI = "1.5.0"
+NAMA_APP_BAWAAN = "Application Controller"
+VERSI = "1.6.0"
 DEFAULT_PORTS = {"django": "8000", "fastapi": "8001"}
 
 # Jangan memunculkan jendela hitam untuk proses anak
@@ -56,11 +56,27 @@ FILE_KONFIG_LAMA = Path(os.environ.get("LOCALAPPDATA", Path.home())) / "Hirunaza
 
 def nama_app(folder: Path | None = None) -> str:
     """
-    Nama aplikasi untuk judul jendela: dibaca dari pengaturan aplikasi
-    (SiteConfig di DB SQLite) supaya panel kendali tidak memakai nama yang
-    sudah usang. Bila tidak terbaca, pakai APP_NAME di .env, lalu nama bawaan.
+    Nama aplikasi untuk judul jendela, urutan pencarian:
+
+      1. ``LAUNCHER_APP_NAME`` di ``.env`` — nama KHUSUS untuk jendela pengendali
+         ini (dipakai bila pemilik ingin jendela memakai nama yang berbeda dari
+         judul aplikasi web, mis. "Home's Library Information System").
+      2. ``SiteConfig.app_name`` dari database — identitas aplikasi yang diatur
+         di Pengaturan → Identitas Aplikasi (satu sumber untuk web + label).
+      3. ``APP_NAME`` di ``.env``.
+      4. Nama bawaan ("Application Controller").
+
+    Tidak ada nama merek yang ditulis tetap di kode — semuanya bisa diubah tanpa
+    membangun ulang .exe.
     """
     if folder is not None:
+        try:
+            env = baca_env(folder)
+            khusus = (env.get("LAUNCHER_APP_NAME") or "").strip()
+            if khusus:
+                return khusus
+        except Exception:
+            pass
         try:
             import sqlite3
             db = folder / "db.sqlite3"
@@ -357,14 +373,14 @@ def ringkas_status(folder: Path | None) -> dict:
 #  Aplikasi GUI
 # ════════════════════════════════════════════════════════════════════════════
 
-class PanelKendali(tk.Tk):
+class ApplicationController(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
         self.folder: Path | None = cari_folder_aplikasi()
         # Nama aplikasi mengikuti pengaturan di aplikasi (SiteConfig), bukan
         # ditulis tetap di kode — judul tidak boleh memakai nama lama.
         self.nama_app = nama_app(self.folder)
-        self.title(f"Panel Kendali — {self.nama_app} v{VERSI}")
+        self.title(f"Application Controller — {self.nama_app} v{VERSI}")
         self.geometry("820x640")
         self.minsize(760, 560)
 
@@ -394,7 +410,7 @@ class PanelKendali(tk.Tk):
         self.lbl_nama = ttk.Label(kepala, text=self.nama_app,
                                   font=("Segoe UI", 13, "bold"))
         self.lbl_nama.pack(anchor="w")
-        ttk.Label(kepala, text="Panel kendali: siapkan, jalankan, dan hentikan aplikasi.",
+        ttk.Label(kepala, text="Application Controller: siapkan, jalankan, dan hentikan aplikasi.",
                   foreground="#555").pack(anchor="w")
 
         # Folder aplikasi
@@ -528,7 +544,7 @@ class PanelKendali(tk.Tk):
         simpan_konfig(konfig)
         # Nama aplikasi bisa berubah begitu folder benar-benar diketahui
         self.nama_app = nama_app(self.folder)
-        self.title(f"Panel Kendali — {self.nama_app} v{VERSI}")
+        self.title(f"Application Controller — {self.nama_app} v{VERSI}")
         self.lbl_nama.configure(text=self.nama_app)
         self.tulis(f"Folder aplikasi diset ke: {self.folder}")
 
@@ -816,7 +832,7 @@ def main() -> int:
         return cli_stop()
     if "--admincli" in sys.argv:
         return cli_buat_admin()
-    app = PanelKendali()
+    app = ApplicationController()
     app.mainloop()
     return 0
 

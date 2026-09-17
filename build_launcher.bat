@@ -1,13 +1,15 @@
 @echo off
 setlocal enabledelayedexpansion
-title Build EXE Panel Kendali - Home Library
+title Build EXE Application Controller - Home Library
 cd /d "%~dp0"
 
 echo ============================================================
-echo   BUILD .EXE "PANEL KENDALI"  (Home Library)
+echo   BUILD .EXE "APPLICATION CONTROLLER"
 echo ============================================================
 echo   Menghasilkan : home_library.exe
 echo   Sumber       : launcher.py  (GUI tkinter)
+echo   Judul jendela: "Application Controller — ^<nama^>"
+echo                  (nama diatur di .env: LAUNCHER_APP_NAME)
 echo ============================================================
 echo.
 

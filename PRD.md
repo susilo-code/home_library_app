@@ -237,7 +237,7 @@ Delapan permintaan perbaikan sekaligus:
    **Pengaturan → Identitas Aplikasi**. Bonus: *deep-link* `?tentang=1` langsung membuka modal.
 2. **Kredit di halaman login dihapus** — frasa “This app is developed by susilo” tidak lagi
    tampil di `/login/`. Footer `Developed by susilo` tetap ada di halaman dalam aplikasi.
-3. **Panel Kendali satu pintu (`launcher.py` → `home_library.exe`)** — aplikasi
+3. **Application Controller (`launcher.py` → `home_library.exe`)** — aplikasi
    jendela **tkinter** untuk pengguna awam: tombol **Siapkan / Jalankan / Hentikan / Buka
    Aplikasi / Buat Akun Admin**, status langsung (folder, `.venv`, `.env`, port, Node.js), dan
    catatan aktivitas. Logika start/stop dipakai bersama GUI dan mode CLI

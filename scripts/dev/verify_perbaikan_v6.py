@@ -14,7 +14,7 @@ VERIFIKASI v1.6 — batch permintaan terbaru
    (identitas pengembang, open source, tech stack, fungsi aplikasi,
     izin pemakaian, tautan repo GitHub).
 2. Kredit "This app is developed by susilo" DIHAPUS dari halaman login.
-3. Panel kendali (.exe tkinter) untuk setup/start/stop + skrip build-nya.
+3. Application Controller (.exe tkinter) untuk setup/start/stop + skrip build-nya.
 4. setup.bat mengakomodir PC yang belum ada Node.js/npm.
 """
 
@@ -152,7 +152,7 @@ cek("kedua field dapat disunting dari form Identitas Aplikasi",
 cek("migrasi 0007 sudah diterapkan", (ROOT / "library/migrations/0007_siteconfig_developer_name_siteconfig_repo_url.py").exists())
 
 # ── 5. PANEL KENDALI (.EXE) ──────────────────────────────────────────────────
-bagian("5. Panel kendali tkinter + .exe")
+bagian("5. Application Controller tkinter + .exe")
 
 launcher = ROOT / "launcher.py"
 exe = ROOT / "home_library.exe"

@@ -185,10 +185,13 @@ stop.bat               :: matikan semua service
 
 ---
 
-## 5b. Panel Kendali — “satu pintu” untuk pengguna awam
+## 5b. Application Controller — “satu pintu” untuk pengguna awam
 
-Bila tidak ingin menyentuh berkas `.bat` sama sekali, gunakan **Panel Kendali**:
-`home_library.exe` (jendela tkinter, dibangun dari `launcher.py`).
+Bila tidak ingin menyentuh berkas `.bat` sama sekali, gunakan **Application Controller**:
+`home_library.exe` (jendela tkinter, dibangun dari `launcher.py`). Judul jendelanya
+berbentuk `Application Controller — <nama aplikasi>`; nama itu diambil dari
+`.env` → `LAUNCHER_APP_NAME` bila diisi, atau dari **Pengaturan → Identitas Aplikasi**
+bila dikosongkan.
 
 | Tombol | Fungsinya |
 | :--- | :--- |
